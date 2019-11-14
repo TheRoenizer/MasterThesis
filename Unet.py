@@ -1,5 +1,6 @@
 import numpy as np
 from PIL import Image
+import cv2
 
 try:
     from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout
@@ -81,13 +82,15 @@ def unet(input_shape, num_classes=1, droprate=None, linear=False):
     return model, model_name
 
 
-#model.compile(optimizer = Adam(lr=lr),loss = loss, metrics = ['accuracy'])
-'''
+
+
 imgs_train = np.zeros((79, 480, 640, 3))
 for i in range(1,80):
     print('Progress: ' + str(i) + ' of 79')
     path = 'C:/Users/chris/Google Drive/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
     img = np.array(Image.open(path))[np.newaxis]
+    img = img / 255
+    print(img.min(), img.max())
     np.append(imgs_train, img, axis = 0)
 
 imgs_val = np.zeros((10, 480, 640, 3))
@@ -95,27 +98,56 @@ for i in range(80, 90):
     print('Progress: ' + str(i) + ' of 89')
     path = 'C:/Users/chris/Google Drive/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
     img = np.array(Image.open(path))[np.newaxis]
+    img = img / 255
+    print(img.min(), img.max())
     np.append(imgs_val, img, axis = 0)
-'''
+
 #Labels for right gripper
-lbls_train = np.zeros((79, 480, 640, 4))
+lbls_train = np.zeros((79, 480, 640))
 for i in range(1,80):
     print('Progress: ' + str(i) + ' of 79')
     path = 'C:/Users/chris/Google Drive/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
-    img = np.array(Image.open(path))[np.newaxis]
-    #print(img.shape)
-    np.append(lbls_train, img, axis = 0)
+    img = cv2.imread(path, 2)
+    ret, binary_img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)
+    # cv2.imshow("Binary", binary_img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    # print(temp_img.size)
+    # converted_img = temp_img.convert('L')
+    # converted_img.show()
+    # print(converted_img.size)
+    binary_img = binary_img.astype('float32') / 255
+    final_img = np.array(binary_img)[np.newaxis]
+    print(final_img.shape)
+    print(final_img.min(), final_img.max())
+    np.append(lbls_train, final_img, axis=0)
 
-lbls_val = np.zeros((10, 480, 640, 4))
+lbls_val = np.zeros((10, 480, 640))
 for i in range (80, 90):
     print('Progress: ' + str(i) + ' of 89')
     path = 'C:/Users/chris/Google Drive/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
-    img = np.array(Image.open(path))[np.newaxis]
-    np.append(lbls_val, img, axis = 0)
+    img = cv2.imread(path, 2)
+    ret, binary_img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)
+    #cv2.imshow("Binary", binary_img)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
+    #print(temp_img.size)
+    #converted_img = temp_img.convert('L')
+    #converted_img.show()
+    #print(converted_img.size)
+    binary_img = binary_img.astype('float32') / 255
+    final_img = np.array(binary_img)[np.newaxis]
+    print(final_img.shape)
+    print(final_img.min(), final_img.max())
+    np.append(lbls_val, final_img, axis = 0)
+
 
 #print(imgs_train.shape)
 #print(imgs_val.shape)
-print(lbls_train.shape)
+#print(lbls_train.shape)
 print(lbls_val.shape)
 
+unet = unet(imgs_train.shape, num_classes=1, droprate=None, linear=False)
+
+#model.compile(optimizer = Adam(lr=lr),loss = loss, metrics = ['accuracy'])
 #model.fit(imgs_train, lbls_train,validation_data=[imgs_val,lbls_val], batch_size=batch_size, epochs=num_epochs, verbose=1,shuffle=True,callbacks=callbacks)
