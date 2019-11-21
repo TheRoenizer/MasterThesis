@@ -11,6 +11,13 @@ except:
 
 """Unet model for segmentation of color/greyscale images https://github.com/zhixuhao/unet"""
 
+
+# Christoffer:
+# PATH = 'C:/Users/chris/'
+# Jonathan:
+PATH = '/Users/jonathansteen/'
+
+
 def unet(input_shape, num_classes=1, droprate=None, linear=False):
     model_name = 'unet'
 
@@ -82,16 +89,13 @@ def unet(input_shape, num_classes=1, droprate=None, linear=False):
     return model, model_name
 
 
-
-
 imgs_train = np.zeros((79, 480, 640, 3))
-for i in range(1,80):
+for i in range(1, 80):
     print('Progress: ' + str(i) + ' of 79')
-    path = 'C:/Users/chris/Google Drive/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
+    path = PATH + '/Google Drive/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
     img = np.array(Image.open(path))[np.newaxis]
     img = img / 255
     print(img.shape)
-    #print(img.min(), img.max())
     imgs_train[i-1] = img
 
 
@@ -100,64 +104,45 @@ print(imgs_train)
 imgs_val = np.zeros((10, 480, 640, 3))
 for i in range(80, 90):
     print('Progress: ' + str(i) + ' of 89')
-    path = 'C:/Users/chris/Google Drive/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
+    path = PATH + '/Google Drive/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
     img = np.array(Image.open(path))[np.newaxis]
     img = img / 255
     imgs_val[i-80] = img
     print(imgs_val)
-    #print(img.min(), img.max())
-    #np.append(imgs_val, img, axis = 0)
 
-#Labels for right gripper
+# Labels for right gripper
 lbls_train = np.zeros((79, 480, 640))
-for i in range(1,80):
+for i in range(1, 80):
     print('Progress: ' + str(i) + ' of 79')
-    path = 'C:/Users/chris/Google Drive/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
+    path = PATH + '/Google Drive/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
     img = cv2.imread(path, 2)
     ret, binary_img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)
-    # cv2.imshow("Binary", binary_img)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-    # print(temp_img.size)
-    # converted_img = temp_img.convert('L')
-    # converted_img.show()
-    # print(converted_img.size)
     binary_img = binary_img.astype('float32') / 255
     final_img = np.array(binary_img)[np.newaxis]
     lbls_train[i-1] = final_img
-    #print(final_img.shape)
-    #print(final_img.min(), final_img.max())
-    #np.append(lbls_train, final_img, axis=0)
 
 lbls_train = lbls_train.reshape(79, 480, 640, -1)
 print(lbls_train.shape)
 
 lbls_val = np.zeros((10, 480, 640))
-for i in range (80, 90):
+for i in range(80, 90):
     print('Progress: ' + str(i) + ' of 89')
-    path = 'C:/Users/chris/Google Drive/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
+    path = PATH + '/Google Drive/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
     img = cv2.imread(path, 2)
     ret, binary_img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)
-    #cv2.imshow("Binary", binary_img)
-    #cv2.waitKey(0)
-    #cv2.destroyAllWindows()
-    #print(temp_img.size)
-    #converted_img = temp_img.convert('L')
-    #converted_img.show()
-    #print(converted_img.size)
     binary_img = binary_img.astype('float32') / 255
     final_img = np.array(binary_img)[np.newaxis]
     lbls_val[i-80] = final_img
 
 lbls_val = lbls_val.reshape(10, 480, 640, -1)
 
-#print(imgs_train.shape)
-#print(imgs_val.shape)
-#print(lbls_train.shape)
+# print(imgs_train.shape)
+# print(imgs_val.shape)
+# print(lbls_train.shape)
 print(lbls_val.shape)
 
 imgs_train2 = np.zeros((480, 640, 3))
-(unet, model_name) = unet(imgs_train2.shape, num_classes=1, droprate=0.0, linear=False)
+(unet, name) = unet(imgs_train2.shape, num_classes=1, droprate=0.0, linear=False)
 
-unet.compile(optimizer='adam', loss ='binary_crossentropy', metrics=['accuracy'])
+unet.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val], batch_size=1, epochs=25, verbose=1, shuffle=True)
