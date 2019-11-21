@@ -90,8 +90,12 @@ for i in range(1,80):
     path = 'C:/Users/chris/Google Drive/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
     img = np.array(Image.open(path))[np.newaxis]
     img = img / 255
-    print(img.min(), img.max())
-    np.append(imgs_train, img, axis = 0)
+    print(img.shape)
+    #print(img.min(), img.max())
+    imgs_train[i-1] = img
+
+
+print(imgs_train)
 
 imgs_val = np.zeros((10, 480, 640, 3))
 for i in range(80, 90):
@@ -99,8 +103,10 @@ for i in range(80, 90):
     path = 'C:/Users/chris/Google Drive/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
     img = np.array(Image.open(path))[np.newaxis]
     img = img / 255
-    print(img.min(), img.max())
-    np.append(imgs_val, img, axis = 0)
+    imgs_val[i-80] = img
+    print(imgs_val)
+    #print(img.min(), img.max())
+    #np.append(imgs_val, img, axis = 0)
 
 #Labels for right gripper
 lbls_train = np.zeros((79, 480, 640))
@@ -118,9 +124,13 @@ for i in range(1,80):
     # print(converted_img.size)
     binary_img = binary_img.astype('float32') / 255
     final_img = np.array(binary_img)[np.newaxis]
-    print(final_img.shape)
-    print(final_img.min(), final_img.max())
-    np.append(lbls_train, final_img, axis=0)
+    lbls_train[i-1] = final_img
+    #print(final_img.shape)
+    #print(final_img.min(), final_img.max())
+    #np.append(lbls_train, final_img, axis=0)
+
+lbls_train = lbls_train.reshape(79, 480, 640, -1)
+print(lbls_train.shape)
 
 lbls_val = np.zeros((10, 480, 640))
 for i in range (80, 90):
@@ -137,17 +147,17 @@ for i in range (80, 90):
     #print(converted_img.size)
     binary_img = binary_img.astype('float32') / 255
     final_img = np.array(binary_img)[np.newaxis]
-    print(final_img.shape)
-    print(final_img.min(), final_img.max())
-    np.append(lbls_val, final_img, axis = 0)
+    lbls_val[i-80] = final_img
 
+lbls_val = lbls_val.reshape(10, 480, 640, -1)
 
 #print(imgs_train.shape)
 #print(imgs_val.shape)
 #print(lbls_train.shape)
 print(lbls_val.shape)
 
-unet = unet(imgs_train.shape, num_classes=1, droprate=None, linear=False)
+imgs_train2 = np.zeros((480, 640, 3))
+(unet, model_name) = unet(imgs_train2.shape, num_classes=1, droprate=0.0, linear=False)
 
-#model.compile(optimizer = Adam(lr=lr),loss = loss, metrics = ['accuracy'])
-#model.fit(imgs_train, lbls_train,validation_data=[imgs_val,lbls_val], batch_size=batch_size, epochs=num_epochs, verbose=1,shuffle=True,callbacks=callbacks)
+unet.compile(optimizer='adam', loss ='binary_crossentropy', metrics=['accuracy'])
+unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val], batch_size=1, epochs=25, verbose=1, shuffle=True)
