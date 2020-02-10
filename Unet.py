@@ -1,6 +1,8 @@
+import tensorflow as tf
 import numpy as np
 from PIL import Image
 import cv2
+import matplotlib.pyplot as plt
 
 try:
     from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout
@@ -89,6 +91,19 @@ def unet(input_shape, num_classes=1, droprate=None, linear=False):
     return model, model_name
 
 
+def display(display_list):
+    plt.figure(figsize=(15, 15))
+
+    title = ['Input Image', 'True Mask', 'Predicted Mask']
+
+    for i in range(len(display_list)):
+        plt.subplot(1, len(display_list), i+1)
+        plt.title(title[i])
+        plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
+        plt.axis('off')
+    plt.show()
+
+
 imgs_train = np.zeros((79, 480, 640, 3))
 for i in range(1, 80):
     print('Progress: ' + str(i) + ' of 79')
@@ -121,7 +136,7 @@ for i in range(1, 80):
     final_img = np.array(binary_img)[np.newaxis]
     lbls_train[i-1] = final_img
 
-lbls_train = lbls_train.reshape(79, 480, 640, -1)
+lbls_train = lbls_train.reshape((79, 480, 640, -1))
 print(lbls_train.shape)
 
 lbls_val = np.zeros((10, 480, 640))
@@ -134,15 +149,27 @@ for i in range(80, 90):
     final_img = np.array(binary_img)[np.newaxis]
     lbls_val[i-80] = final_img
 
-lbls_val = lbls_val.reshape(10, 480, 640, -1)
-
+lbls_val = lbls_val.reshape((10, 480, 640, -1))
 # print(imgs_train.shape)
 # print(imgs_val.shape)
 # print(lbls_train.shape)
-print(lbls_val.shape)
+# print(lbls_val.shape)
 
 imgs_train2 = np.zeros((480, 640, 3))
 (unet, name) = unet(imgs_train2.shape, num_classes=1, droprate=0.0, linear=False)
 
 unet.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val], batch_size=1, epochs=25, verbose=1, shuffle=True)
+
+
+def create_mask(pred_mask):
+    pred_mask = tf.argmax(pred_mask, axis=-1)
+    pred_mask = pred_mask[..., tf.newaxis]
+    return pred_mask[0]
+
+
+def show_predictions(image_num):
+    pred_mask = unet.predict(imgs_train[image_num])
+    display([imgs_train[image_num], lbls_train[image_num], create_mask(pred_mask)])
+
+
+unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val], batch_size=1, epochs=1, verbose=1, shuffle=True)
