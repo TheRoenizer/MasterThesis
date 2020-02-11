@@ -172,5 +172,8 @@ def show_predictions(image_num):
     pred_mask = unet.predict(imgs_train[image_num])
     display([imgs_train[image_num], lbls_train[image_num], create_mask(pred_mask)])
 
+show_predictions(1)
 
 unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val], batch_size=1, epochs=1, verbose=1, shuffle=True)
+
+show_predictions(1)
