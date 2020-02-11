@@ -15,9 +15,10 @@ except:
 
 
 # Christoffer:
-# PATH = 'C:/Users/chris/'
+# PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
-PATH = '/Users/jonathansteen/'
+#PATH = '/Users/jonathansteen/Google Drive/'
+PATH = '/home/jsteeen/'
 
 
 def unet(input_shape, num_classes=1, droprate=None, linear=False):
@@ -107,7 +108,7 @@ def display(display_list):
 imgs_train = np.zeros((79, 480, 640, 3))
 for i in range(1, 80):
     print('Progress: ' + str(i) + ' of 79')
-    path = PATH + '/Google Drive/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
+    path = PATH + '/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
     img = np.array(Image.open(path))[np.newaxis]
     img = img / 255
     print(img.shape)
@@ -119,7 +120,7 @@ print(imgs_train)
 imgs_val = np.zeros((10, 480, 640, 3))
 for i in range(80, 90):
     print('Progress: ' + str(i) + ' of 89')
-    path = PATH + '/Google Drive/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
+    path = PATH + '/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
     img = np.array(Image.open(path))[np.newaxis]
     img = img / 255
     imgs_val[i-80] = img
@@ -129,7 +130,7 @@ for i in range(80, 90):
 lbls_train = np.zeros((79, 480, 640))
 for i in range(1, 80):
     print('Progress: ' + str(i) + ' of 79')
-    path = PATH + '/Google Drive/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
+    path = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
     img = cv2.imread(path, 2)
     ret, binary_img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)
     binary_img = binary_img.astype('float32') / 255
@@ -142,7 +143,7 @@ print(lbls_train.shape)
 lbls_val = np.zeros((10, 480, 640))
 for i in range(80, 90):
     print('Progress: ' + str(i) + ' of 89')
-    path = PATH + '/Google Drive/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
+    path = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
     img = cv2.imread(path, 2)
     ret, binary_img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)
     binary_img = binary_img.astype('float32') / 255
