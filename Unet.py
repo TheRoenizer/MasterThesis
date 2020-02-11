@@ -169,7 +169,7 @@ def create_mask(pred_mask):
 
 
 def show_predictions(image_num):
-    pred_mask = unet.predict(imgs_train[image_num])
+    pred_mask = unet.predict(imgs_train[image_num][tf.newaxis, ...])
     display([imgs_train[image_num], lbls_train[image_num], create_mask(pred_mask)])
 
 show_predictions(1)
