@@ -3,6 +3,7 @@ import numpy as np
 from PIL import Image
 import cv2
 import matplotlib.pyplot as plt
+from IPython.display import clear_output
 
 try:
     from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout
@@ -15,9 +16,11 @@ except:
 
 
 # Christoffer:
-PATH = 'C:/Users/chris/'
+# PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
-#PATH = '/Users/jonathansteen/'
+# PATH = '/Users/jonathansteen/Google Drive/'
+# Linux:
+PATH = '/home/jsteeen/'
 
 
 def unet(input_shape, num_classes=1, droprate=None, linear=False):
@@ -107,29 +110,29 @@ def display(display_list):
 imgs_train = np.zeros((79, 480, 640, 3))
 for i in range(1, 80):
     print('Progress: ' + str(i) + ' of 79')
-    path = PATH + '/Google Drive/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
+    path = PATH + '/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
     img = np.array(Image.open(path))[np.newaxis]
     img = img / 255
     print(img.shape)
     imgs_train[i-1] = img
 
 
-print(imgs_train)
+# print(imgs_train)
 
 imgs_val = np.zeros((10, 480, 640, 3))
 for i in range(80, 90):
     print('Progress: ' + str(i) + ' of 89')
-    path = PATH + '/Google Drive/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
+    path = PATH + '/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
     img = np.array(Image.open(path))[np.newaxis]
     img = img / 255
     imgs_val[i-80] = img
-    print(imgs_val)
+    # print(imgs_val)
 
 # Labels for left arm or something else
 lbls_train = np.zeros((79, 480, 640))
 for i in range(1, 80):
     print('Progress: ' + str(i) + ' of 79')
-    path = PATH + '/Google Drive/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
+    path = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
     img = cv2.imread(path, 2)
     ret, binary_img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)
     binary_img = binary_img.astype('float32') / 255
@@ -142,7 +145,7 @@ print(lbls_train.shape)
 lbls_val = np.zeros((10, 480, 640))
 for i in range(80, 90):
     print('Progress: ' + str(i) + ' of 89')
-    path = PATH + '/Google Drive/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
+    path = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
     img = cv2.imread(path, 2)
     ret, binary_img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)
     binary_img = binary_img.astype('float32') / 255
@@ -167,13 +170,21 @@ def create_mask(pred_mask):
     return pred_mask[0]
 
 
-def show_predictions(image_num):
+def show_predictions(image_num=1):
     pred_mask = unet.predict(imgs_train[image_num][tf.newaxis, ...]) * 255
     #print(pred_mask.shape)
     display([imgs_train[image_num], lbls_train[image_num], pred_mask[0]])
 
-show_predictions(1)
+class DisplayCallback(tf.keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        clear_output(wait=True)
+        show_predictions()
+        print('\nSample Prediction after epoch {}\n'.format(epoch+1))
 
-unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val], batch_size=1, epochs=1, verbose=1, shuffle=True)
 
-show_predictions(1)
+unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
+         batch_size=1,
+         epochs=10,
+         verbose=1,
+         shuffle=True,
+         callbacks=[DisplayCallback()])
