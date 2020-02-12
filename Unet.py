@@ -18,9 +18,9 @@ except:
 # Christoffer:
 # PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
-# PATH = '/Users/jonathansteen/Google Drive/'
+PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-PATH = '/home/jsteeen/'
+# PATH = '/home/jsteeen/'
 
 
 def unet(input_shape, num_classes=1, droprate=None, linear=False):
@@ -172,8 +172,9 @@ def create_mask(pred_mask):
 
 def show_predictions(image_num=1):
     pred_mask = unet.predict(imgs_train[image_num][tf.newaxis, ...]) * 255
-    #print(pred_mask.shape)
+    # print(pred_mask.shape)
     display([imgs_train[image_num], lbls_train[image_num], pred_mask[0]])
+
 
 class DisplayCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
@@ -182,9 +183,12 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         print('\nSample Prediction after epoch {}\n'.format(epoch+1))
 
 
+epoch = 10
+show_predictions()
+
 unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
          batch_size=1,
-         epochs=10,
+         epochs=epoch,
          verbose=1,
          shuffle=True,
          callbacks=[DisplayCallback()])
