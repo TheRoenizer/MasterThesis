@@ -1,3 +1,4 @@
 # MasterThesis
-Readme file for master thesis 
+Readme file for master thesis
+
 by Christoffer Røn & Jonathan Steen
