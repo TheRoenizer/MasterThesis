@@ -18,9 +18,9 @@ except:
 # Christoffer:
 # PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
-PATH = '/Users/jonathansteen/Google Drive/'
+# PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-# PATH = '/home/jsteeen/'
+PATH = '/home/jsteeen/'
 
 
 def unet(input_shape, num_classes=1, droprate=None, linear=False):
@@ -94,17 +94,20 @@ def unet(input_shape, num_classes=1, droprate=None, linear=False):
     return model, model_name
 
 
-def display(display_list):
+def display(display_list, epoch):
     plt.figure(figsize=(15, 15))
 
-    title = ['Input Image', 'True Mask', 'Predicted Mask']
+    title = ['Input Image', 'True Mask', 'Predicted Mask after epoch {}'.format(epoch+1)]
 
     for i in range(len(display_list)):
         plt.subplot(1, len(display_list), i+1)
         plt.title(title[i])
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
+        # img = tf.keras.preprocessing.image.array_to_img(display_list[i])
+        # img.save("afterEpoch{}.png".format(epoch))
         plt.axis('off')
     plt.show()
+    plt.savefig("afterEpoch{}.png".format(epoch))
 
 
 imgs_train = np.zeros((79, 480, 640, 3))
@@ -170,21 +173,21 @@ def create_mask(pred_mask):
     return pred_mask[0]
 
 
-def show_predictions(image_num=1):
+def show_predictions(epoch, image_num=1):
     pred_mask = unet.predict(imgs_train[image_num][tf.newaxis, ...]) * 255
     # print(pred_mask.shape)
-    display([imgs_train[image_num], lbls_train[image_num], pred_mask[0]])
+    display([imgs_train[image_num], lbls_train[image_num], pred_mask[0]], epoch)
 
 
 class DisplayCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
         clear_output(wait=True)
-        show_predictions()
+        show_predictions(epoch)
         print('\nSample Prediction after epoch {}\n'.format(epoch+1))
 
 
-epoch = 10
-show_predictions()
+epoch = 5
+show_predictions(0)
 
 unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
          batch_size=1,
@@ -192,3 +195,9 @@ unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
          verbose=1,
          shuffle=True,
          callbacks=[DisplayCallback()])
+
+show_predictions(epoch, 2)
+show_predictions(epoch, 3)
+show_predictions(epoch, 4)
+show_predictions(epoch, 32)
+
