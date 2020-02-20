@@ -20,7 +20,8 @@ except:
 # Jonathan:
 # PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-PATH = '/home/jsteeen/'
+#"PATH = '/home/jsteeen/'
+PATH = '/home/croen/'
 
 
 def unet(input_shape, num_classes=1, droprate=None, linear=False):
@@ -106,8 +107,9 @@ def display(display_list, epoch):
         # img = tf.keras.preprocessing.image.array_to_img(display_list[i])
         # img.save("afterEpoch{}.png".format(epoch))
         plt.axis('off')
-    plt.show()
     plt.savefig("afterEpoch{}.png".format(epoch))
+    plt.show()
+
 
 
 imgs_train = np.zeros((79, 480, 640, 3))
@@ -184,7 +186,6 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         clear_output(wait=True)
         show_predictions(epoch)
         print('\nSample Prediction after epoch {}\n'.format(epoch+1))
-
 
 epoch = 5
 show_predictions(0)
