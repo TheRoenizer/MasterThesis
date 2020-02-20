@@ -16,9 +16,9 @@ except:
 
 
 # Christoffer:
-# PATH = 'C:/Users/chris/Google Drive/'
+PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
-PATH = '/Users/jonathansteen/Google Drive/'
+#PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
 # PATH = '/home/jsteeen/'
 
@@ -97,7 +97,7 @@ def unet(input_shape, num_classes=1, droprate=None, linear=False):
 def display(display_list):
     plt.figure(figsize=(15, 15))
 
-    title = ['Input Image', 'True Mask', 'Predicted Mask']
+    title = ['Input Image', 'True Mask shaft', 'True Mask gripper', 'Predicted Mask']
 
     for i in range(len(display_list)):
         plt.subplot(1, len(display_list), i+1)
@@ -128,41 +128,82 @@ for i in range(80, 90):
     imgs_val[i-80] = img
     # print(imgs_val)
 
-# Labels for left arm or something else
-lbls_train = np.zeros((79, 480, 640))
+# Label for shafts
+lbls_train_shaft = np.zeros((79, 480, 640))
 for i in range(1, 80):
     print('Progress: ' + str(i) + ' of 79')
-    path = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
-    img = cv2.imread(path, 2)
+    path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
+    path2 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/001.png'
+    img1 = cv2.imread(path1, 2)
+    img2 = cv2.imread(path2, 2)
+    img = img1 + img2
     ret, binary_img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)
     binary_img = binary_img.astype('float32') / 255
     final_img = np.array(binary_img)[np.newaxis]
-    lbls_train[i-1] = final_img
+    lbls_train_shaft[i-1] = final_img
 
-lbls_train = lbls_train.reshape((79, 480, 640, -1))
-print(lbls_train.shape)
+lbls_train_shaft = lbls_train_shaft.reshape((79, 480, 640, -1))
+#print(lbls_train_shaft.shape)
 
-lbls_val = np.zeros((10, 480, 640))
+lbls_val_shaft = np.zeros((10, 480, 640))
 for i in range(80, 90):
     print('Progress: ' + str(i) + ' of 89')
-    path = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
-    img = cv2.imread(path, 2)
+    path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
+    path2 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/001.png'
+    img1 = cv2.imread(path1, 2)
+    img2 = cv2.imread(path2, 2)
+    img = img1 + img2
     ret, binary_img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)
     binary_img = binary_img.astype('float32') / 255
     final_img = np.array(binary_img)[np.newaxis]
-    lbls_val[i-80] = final_img
+    lbls_val_shaft[i-80] = final_img
 
-lbls_val = lbls_val.reshape((10, 480, 640, -1))
+lbls_val_shaft = lbls_val_shaft.reshape((10, 480, 640, -1))
 # print(imgs_train.shape)
 # print(imgs_val.shape)
 # print(lbls_train.shape)
 # print(lbls_val.shape)
 
+# Label for grippers
+lbls_train_gripper = np.zeros((79, 480, 640))
+for i in range(1, 80):
+    print('Progress: ' + str(i) + ' of 79')
+    path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/000.png'
+    path2 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/002.png'
+    img1 = cv2.imread(path1, 2)
+    img2 = cv2.imread(path2, 2)
+    img = img1 + img2
+    ret, binary_img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)
+    binary_img = binary_img.astype('float32') / 255
+    final_img = np.array(binary_img)[np.newaxis]
+    print('SE OGSÅ HER:')
+    print(final_img.shape)
+    lbls_train_gripper[i-1] = final_img
+
+lbls_train_gripper = lbls_train_gripper.reshape((79, 480, 640, -1))
+print('SE HER:')
+print(lbls_train_gripper.shape)
+
+lbls_val_gripper = np.zeros((10, 480, 640))
+for i in range(80, 90):
+    print('Progress: ' + str(i) + ' of 89')
+    path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/000.png'
+    path2 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/002.png'
+    img1 = cv2.imread(path1, 2)
+    img2 = cv2.imread(path2, 2)
+    img = img1 + img2
+    ret, binary_img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)
+    binary_img = binary_img.astype('float32') / 255
+    final_img = np.array(binary_img)[np.newaxis]
+    lbls_val_gripper[i-80] = final_img
+
+lbls_val_gripper = lbls_val_gripper.reshape((10, 480, 640, -1))
+
 imgs_train2 = np.zeros((480, 640, 3))
 (unet, name) = unet(imgs_train2.shape, num_classes=1, droprate=0.0, linear=False)
 
-unet.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-
+unet.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+#tf.keras.metrics.MeanIoU(num_classes=2)
 
 def create_mask(pred_mask):
     pred_mask = tf.argmax(pred_mask, axis=-1)
@@ -170,10 +211,12 @@ def create_mask(pred_mask):
     return pred_mask[0]
 
 
-def show_predictions(image_num=1):
+def show_predictions(image_num=0):
     pred_mask = unet.predict(imgs_train[image_num][tf.newaxis, ...]) * 255
     # print(pred_mask.shape)
-    display([imgs_train[image_num], lbls_train[image_num], pred_mask[0]])
+    display([imgs_train[image_num], lbls_train_shaft[image_num], lbls_train_gripper[image_num], pred_mask[0]])
+
+
 
 
 class DisplayCallback(tf.keras.callbacks.Callback):
@@ -186,7 +229,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 epoch = 10
 show_predictions()
 
-unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
+unet.fit(imgs_train, [lbls_train_shaft, lbls_train_gripper], validation_data=[imgs_val, lbls_val_shaft, lbls_val_gripper],
          batch_size=1,
          epochs=epoch,
          verbose=1,
