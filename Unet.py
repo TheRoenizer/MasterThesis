@@ -115,9 +115,6 @@ for i in range(1, 80):
     img = img / 255
     imgs_train[i-1] = img
 
-
-# print(imgs_train)
-
 imgs_val = np.zeros((10, 480, 640, 3))
 for i in range(80, 90):
     print('Progress: ' + str(i) + ' of 89')
@@ -125,7 +122,6 @@ for i in range(80, 90):
     img = np.array(Image.open(path))[np.newaxis]
     img = img / 255
     imgs_val[i-80] = img
-    # print(imgs_val)
 
 # Labels
 lbls_train = np.zeros((79, 480, 640))
@@ -150,10 +146,6 @@ for i in range(1, 80):
     img = img1 + img2 + img3 + img4
     change_5 = np.where(img[:, :] == 5)
     img[change_5] = 0
-    #cv2.imwrite('JOHN.png', img)
-    #ret, binary_img = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY)
-    #binary_img = binary_img.astype('float32') / 255
-    #final_img = np.array(binary_img)[np.newaxis]
     lbls_train[i-1] = img
 
 lbls_train_onehot =tf.keras.utils.to_categorical(lbls_train, num_classes=5, dtype='float32')
@@ -197,21 +189,16 @@ def create_mask(pred_mask):
     pred_mask = pred_mask[..., tf.newaxis]
     return pred_mask[0]
 
-
 def show_predictions(image_num=0):
     pred_mask = unet.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
     # print(pred_mask.shape)
     display([imgs_val[image_num], lbls_val[image_num], create_mask(pred_mask)])
-
-
-
 
 class DisplayCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
         clear_output(wait=True)
         show_predictions()
         print('\nSample Prediction after epoch {}\n'.format(epoch+1))
-
 
 epoch = 10
 show_predictions()
