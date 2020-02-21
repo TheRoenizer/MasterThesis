@@ -16,11 +16,11 @@ except:
 
 
 # Christoffer:
-# PATH = 'C:/Users/chris/Google Drive/'
+PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
 # PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-PATH = '/home/jsteeen/'
+#PATH = '/home/jsteeen/'
 
 
 def unet(input_shape, num_classes=1, droprate=None, linear=False):
@@ -174,9 +174,9 @@ def create_mask(pred_mask):
 
 
 def show_predictions(epoch, image_num=1):
-    pred_mask = unet.predict(imgs_train[image_num][tf.newaxis, ...]) * 255
+    pred_mask = unet.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
     # print(pred_mask.shape)
-    display([imgs_train[image_num], lbls_train[image_num], pred_mask[0]], epoch)
+    display([imgs_val[image_num], lbls_val[image_num], pred_mask[0]], epoch)
 
 
 class DisplayCallback(tf.keras.callbacks.Callback):
@@ -195,6 +195,9 @@ unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
          verbose=1,
          shuffle=True,
          callbacks=[DisplayCallback()])
+
+#results = unet.evaluate(imgs_test, lbls_test, batch_size=1)
+#print('test loss, test acc:', results)
 
 show_predictions(epoch, 2)
 show_predictions(epoch, 3)
