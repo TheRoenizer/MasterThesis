@@ -20,7 +20,7 @@ except:
 # Jonathan:
 # PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-#"PATH = '/home/jsteeen/'
+# PATH = '/home/jsteeen/'
 PATH = '/home/croen/'
 
 
@@ -109,7 +109,6 @@ def display(display_list, epoch):
         plt.axis('off')
     plt.savefig("afterEpoch{}.png".format(epoch))
     plt.show()
-
 
 
 imgs_train = np.zeros((79, 480, 640, 3))
