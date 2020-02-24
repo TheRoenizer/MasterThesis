@@ -23,7 +23,7 @@ PATH = 'C:/Users/chris/Google Drive/'
 # PATH = '/home/jsteeen/'
 
 
-def unet(input_shape, num_classes=1, droprate=None, linear=False):
+def unet(input_shape, num_classes=5, droprate=None, linear=False):
     model_name = 'unet'
 
     if droprate:
@@ -179,9 +179,9 @@ lbls_val_onehot =tf.keras.utils.to_categorical(lbls_val, num_classes=5, dtype='f
 lbls_val = lbls_val.reshape((10, 480, 640, -1))
 
 imgs_train2 = np.zeros((480, 640, 3))
-(unet, name) = unet(imgs_train2.shape, num_classes=4, droprate=0.0, linear=False)
+(unet, name) = unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
 
-unet.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+unet.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 #tf.keras.metrics.MeanIoU(num_classes=2)
 
 def create_mask(pred_mask):
