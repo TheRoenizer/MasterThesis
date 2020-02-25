@@ -1,4 +1,5 @@
 import tensorflow as tf
+from keras import backend as K
 import numpy as np
 from PIL import Image
 import cv2
@@ -16,49 +17,56 @@ except:
 
 
 # Christoffer:
-PATH = 'C:/Users/chris/Google Drive/'
+#PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
 # PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
 # PATH = '/home/jsteeen/'
-#PATH = '/home/croen/'
+PATH = '/home/croen/'
 
-def focal_loss(gamma=2., alpha=4.):
-
-    gamma = float(gamma)
-    alpha = float(alpha)
-
-    def focal_loss_fixed(y_true, y_pred):
-        """Focal loss for multi-classification
-        FL(p_t)=-alpha(1-p_t)^{gamma}ln(p_t)
-        Notice: y_pred is probability after softmax
-        gradient is d(Fl)/d(p_t) not d(Fl)/d(x) as described in paper
-        d(Fl)/d(p_t) * [p_t(1-p_t)] = d(Fl)/d(x)
-        Focal Loss for Dense Object Detection
-        https://arxiv.org/abs/1708.02002
-
-        Arguments:
-            y_true {tensor} -- ground truth labels, shape of [batch_size, num_cls]
-            y_pred {tensor} -- model's output, shape of [batch_size, num_cls]
-
-        Keyword Arguments:
-            gamma {float} -- (default: {2.0})
-            alpha {float} -- (default: {4.0})
-
-        Returns:
-            [tensor] -- loss.
+def categorical_focal_loss(gamma=2., alpha=.25):
+    """
+    Softmax version of focal loss.
+           m
+      FL = ∑  -alpha * (1 - p_o,c)^gamma * y_o,c * log(p_o,c)
+          c=1
+      where m = number of classes, c = class and o = observation
+    Parameters:
+      alpha -- the same as weighing factor in balanced cross entropy
+      gamma -- focusing parameter for modulating factor (1-p)
+    Default value:
+      gamma -- 2.0 as mentioned in the paper
+      alpha -- 0.25 as mentioned in the paper
+    References:
+        Official paper: https://arxiv.org/pdf/1708.02002.pdf
+        https://www.tensorflow.org/api_docs/python/tf/keras/backend/categorical_crossentropy
+    Usage:
+     model.compile(loss=[categorical_focal_loss(alpha=.25, gamma=2)], metrics=["accuracy"], optimizer=adam)
+    """
+    def categorical_focal_loss_fixed(y_true, y_pred):
         """
-        epsilon = 1.e-9
-        y_true = tf.convert_to_tensor(y_true, tf.float32)
-        y_pred = tf.convert_to_tensor(y_pred, tf.float32)
+        :param y_true: A tensor of the same shape as `y_pred`
+        :param y_pred: A tensor resulting from a softmax
+        :return: Output tensor.
+        """
 
-        model_out = tf.add(y_pred, epsilon)
-        ce = tf.multiply(y_true, -tf.math.log(model_out))
-        weight = tf.multiply(y_true, tf.pow(tf.subtract(1., model_out), gamma))
-        fl = tf.multiply(alpha, tf.multiply(weight, ce))
-        reduced_fl = tf.reduce_max(fl, axis=1)
-        return tf.reduce_mean(reduced_fl)
-    return focal_loss_fixed
+        # Scale predictions so that the class probas of each sample sum to 1
+        y_pred /= K.sum(y_pred, axis=-1, keepdims=True)
+
+        # Clip the prediction value to prevent NaN's and Inf's
+        epsilon = K.epsilon()
+        y_pred = K.clip(y_pred, epsilon, 1. - epsilon)
+
+        # Calculate Cross Entropy
+        cross_entropy = -y_true * K.log(y_pred)
+
+        # Calculate Focal Loss
+        loss = alpha * K.pow(1 - y_pred, gamma) * cross_entropy
+
+        # Sum the losses in mini_batch
+        return K.sum(loss, axis=1)
+
+    return categorical_focal_loss_fixed
 
 def unet(input_shape, num_classes=5, droprate=None, linear=False):
     model_name = 'unet'
@@ -140,7 +148,7 @@ def display(display_list, epoch):
         plt.title(title[i])
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
         plt.axis('off')
-    plt.savefig("afterEpoch{}.png".format(epoch))
+    plt.savefig("Pictures/afterEpoch{}.png".format(epoch+1))
     plt.show()
 
 
@@ -218,7 +226,7 @@ lbls_val = lbls_val.reshape((10, 480, 640, -1))
 imgs_train2 = np.zeros((480, 640, 3))
 (unet, name) = unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
 
-unet.compile(optimizer='adam', loss=focal_loss(alpha=0.5), metrics=['accuracy'])
+unet.compile(optimizer='adam', loss=[categorical_focal_loss(alpha=.25, gamma=2)], metrics=['accuracy'])
 # tf.keras.metrics.MeanIoU(num_classes=2)
 
 def create_mask(pred_mask):
@@ -241,12 +249,27 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         print('\nSample Prediction after epoch {}\n'.format(epoch+1))
 
 
-epoch = 50
-show_predictions(0)
+epoch = 10
+show_predictions(-1)
 
-unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
+model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
          batch_size=1,
          epochs=epoch,
          verbose=1,
          shuffle=True,
          callbacks=[DisplayCallback()])
+
+loss = model_history.history['loss']
+val_loss = model_history.history['val_loss']
+
+epochs = range(epoch)
+
+plt.figure()
+plt.plot(epochs, loss, 'r', label='Training loss')
+plt.plot(epochs, val_loss, 'bo', label='Validation loss')
+plt.title('Training and Validation Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss Value')
+plt.ylim([0, 5])
+plt.legend()
+plt.show()
