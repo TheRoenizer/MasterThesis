@@ -16,9 +16,9 @@ except:
 
 
 # Christoffer:
-PATH = 'C:/Users/chris/Google Drive/'
+# PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
-#PATH = '/Users/jonathansteen/Google Drive/'
+PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
 # PATH = '/home/jsteeen/'
 
@@ -94,10 +94,10 @@ def unet(input_shape, num_classes=5, droprate=None, linear=False):
     return model, model_name
 
 
-def display(display_list):
+def display(display_list, epoch):
     plt.figure(figsize=(15, 15))
 
-    title = ['Input Image', 'True Mask', 'Predicted Mask']
+    title = ['Input Image', 'True Mask', 'Predicted Mask after epoch {}'.format(epoch+1)]
 
     for i in range(len(display_list)):
         plt.subplot(1, len(display_list), i+1)
@@ -149,8 +149,8 @@ for i in range(1, 80):
     img[change_5] = 0
     lbls_train[i-1] = img
 
-lbls_train_onehot =tf.keras.utils.to_categorical(lbls_train, num_classes=5, dtype='float32')
-lbls_train = lbls_train.reshape(((79, 480, 640, -1)))
+lbls_train_onehot = tf.keras.utils.to_categorical(lbls_train, num_classes=5, dtype='float32')
+lbls_train = lbls_train.reshape((79, 480, 640, -1))
 
 lbls_val = np.zeros((10, 480, 640))
 for i in range(80, 90):
@@ -176,24 +176,27 @@ for i in range(80, 90):
     img[change_5] = 0
     lbls_val[i-80] = img
 
-lbls_val_onehot =tf.keras.utils.to_categorical(lbls_val, num_classes=5, dtype='float32')
+lbls_val_onehot = tf.keras.utils.to_categorical(lbls_val, num_classes=5, dtype='float32')
 lbls_val = lbls_val.reshape((10, 480, 640, -1))
 
 imgs_train2 = np.zeros((480, 640, 3))
 (unet, name) = unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
 
 unet.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-#tf.keras.metrics.MeanIoU(num_classes=2)
+# tf.keras.metrics.MeanIoU(num_classes=2)
+
 
 def create_mask(pred_mask):
     pred_mask = tf.argmax(pred_mask, axis=-1)
     pred_mask = pred_mask[..., tf.newaxis]
     return pred_mask[0]
 
-def show_predictions(image_num=0):
+
+def show_predictions(epoch, image_num=1):
     pred_mask = unet.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
     # print(pred_mask.shape)
-    display([imgs_val[image_num], lbls_val[image_num], create_mask(pred_mask)])
+    display([imgs_val[image_num], lbls_val[image_num], create_mask(pred_mask)], epoch)
+
 
 class DisplayCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
@@ -201,8 +204,9 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         show_predictions()
         print('\nSample Prediction after epoch {}\n'.format(epoch+1))
 
+
 epoch = 10
-show_predictions()
+show_predictions(0)
 
 unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
          batch_size=1,

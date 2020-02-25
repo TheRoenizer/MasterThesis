@@ -2,10 +2,13 @@
   <dictionary name="jonathansteen">
     <words>
       <w>conv</w>
+      <w>crossentropy</w>
       <w>droprate</w>
       <w>imgs</w>
       <w>jonathansteen</w>
+      <w>keras</w>
       <w>lbls</w>
+      <w>onehot</w>
       <w>relu</w>
       <w>softmax</w>
       <w>unet</w>
