@@ -18,9 +18,10 @@ except:
 # Christoffer:
 # PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
-PATH = '/Users/jonathansteen/Google Drive/'
+# PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
 # PATH = '/home/jsteeen/'
+PATH = '/home/croen/'
 
 
 def unet(input_shape, num_classes=5, droprate=None, linear=False):
@@ -98,7 +99,6 @@ def display(display_list, epoch):
     plt.figure(figsize=(15, 15))
 
     title = ['Input Image', 'True Mask', 'Predicted Mask after epoch {}'.format(epoch+1)]
-
     for i in range(len(display_list)):
         plt.subplot(1, len(display_list), i+1)
         plt.title(title[i])
@@ -199,13 +199,14 @@ def show_predictions(epoch, image_num=1):
 
 
 class DisplayCallback(tf.keras.callbacks.Callback):
+    # @staticmethod
     def on_epoch_end(self, epoch, logs=None):
         clear_output(wait=True)
-        show_predictions()
+        show_predictions(epoch)
         print('\nSample Prediction after epoch {}\n'.format(epoch+1))
 
 
-epoch = 10
+epoch = 50
 show_predictions(0)
 
 unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
