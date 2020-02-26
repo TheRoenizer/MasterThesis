@@ -71,12 +71,16 @@ def categorical_focal_loss(gamma=2., alpha=.25):
 
 def dice_loss():
     def dice_loss_fixed(y_true, y_pred):
-        numerator = 2 * tf.reduce_sum(y_true * y_pred, axis=(1,2,3))
-        denominator = tf.reduce_sum(y_true + y_pred, axis=(1,2,3))
+        numerator = 2 * tf.reduce_sum(y_true * y_pred, axis=-1)
+        denominator = tf.reduce_sum(y_true + y_pred, axis=-1)
 
-        return 1 - numerator / denominator
+        return 1 - (numerator+1) / (denominator+1)
 
     return dice_loss_fixed
+
+
+def
+
 
 def unet(input_shape, num_classes=5, droprate=None, linear=False):
     model_name = 'unet'
