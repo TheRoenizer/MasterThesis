@@ -79,7 +79,6 @@ def dice_loss():
     return dice_loss_fixed
 
 
-def
 
 
 def unet(input_shape, num_classes=5, droprate=None, linear=False):
