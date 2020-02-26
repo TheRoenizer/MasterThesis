@@ -17,12 +17,12 @@ except:
 
 
 # Christoffer:
-#PATH = 'C:/Users/chris/Google Drive/'
+PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
 # PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
 # PATH = '/home/jsteeen/'
-PATH = '/home/croen/'
+#PATH = '/home/croen/'
 
 def categorical_focal_loss(gamma=2., alpha=.25):
     """
@@ -68,11 +68,15 @@ def categorical_focal_loss(gamma=2., alpha=.25):
 
     return categorical_focal_loss_fixed
 
-def dice_loss(y_true, y_pred):
-    numerator = 2 * tf.reduce_sum(y_true * y_pred, axis=(1,2,3))
-    denominator = tf.reduce_sum(y_true + y_pred, axis=(1,2,3))
 
-    return 1 - numerator / denominator
+def dice_loss():
+    def dice_loss_fixed(y_true, y_pred):
+        numerator = 2 * tf.reduce_sum(y_true * y_pred, axis=(1,2,3))
+        denominator = tf.reduce_sum(y_true + y_pred, axis=(1,2,3))
+
+        return 1 - numerator / denominator
+
+    return dice_loss_fixed
 
 def unet(input_shape, num_classes=5, droprate=None, linear=False):
     model_name = 'unet'
@@ -232,7 +236,7 @@ lbls_val = lbls_val.reshape((10, 480, 640, -1))
 imgs_train2 = np.zeros((480, 640, 3))
 (unet, name) = unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
 
-unet.compile(optimizer='adam', loss=[categorical_focal_loss(alpha=.25, gamma=2)], metrics=['accuracy'])
+unet.compile(optimizer='adam', loss=[dice_loss()], metrics=['accuracy'])
 # tf.keras.metrics.MeanIoU(num_classes=2)
 
 def create_mask(pred_mask):
