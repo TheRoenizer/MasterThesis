@@ -17,11 +17,11 @@ except:
 
 
 # Christoffer:
-PATH = 'C:/Users/chris/Google Drive/'
+#PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
 # PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-# PATH = '/home/jsteeen/'
+PATH = '/home/jsteeen/'
 #PATH = '/home/croen/'
 
 def categorical_focal_loss(gamma=2., alpha=.25):
