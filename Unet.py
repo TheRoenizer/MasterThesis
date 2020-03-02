@@ -15,14 +15,29 @@ except:
 
 """Unet model for segmentation of color/greyscale images https://github.com/zhixuhao/unet"""
 
-
 # Christoffer:
-#PATH = 'C:/Users/chris/Google Drive/'
+# PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
-# PATH = '/Users/jonathansteen/Google Drive/'
+PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-PATH = '/home/jsteeen/'
-#PATH = '/home/croen/'
+# PATH = '/home/jsteeen/'
+# PATH = '/home/croen/'
+
+epoch = 100
+class_weight = {
+    0: 1.,
+    1: 50.,
+    2: 2.,
+    3: 1.,
+    4: 1.
+}
+
+Loss_function = 1   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss
+
+FL_alpha = .25      # Focal loss alpha
+FL_gamma = 2.       # Focal loss gamma
+TL_beta = 3         # Tversky loss beta
+
 
 def categorical_focal_loss(gamma=2., alpha=.25):
     """
@@ -50,7 +65,7 @@ def categorical_focal_loss(gamma=2., alpha=.25):
         :return: Output tensor.
         """
 
-        # Scale predictions so that the class probas of each sample sum to 1
+        # Scale predictions so that the class probabilities of each sample sum to 1
         y_pred /= K.sum(y_pred, axis=-1, keepdims=True)
 
         # Clip the prediction value to prevent NaN's and Inf's
@@ -61,10 +76,10 @@ def categorical_focal_loss(gamma=2., alpha=.25):
         cross_entropy = -y_true * K.log(y_pred)
 
         # Calculate Focal Loss
-        loss = alpha * K.pow(1 - y_pred, gamma) * cross_entropy
+        focal_loss = alpha * K.pow(1 - y_pred, gamma) * cross_entropy
 
         # Sum the losses in mini_batch
-        return K.sum(loss, axis=1)
+        return K.sum(focal_loss, axis=1)
 
     return categorical_focal_loss_fixed
 
@@ -170,22 +185,23 @@ def unet(input_shape, num_classes=5, droprate=None, linear=False):
     return model, model_name
 
 
-def display(display_list, epoch):
+def display(display_list, epoch_display):
     plt.figure(figsize=(15, 15))
 
-    title = ['Input Image', 'True Mask', 'Predicted Mask after epoch {}'.format(epoch+1)]
-    for i in range(len(display_list)):
-        plt.subplot(1, len(display_list), i+1)
-        plt.title(title[i])
-        plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
+    title = ['Input Image', 'True Mask', 'Predicted Mask after epoch {}'.format(epoch_display + 1)]
+    for j in range(len(display_list)):
+        plt.subplot(1, len(display_list), j + 1)
+        plt.title(title[j])
+        plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[j]))
         plt.axis('off')
-    plt.savefig("Pictures/afterEpoch{}.png".format(epoch+1))
+    plt.savefig("Pictures/afterEpoch{}.png".format(epoch_display + 1))
     plt.show()
 
 
 imgs_train = np.zeros((79, 480, 640, 3))
+print('Loading images...')
 for i in range(1, 80):
-    print('Progress: ' + str(i) + ' of 79')
+    # print('Progress: ' + str(i) + ' of 79')
     path = PATH + '/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
     img = np.array(Image.open(path))[np.newaxis]
     img = img / 255
@@ -193,16 +209,18 @@ for i in range(1, 80):
 
 imgs_val = np.zeros((10, 480, 640, 3))
 for i in range(80, 90):
-    print('Progress: ' + str(i) + ' of 89')
+    # print('Progress: ' + str(i) + ' of 89')
     path = PATH + '/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
     img = np.array(Image.open(path))[np.newaxis]
     img = img / 255
     imgs_val[i-80] = img
 
+print('Done!')
+print('Loading labels...')
 # Labels
 lbls_train = np.zeros((79, 480, 640))
 for i in range(1, 80):
-    print('Progress: ' + str(i) + ' of 79')
+    # print('Progress: ' + str(i) + ' of 79')
     path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/000.png'
     path2 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/002.png'
     path3 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
@@ -229,7 +247,7 @@ lbls_train = lbls_train.reshape((79, 480, 640, -1))
 
 lbls_val = np.zeros((10, 480, 640))
 for i in range(80, 90):
-    print('Progress: ' + str(i) + ' of 89')
+    # print('Progress: ' + str(i) + ' of 89')
     path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/000.png'
     path2 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/002.png'
     path3 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
@@ -251,14 +269,30 @@ for i in range(80, 90):
     img[change_5] = 0
     lbls_val[i-80] = img
 
+print('Done!')
 lbls_val_onehot = tf.keras.utils.to_categorical(lbls_val, num_classes=5, dtype='float32')
 lbls_val = lbls_val.reshape((10, 480, 640, -1))
 
 imgs_train2 = np.zeros((480, 640, 3))
 (unet, name) = unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
 
-unet.compile(optimizer='adam', loss=[dice_loss()], metrics=['accuracy'])
+if Loss_function == 1:
+    print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
+    unet.compile(optimizer='adam', loss=[categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)], metrics=['accuracy'])
+elif Loss_function == 2:
+    print('Dice Loss')
+    unet.compile(optimizer='adam', loss=[dice_loss()], metrics=['accuracy'])
+elif Loss_function == 3:
+    print('Jaccard Loss')
+    unet.compile(optimizer='adam', loss=[jaccard_loss()], metrics=['accuracy'])
+elif Loss_function == 4:
+    print('Tversky Loss with beta = ' + str(TL_beta))
+    unet.compile(optimizer='adam', loss=[tversky_loss(beta=TL_beta)], metrics=['accuracy'])
+else:
+    print('No loss function')
+
 # tf.keras.metrics.MeanIoU(num_classes=2)
+
 
 def create_mask(pred_mask):
     pred_mask = tf.argmax(pred_mask, axis=-1)
@@ -266,29 +300,31 @@ def create_mask(pred_mask):
     return pred_mask[0]
 
 
-def show_predictions(epoch, image_num=1):
+def show_predictions(epoch_show_predictions, image_num=1):
     pred_mask = unet.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
     # print(pred_mask.shape)
-    display([imgs_val[image_num], lbls_val[image_num], create_mask(pred_mask)], epoch)
+    display([imgs_val[image_num], lbls_val[image_num], create_mask(pred_mask)], epoch_show_predictions)
 
 
 class DisplayCallback(tf.keras.callbacks.Callback):
     # @staticmethod
-    def on_epoch_end(self, epoch, logs=None):
+    def on_epoch_end(self, epoch_callback, logs=None):
         clear_output(wait=True)
-        show_predictions(epoch)
-        print('\nSample Prediction after epoch {}\n'.format(epoch+1))
+        show_predictions(epoch_callback)
+        print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
+        if logs:
+            print('logs')
 
 
-epoch = 10
 show_predictions(-1)
 
 model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
-         batch_size=1,
-         epochs=epoch,
-         verbose=1,
-         shuffle=True,
-         callbacks=[DisplayCallback()])
+                         batch_size=1,
+                         epochs=epoch,
+                         verbose=1,
+                         shuffle=True,
+                         callbacks=[DisplayCallback()],
+                         class_weight=class_weight)
 
 loss = model_history.history['loss']
 val_loss = model_history.history['val_loss']
@@ -298,7 +334,7 @@ epochs = range(epoch)
 plt.figure()
 plt.plot(epochs, loss, 'r', label='Training loss')
 plt.plot(epochs, val_loss, 'bo', label='Validation loss')
-plt.title('Training and Validation Loss')
+plt.title('Pictures/Training and Validation Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss Value')
 plt.ylim([0, 5])

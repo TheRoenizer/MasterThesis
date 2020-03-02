@@ -5,12 +5,15 @@
       <w>crossentropy</w>
       <w>droprate</w>
       <w>imgs</w>
+      <w>jaccard</w>
       <w>jonathansteen</w>
       <w>keras</w>
       <w>lbls</w>
       <w>onehot</w>
+      <w>pred</w>
       <w>relu</w>
       <w>softmax</w>
+      <w>tversky</w>
       <w>unet</w>
     </words>
   </dictionary>
