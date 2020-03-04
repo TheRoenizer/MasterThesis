@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 from IPython.display import clear_output
 
 try:
-    from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout
+    from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
     from keras.models import Model
 except:
-    from tensorflow.keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout
+    from tensorflow.keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
     from tensorflow.keras.models import Model
 
 """Unet model for segmentation of color/greyscale images https://github.com/zhixuhao/unet"""
@@ -24,13 +24,8 @@ PATH = '/Users/jonathansteen/Google Drive/'
 # PATH = '/home/croen/'
 
 epoch = 100
-class_weight = {
-    0: 1.,
-    1: 50.,
-    2: 2.,
-    3: 1.,
-    4: 1.
-}
+num_pixels = 480 * 640
+sample_weight = np.zeros((79, num_pixels))
 
 Loss_function = 1   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss
 
@@ -114,6 +109,20 @@ def tversky_loss(beta):
     return tversky_loss_fixed
 
 
+def iou_coef(y_true, y_pred, smooth=1):
+    intersection = K.sum(K.abs(y_true * y_pred), axis=[1, 2, 3])
+    union = K.sum(y_true, [1, 2, 3])+K.sum(y_pred, [1, 2, 3])-intersection
+    iou = K.mean((intersection + smooth) / (union + smooth), axis=0)
+    return iou
+
+
+def dice_coef(y_true, y_pred, smooth=1):
+    intersection = K.sum(y_true * y_pred, axis=[1, 2, 3])
+    union = K.sum(y_true, axis=[1, 2, 3]) + K.sum(y_pred, axis=[1, 2, 3])
+    dice = K.mean((2. * intersection + smooth)/(union + smooth), axis=0)
+    return dice
+
+
 def unet(input_shape, num_classes=5, droprate=None, linear=False):
     model_name = 'unet'
 
@@ -169,19 +178,24 @@ def unet(input_shape, num_classes=5, droprate=None, linear=False):
     conv9 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(add9)
     conv9 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
     conv9 = Conv2D(2, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
+
     if num_classes == 1:
         if linear:
             conv10 = Conv2D(num_classes, 1, activation='linear')(conv9)
+            reshape1 = Reshape((num_pixels, num_classes))(conv10)
         else:
             conv10 = Conv2D(num_classes, 1, activation='sigmoid')(conv9)
+            reshape1 = Reshape((num_pixels, num_classes))(conv10)
 
     else:
         if linear:
             conv10 = Conv2D(num_classes, 1, activation='linear')(conv9)
+            reshape1 = Reshape((num_pixels, num_classes))(conv10)
         else:
             conv10 = Conv2D(num_classes, 1, activation='softmax')(conv9)
+            reshape1 = Reshape((num_pixels, num_classes))(conv10)
 
-    model = Model(inputs=inputs, outputs=conv10)
+    model = Model(inputs=inputs, outputs=reshape1)
     return model, model_name
 
 
@@ -215,10 +229,11 @@ for i in range(80, 90):
     img = img / 255
     imgs_val[i-80] = img
 
-print('Done!')
+print('Images loaded!')
 print('Loading labels...')
 # Labels
 lbls_train = np.zeros((79, 480, 640))
+sample_weight = np.zeros((79, 480, 640))
 for i in range(1, 80):
     # print('Progress: ' + str(i) + ' of 79')
     path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/000.png'
@@ -237,13 +252,27 @@ for i in range(1, 80):
     img2[change2_to] = 2
     img3[change3_to] = 3
     img4[change4_to] = 4
+    weight1 = np.zeros((480, 640))
+    weight2 = np.zeros((480, 640))
+    weight3 = np.zeros((480, 640))
+    weight4 = np.zeros((480, 640))
+    weight1[change1_to] = 10
+    weight2[change2_to] = 1
+    weight3[change3_to] = 10
+    weight4[change4_to] = 1
     img = img1 + img2 + img3 + img4
+    weight = weight1 + weight2 + weight3 + weight4
     change_5 = np.where(img[:, :] == 5)
     img[change_5] = 0
+    change_overlap = np.where(weight[:, :] == 11)
+    weight[change_overlap] = 0
     lbls_train[i-1] = img
+    sample_weight[i-1] = weight
 
 lbls_train_onehot = tf.keras.utils.to_categorical(lbls_train, num_classes=5, dtype='float32')
 lbls_train = lbls_train.reshape((79, 480, 640, -1))
+lbls_train_onehot = lbls_train_onehot.reshape((79, num_pixels, 5))
+sample_weight = sample_weight.reshape((79, num_pixels))
 
 lbls_val = np.zeros((10, 480, 640))
 for i in range(80, 90):
@@ -269,25 +298,39 @@ for i in range(80, 90):
     img[change_5] = 0
     lbls_val[i-80] = img
 
-print('Done!')
+print('Labels loaded!')
 lbls_val_onehot = tf.keras.utils.to_categorical(lbls_val, num_classes=5, dtype='float32')
 lbls_val = lbls_val.reshape((10, 480, 640, -1))
 
 imgs_train2 = np.zeros((480, 640, 3))
 (unet, name) = unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
 
+unet.summary()
+
 if Loss_function == 1:
     print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
-    unet.compile(optimizer='adam', loss=[categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)], metrics=['accuracy'])
+    unet.compile(optimizer='adam',
+                 loss=[categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)],
+                 metrics=['accuracy'],
+                 sample_weight_mode="temporal")
 elif Loss_function == 2:
     print('Dice Loss')
-    unet.compile(optimizer='adam', loss=[dice_loss()], metrics=['accuracy'])
+    unet.compile(optimizer='adam',
+                 loss=[dice_loss()],
+                 metrics=['accuracy'],
+                 sample_weight_mode="temporal")
 elif Loss_function == 3:
     print('Jaccard Loss')
-    unet.compile(optimizer='adam', loss=[jaccard_loss()], metrics=['accuracy'])
+    unet.compile(optimizer='adam',
+                 loss=[jaccard_loss()],
+                 metrics=['accuracy'],
+                 sample_weight_mode="temporal")
 elif Loss_function == 4:
     print('Tversky Loss with beta = ' + str(TL_beta))
-    unet.compile(optimizer='adam', loss=[tversky_loss(beta=TL_beta)], metrics=['accuracy'])
+    unet.compile(optimizer='adam',
+                 loss=[tversky_loss(beta=TL_beta)],
+                 metrics=['accuracy'],
+                 sample_weight_mode="temporal")
 else:
     print('No loss function')
 
@@ -302,7 +345,9 @@ def create_mask(pred_mask):
 
 def show_predictions(epoch_show_predictions, image_num=1):
     pred_mask = unet.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
-    # print(pred_mask.shape)
+    print(pred_mask.shape)
+    pred_mask.reshape((1, 480, 640, 5))
+    print(pred_mask.shape)
     display([imgs_val[image_num], lbls_val[image_num], create_mask(pred_mask)], epoch_show_predictions)
 
 
@@ -316,15 +361,15 @@ class DisplayCallback(tf.keras.callbacks.Callback):
             print('logs')
 
 
-show_predictions(-1)
-
+# show_predictions(-1)
+print(sample_weight.shape)
 model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
                          batch_size=1,
                          epochs=epoch,
                          verbose=1,
                          shuffle=True,
-                         callbacks=[DisplayCallback()],
-                         class_weight=class_weight)
+                         # callbacks=[DisplayCallback()],
+                         sample_weight=sample_weight)
 
 loss = model_history.history['loss']
 val_loss = model_history.history['val_loss']
