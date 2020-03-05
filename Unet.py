@@ -109,6 +109,7 @@ def tversky_loss(beta):
     return tversky_loss_fixed
 
 
+# https://towardsdatascience.com/metrics-to-evaluate-your-semantic-segmentation-model-6bcb99639aa2
 def iou_coef(y_true, y_pred, smooth=1):
     intersection = K.sum(K.abs(y_true * y_pred), axis=[1, 2, 3])
     union = K.sum(y_true, [1, 2, 3])+K.sum(y_pred, [1, 2, 3])-intersection
@@ -116,6 +117,7 @@ def iou_coef(y_true, y_pred, smooth=1):
     return iou
 
 
+# https://towardsdatascience.com/metrics-to-evaluate-your-semantic-segmentation-model-6bcb99639aa2
 def dice_coef(y_true, y_pred, smooth=1):
     intersection = K.sum(y_true * y_pred, axis=[1, 2, 3])
     union = K.sum(y_true, axis=[1, 2, 3]) + K.sum(y_pred, axis=[1, 2, 3])
@@ -182,20 +184,20 @@ def unet(input_shape, num_classes=5, droprate=None, linear=False):
     if num_classes == 1:
         if linear:
             conv10 = Conv2D(num_classes, 1, activation='linear')(conv9)
-            reshape1 = Reshape((num_pixels, num_classes))(conv10)
+            # reshape1 = Reshape((num_pixels, num_classes))(conv10)
         else:
             conv10 = Conv2D(num_classes, 1, activation='sigmoid')(conv9)
-            reshape1 = Reshape((num_pixels, num_classes))(conv10)
+            # reshape1 = Reshape((num_pixels, num_classes))(conv10)
 
     else:
         if linear:
             conv10 = Conv2D(num_classes, 1, activation='linear')(conv9)
-            reshape1 = Reshape((num_pixels, num_classes))(conv10)
+            # reshape1 = Reshape((num_pixels, num_classes))(conv10)
         else:
             conv10 = Conv2D(num_classes, 1, activation='softmax')(conv9)
-            reshape1 = Reshape((num_pixels, num_classes))(conv10)
+            # reshape1 = Reshape((num_pixels, num_classes))(conv10)
 
-    model = Model(inputs=inputs, outputs=reshape1)
+    model = Model(inputs=inputs, outputs=conv10)
     return model, model_name
 
 
@@ -271,7 +273,7 @@ for i in range(1, 80):
 
 lbls_train_onehot = tf.keras.utils.to_categorical(lbls_train, num_classes=5, dtype='float32')
 lbls_train = lbls_train.reshape((79, 480, 640, -1))
-lbls_train_onehot = lbls_train_onehot.reshape((79, num_pixels, 5))
+lbls_train_onehot = lbls_train_onehot.reshape((79, 480, 640, 5))
 sample_weight = sample_weight.reshape((79, num_pixels))
 
 lbls_val = np.zeros((10, 480, 640))
@@ -311,26 +313,26 @@ if Loss_function == 1:
     print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
     unet.compile(optimizer='adam',
                  loss=[categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)],
-                 metrics=['accuracy'],
-                 sample_weight_mode="temporal")
+                 metrics=['accuracy'])#,
+                 #sample_weight_mode="temporal")
 elif Loss_function == 2:
     print('Dice Loss')
     unet.compile(optimizer='adam',
                  loss=[dice_loss()],
-                 metrics=['accuracy'],
-                 sample_weight_mode="temporal")
+                 metrics=['accuracy'])#,
+                 #sample_weight_mode="temporal")
 elif Loss_function == 3:
     print('Jaccard Loss')
     unet.compile(optimizer='adam',
                  loss=[jaccard_loss()],
-                 metrics=['accuracy'],
-                 sample_weight_mode="temporal")
+                 metrics=['accuracy'])#,
+                 #sample_weight_mode="temporal")
 elif Loss_function == 4:
     print('Tversky Loss with beta = ' + str(TL_beta))
     unet.compile(optimizer='adam',
                  loss=[tversky_loss(beta=TL_beta)],
-                 metrics=['accuracy'],
-                 sample_weight_mode="temporal")
+                 metrics=['accuracy'])#,
+                 #sample_weight_mode="temporal")
 else:
     print('No loss function')
 
@@ -345,9 +347,7 @@ def create_mask(pred_mask):
 
 def show_predictions(epoch_show_predictions, image_num=1):
     pred_mask = unet.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
-    print(pred_mask.shape)
-    pred_mask.reshape((1, 480, 640, 5))
-    print(pred_mask.shape)
+    # pred_mask = pred_mask.reshape((1, 480, 640, 5))
     display([imgs_val[image_num], lbls_val[image_num], create_mask(pred_mask)], epoch_show_predictions)
 
 
@@ -361,15 +361,15 @@ class DisplayCallback(tf.keras.callbacks.Callback):
             print('logs')
 
 
-# show_predictions(-1)
-print(sample_weight.shape)
+show_predictions(-1)
+# print(sample_weight.shape)
 model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
                          batch_size=1,
                          epochs=epoch,
                          verbose=1,
                          shuffle=True,
-                         # callbacks=[DisplayCallback()],
-                         sample_weight=sample_weight)
+                         callbacks=[DisplayCallback()])#,
+                         #sample_weight=sample_weight)
 
 loss = model_history.history['loss']
 val_loss = model_history.history['val_loss']
