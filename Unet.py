@@ -416,8 +416,6 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         clear_output(wait=True)
         show_predictions(epoch_callback)
         print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
-        if logs:
-            print('logs')
 
 
 show_predictions(-1)
