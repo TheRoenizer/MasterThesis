@@ -254,7 +254,7 @@ def unet(input_shape, num_classes=5, droprate=None, linear=False):
 
 
 def display(display_list, epoch_display):
-    plt.figure(figsize=(15, 15))
+    fig = plt.figure(figsize=(15, 15))
 
     title = ['Input Image', 'True Mask', 'Predicted Mask after epoch {}'.format(epoch_display + 1)]
     for i in range(len(display_list)):
@@ -264,6 +264,7 @@ def display(display_list, epoch_display):
         plt.axis('off')
     plt.savefig("Pictures/afterEpoch{}.png".format(epoch_display + 1))
     plt.show()
+    plt.close(fig)
 
 
 imgs_train = np.zeros((79, 480, 640, 3))
