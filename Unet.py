@@ -269,7 +269,7 @@ def display(display_list, epoch_display):
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
         plt.axis('off')
     plt.savefig("Pictures/afterEpoch{}.png".format(epoch_display + 1))
-    plt.show()
+    # plt.show()
     plt.close(fig)
 
 
@@ -424,7 +424,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
 
 
-# show_predictions(-1)
+show_predictions(-1)
 # imgs_train = imgs_train.reshape((79, num_pixels, 3))
 # imgs_val = imgs_val.reshape((10, num_pixels, 3))
 # print(sample_weight.shape)
