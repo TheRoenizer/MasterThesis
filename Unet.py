@@ -19,9 +19,9 @@ except:
 # Christoffer:
 # PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
-PATH = '/Users/jonathansteen/Google Drive/'
+# PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-# PATH = '/home/jsteeen/'
+PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
 epoch = 100
@@ -368,31 +368,31 @@ if Loss_function == 1:
     print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
     unet.compile(optimizer='adam',
                  loss=[categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)],
-                 metrics=['accuracy', iou_coef])  # ,
+                 metrics=['accuracy', iou_coef, dice_coef])  # ,
 #                 sample_weight_mode="temporal")
 elif Loss_function == 2:
     print('Dice Loss')
     unet.compile(optimizer='adam',
                  loss=[dice_loss()],
-                 metrics=['accuracy', iou_coef])  # ,
+                 metrics=['accuracy', iou_coef, dice_coef])  # ,
 #                 sample_weight_mode="temporal")
 elif Loss_function == 3:
     print('Jaccard Loss')
     unet.compile(optimizer='adam',
                  loss=[jaccard_loss()],
-                 metrics=['accuracy', iou_coef])  # ,
+                 metrics=['accuracy', iou_coef, dice_coef])  # ,
 #                 sample_weight_mode="temporal")
 elif Loss_function == 4:
     print('Tversky Loss with beta = ' + str(TL_beta))
     unet.compile(optimizer='adam',
                  loss=[tversky_loss(beta=TL_beta)],
-                 metrics=['accuracy', iou_coef])  # ,
+                 metrics=['accuracy', iou_coef, dice_coef])  # ,
 #                 sample_weight_mode="temporal")
 elif Loss_function == 5:
     print('Weighted categorical crossentropy with weights = ' + str(weights))
     unet.compile(optimizer='adam',
                  loss=[weighted_categorical_crossentropy(weights)],
-                 metrics=['accuracy', iou_coef])
+                 metrics=['accuracy', iou_coef, dice_coef])
 else:
     print('No loss function')
 
