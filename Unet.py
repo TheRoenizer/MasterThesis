@@ -5,8 +5,10 @@ config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
 import tensorflow as tf
+print(tf.__version__)
 from keras import backend as K
 import numpy as np
+print(np.__version__)
 from PIL import Image
 import cv2 as cv
 import os
@@ -25,9 +27,9 @@ except:
 # Christoffer:
 # PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
-# PATH = '/Users/jonathansteen/Google Drive/'
+PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-PATH = '/home/jsteeen/'
+# PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
 epoch = 100
