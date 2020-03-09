@@ -424,7 +424,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
 
 
-show_predictions(-1)
+# show_predictions(-1)
 # imgs_train = imgs_train.reshape((79, num_pixels, 3))
 # imgs_val = imgs_val.reshape((10, num_pixels, 3))
 # print(sample_weight.shape)
@@ -437,8 +437,8 @@ model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_va
                          batch_size=1,
                          epochs=epoch,
                          verbose=1,
-                         shuffle=True,
-                         callbacks=[DisplayCallback()])
+                         shuffle=True)
+                         # callbacks=[DisplayCallback()])
 #                         sample_weight=sample_weight)
 
 loss = model_history.history['loss']
