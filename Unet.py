@@ -9,6 +9,7 @@ print(tf.__version__)
 from keras import backend as K
 import numpy as np
 print(np.__version__)
+print(tf.keras.__version__)
 from PIL import Image
 import cv2 as cv
 import os
