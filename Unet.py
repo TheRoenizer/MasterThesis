@@ -440,12 +440,14 @@ val_loss = model_history.history['val_loss']
 
 epochs = range(epoch)
 
-plt.figure()
+graph = plt.figure()
 plt.plot(epochs, loss, 'r', label='Training loss')
 plt.plot(epochs, val_loss, 'bo', label='Validation loss')
-plt.title('Pictures/Training and Validation Loss')
+plt.title('Training and Validation Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss Value')
 plt.ylim([0, 5])
 plt.legend()
+plt.savefig('Pictures/Training and Validation Loss')
 plt.show()
+plt.close(graph)
