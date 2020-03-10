@@ -28,9 +28,9 @@ except:
 # Christoffer:
 # PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
-PATH = '/Users/jonathansteen/Google Drive/'
+# PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-# PATH = '/home/jsteeen/'
+PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
 epoch = 100
@@ -440,8 +440,8 @@ model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_va
                          batch_size=1,
                          epochs=epoch,
                          verbose=1,
-                         shuffle=True)
-                         # callbacks=[DisplayCallback()])
+                         shuffle=True,
+                         callbacks=[DisplayCallback()])
 #                         sample_weight=sample_weight)
 
 loss = model_history.history['loss']
@@ -455,7 +455,7 @@ plt.plot(epochs, val_loss, 'bo', label='Validation loss')
 plt.title('Training and Validation Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss Value')
-plt.ylim([0, 5])
+plt.ylim([0, 1])
 plt.legend()
 plt.savefig('Pictures/Training and Validation Loss')
 plt.show()
