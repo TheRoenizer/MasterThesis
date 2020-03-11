@@ -30,9 +30,9 @@ print('Keras version: '+tf.keras.__version__)
 # Christoffer:
 # PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
-PATH = '/Users/jonathansteen/Google Drive/'
+# PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-# PATH = '/home/jsteeen/'
+PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
 epoch = 10
