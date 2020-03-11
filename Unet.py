@@ -34,7 +34,7 @@ print('Keras version: '+tf.keras.__version__)
 PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
-epoch = 1
+epoch = 10
 num_pixels = 480 * 640
 weights = [.5, 3, 3, 2, 2]
 # sample_weight = np.zeros((79, num_pixels))
@@ -454,9 +454,15 @@ loss = model_history.history['loss']
 val_loss = model_history.history['val_loss']
 iou_metric = model_history.history['iou_coef']
 dice_metric = model_history.history['dice_coef']
+val_iou_metric = model_history.history['val_iou_coef']
+val_dice_coef = model_history.history['val_dice_coef']
 
-print('IoU metrics: ' + str(iou_metric))
-print('Dice metrics: ' + str(dice_metric))
+f = open("Metrics.txt", "w+")
+f.write("IoU metrics: " + str(iou_metric))
+f.write("Dice metrics: " + str(dice_metric))
+f.write("Val IoU metrics: " + str(val_iou_metric))
+f.write("Val Dice metrics" + str(val_dice_coef))
+f.close()
 
 epochs = range(epoch)
 
