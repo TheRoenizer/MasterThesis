@@ -39,7 +39,7 @@ num_pixels = 480 * 640
 weights = [.5, 3, 3, 2, 2]
 # sample_weight = np.zeros((79, num_pixels))
 
-Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
+Loss_function = 1   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
@@ -474,7 +474,7 @@ epochs = range(epoch)
 
 graph = plt.figure()
 plt.plot(epochs, loss, 'r', label='Training loss')
-plt.plot(epochs, val_loss, 'b', label='Validation loss')
+plt.plot(epochs, val_loss, 'bo', label='Validation loss')
 plt.title('Training and Validation Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss Value')
