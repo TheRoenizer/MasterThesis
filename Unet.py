@@ -30,9 +30,9 @@ print('Keras version: '+tf.keras.__version__)
 # Christoffer:
 # PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
-# PATH = '/Users/jonathansteen/Google Drive/'
+PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-PATH = '/home/jsteeen/'
+# PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
 epoch = 10
@@ -40,7 +40,7 @@ num_pixels = 480 * 640
 weights = [.5, 3, 3, 2, 2]
 # sample_weight = np.zeros((79, num_pixels))
 
-Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss 5=weighted_categorical_crossentropy
+Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
@@ -378,31 +378,36 @@ imgs_train2 = np.zeros((480, 640, 3))
 if Loss_function == 1:
     print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
     unet.compile(optimizer='adam',
-                 loss=[categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)],
+                 loss=categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha),
                  metrics=['accuracy', iou_coef, dice_coef])  # ,
 #                 sample_weight_mode="temporal")
 elif Loss_function == 2:
     print('Dice Loss')
     unet.compile(optimizer='adam',
-                 loss=[dice_loss()],
+                 loss=dice_loss(),
                  metrics=['accuracy', iou_coef, dice_coef])  # ,
 #                 sample_weight_mode="temporal")
 elif Loss_function == 3:
     print('Jaccard Loss')
     unet.compile(optimizer='adam',
-                 loss=[jaccard_loss()],
+                 loss=jaccard_loss(),
                  metrics=['accuracy', iou_coef, dice_coef])  # ,
 #                 sample_weight_mode="temporal")
 elif Loss_function == 4:
     print('Tversky Loss with beta = ' + str(TL_beta))
     unet.compile(optimizer='adam',
-                 loss=[tversky_loss(beta=TL_beta)],
+                 loss=tversky_loss(beta=TL_beta),
                  metrics=['accuracy', iou_coef, dice_coef])  # ,
 #                 sample_weight_mode="temporal")
 elif Loss_function == 5:
     print('Weighted categorical crossentropy with weights = ' + str(weights))
     unet.compile(optimizer='adam',
-                 loss=[weighted_categorical_crossentropy(weights)],
+                 loss=weighted_categorical_crossentropy(weights),
+                 metrics=['accuracy', iou_coef, dice_coef])
+elif Loss_function == 6:
+    print('Categorical cross entropy')
+    unet.compile(optimizer='adam',
+                 loss='categorical_cross_entropy',
                  metrics=['accuracy', iou_coef, dice_coef])
 else:
     print('No loss function')
@@ -448,11 +453,11 @@ model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_va
 
 loss = model_history.history['loss']
 val_loss = model_history.history['val_loss']
-#iou_metric = model_history.history['iou_coef']
-#dice_metric = model_history.history['dice_coef']
+iou_metric = model_history.history['iou_coef']
+dice_metric = model_history.history['dice_coef']
 
-#print('IoU metrics: ' + iou_metric)
-#print('Dice metrics: ' + dice_metric)
+print('IoU metrics: ' + iou_metric)
+print('Dice metrics: ' + dice_metric)
 
 epochs = range(epoch)
 
