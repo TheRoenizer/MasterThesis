@@ -34,7 +34,7 @@ print('Keras version: '+tf.keras.__version__)
 PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
-epoch = 10
+epoch = 100
 num_pixels = 480 * 640
 weights = [.5, 3, 3, 2, 2]
 # sample_weight = np.zeros((79, num_pixels))
@@ -452,16 +452,22 @@ model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_va
 
 loss = model_history.history['loss']
 val_loss = model_history.history['val_loss']
+accuracy = model_history.history['accuracy']
+val_accuracy = model_history.history['val_accuracy']
 iou_metric = model_history.history['iou_coef']
-dice_metric = model_history.history['dice_coef']
 val_iou_metric = model_history.history['val_iou_coef']
+dice_metric = model_history.history['dice_coef']
 val_dice_coef = model_history.history['val_dice_coef']
 
 f = open("Pictures/Metrics.txt", "w+")
-f.write("IoU metrics: " + str(iou_metric))
-f.write("\nDice metrics: " + str(dice_metric))
-f.write("\nVal IoU metrics: " + str(val_iou_metric))
-f.write("\nVal Dice metrics" + str(val_dice_coef))
+f.write("loss" + str(loss))
+f.write("\nval_loss" + str(val_loss))
+f.write("\naccuracy" + str(accuracy))
+f.write("\nval_accuracy" + str(val_accuracy))
+f.write("\niou_coef: " + str(iou_metric))
+f.write("\nval_iou_coef: " + str(val_iou_metric))
+f.write("\ndice_coef: " + str(dice_metric))
+f.write("\nval_dice_coef" + str(val_dice_coef))
 f.close()
 
 epochs = range(epoch)
