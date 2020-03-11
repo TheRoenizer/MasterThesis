@@ -426,9 +426,6 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         show_predictions(epoch_callback)
         print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
 
-    f = open("metrics.txt", "w+")
-    f.write()
-
 
 show_predictions(-1)
 # imgs_train = imgs_train.reshape((79, num_pixels, 3))
