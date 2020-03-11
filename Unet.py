@@ -446,11 +446,11 @@ model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_va
 
 loss = model_history.history['loss']
 val_loss = model_history.history['val_loss']
-iou_metric = model_history.history['iou_coef']
-dice_metric = model_history.history['dice_coef']
+#iou_metric = model_history.history['iou_coef']
+#dice_metric = model_history.history['dice_coef']
 
-print('IoU metrics: ' + iou_metric)
-print('Dice metrics: ' + dice_metric)
+#print('IoU metrics: ' + iou_metric)
+#print('Dice metrics: ' + dice_metric)
 
 epochs = range(epoch)
 
