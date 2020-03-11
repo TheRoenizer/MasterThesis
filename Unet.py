@@ -33,7 +33,7 @@ except:
 PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
-epoch = 100
+epoch = 10
 num_pixels = 480 * 640
 weights = [.5, 3, 3, 2, 2]
 # sample_weight = np.zeros((79, num_pixels))
@@ -426,6 +426,9 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         show_predictions(epoch_callback)
         print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
 
+    f = open("metrics.txt", "w+")
+    f.write()
+
 
 show_predictions(-1)
 # imgs_train = imgs_train.reshape((79, num_pixels, 3))
@@ -446,12 +449,17 @@ model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_va
 
 loss = model_history.history['loss']
 val_loss = model_history.history['val_loss']
+iou_metric = model_history.history['iou_coef']
+dice_metric = model_history.history['dice_coef']
+
+print('IoU metrics: ' + iou_metric)
+print('Dice metrics: ' + dice_metric)
 
 epochs = range(epoch)
 
 graph = plt.figure()
 plt.plot(epochs, loss, 'r', label='Training loss')
-plt.plot(epochs, val_loss, 'bo', label='Validation loss')
+plt.plot(epochs, val_loss, 'b', label='Validation loss')
 plt.title('Training and Validation Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss Value')
