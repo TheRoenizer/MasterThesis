@@ -457,11 +457,11 @@ dice_metric = model_history.history['dice_coef']
 val_iou_metric = model_history.history['val_iou_coef']
 val_dice_coef = model_history.history['val_dice_coef']
 
-f = open("Metrics.txt", "w+")
+f = open("Pictures/Metrics.txt", "w+")
 f.write("IoU metrics: " + str(iou_metric))
-f.write("Dice metrics: " + str(dice_metric))
-f.write("Val IoU metrics: " + str(val_iou_metric))
-f.write("Val Dice metrics" + str(val_dice_coef))
+f.write("\nDice metrics: " + str(dice_metric))
+f.write("\nVal IoU metrics: " + str(val_iou_metric))
+f.write("\nVal Dice metrics" + str(val_dice_coef))
 f.close()
 
 epochs = range(epoch)
