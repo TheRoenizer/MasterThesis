@@ -1,10 +1,10 @@
-'''
+"""
 from tensorflow.compat.v1 import ConfigProto
 from tensorflow.compat.v1 import InteractiveSession
 config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
-'''
+"""
 import tensorflow as tf
 from keras import backend as K
 import numpy as np
@@ -21,9 +21,9 @@ except:
     from tensorflow.keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
     from tensorflow.keras.models import Model
 
-print('tensorflow version: '+tf.__version__)
-print('numpy version: '+np.__version__)
-print('keras version: '+tf.keras.__version__)
+print('Tensorflow version: '+tf.__version__)
+print('Numpy version: '+np.__version__)
+print('Keras version: '+tf.keras.__version__)
 
 """Unet model for segmentation of color/greyscale images https://github.com/zhixuhao/unet"""
 
