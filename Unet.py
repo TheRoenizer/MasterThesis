@@ -36,10 +36,10 @@ PATH = '/home/jsteeen/'
 
 epoch = 100
 num_pixels = 480 * 640
-weights = [.5, 3, 3, 2, 2]
+weights = [.5, 2, 2, 1, 1]
 # sample_weight = np.zeros((79, num_pixels))
 
-Loss_function = 6   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
+Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
@@ -404,7 +404,7 @@ elif Loss_function == 5:
                  loss=weighted_categorical_crossentropy(weights),
                  metrics=['accuracy', iou_coef, dice_coef])
 elif Loss_function == 6:
-    print('Categorical cross entropy')
+    print('Categorical crossentropy')
     unet.compile(optimizer='adam',
                  loss='categorical_crossentropy',
                  metrics=['accuracy', iou_coef, dice_coef])
