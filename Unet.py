@@ -406,7 +406,7 @@ elif Loss_function == 5:
 elif Loss_function == 6:
     print('Categorical cross entropy')
     unet.compile(optimizer='adam',
-                 loss='categorical_cross_entropy',
+                 loss='categorical_crossentropy',
                  metrics=['accuracy', iou_coef, dice_coef])
 else:
     print('No loss function')
