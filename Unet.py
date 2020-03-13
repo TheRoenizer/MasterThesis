@@ -1,9 +1,5 @@
 from tensorflow.compat.v1 import ConfigProto
 from tensorflow.compat.v1 import InteractiveSession
-config = ConfigProto()
-config.gpu_options.allow_growth = True
-session = InteractiveSession(config=config)
-
 import tensorflow as tf
 from keras import backend as K
 import numpy as np
@@ -19,6 +15,10 @@ try:
 except:
     from tensorflow.keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
     from tensorflow.keras.models import Model
+
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
 
 print('Tensorflow version: '+tf.__version__)
 print('Numpy version: '+np.__version__)
@@ -36,7 +36,7 @@ PATH = '/home/jsteeen/'
 
 epoch = 100
 num_pixels = 480 * 640
-weights = [.5, 2, 2, 1, 1]
+weights = [.5, 1, 1, 1, 1]
 # sample_weight = np.zeros((79, num_pixels))
 
 Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
