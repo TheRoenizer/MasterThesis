@@ -36,7 +36,7 @@ PATH = '/home/jsteeen/'
 
 epoch = 100
 num_pixels = 480 * 640
-weights = [.5, 1, 1, 1, 1]
+weights = [.5, 1.5, 1.5, 1, 1]
 # sample_weight = np.zeros((79, num_pixels))
 
 Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
@@ -449,6 +449,13 @@ model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_va
                          shuffle=True,
                          callbacks=[DisplayCallback()])
 #                         sample_weight=sample_weight)
+
+show_predictions(101, 2)
+show_predictions(102, 3)
+show_predictions(103, 4)
+show_predictions(104, 5)
+show_predictions(105, 6)
+
 
 loss = model_history.history['loss']
 val_loss = model_history.history['val_loss']
