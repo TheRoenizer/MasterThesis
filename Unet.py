@@ -27,11 +27,11 @@ print('Keras version: '+tf.keras.__version__)
 """Unet model for segmentation of color/greyscale images https://github.com/zhixuhao/unet"""
 
 # Christoffer:
-# PATH = 'C:/Users/chris/Google Drive/'
+PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
 # PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-PATH = '/home/jsteeen/'
+#PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
 epoch = 100
