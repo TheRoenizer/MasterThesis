@@ -277,6 +277,7 @@ def display(display_list, epoch_display):
     plt.close(fig)
 
 
+# Images
 imgs_train = np.zeros((79, 480, 640, 3))
 print('Loading images...')
 for i in range(1, 80):
@@ -294,8 +295,18 @@ for i in range(80, 90):
     img = img / 255
     imgs_val[i-80] = img
 
+imgs_test = np.zeros((10, 480, 640, 3))
+for i in range(90, 100):
+    # print('Progress: ' + str(i) + ' of 89')
+    path = PATH + '/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
+    img = np.array(Image.open(path))[np.newaxis]
+    img = img / 255
+    imgs_test[i-90] = img
+
 print('Images loaded!')
 print('Loading labels...')
+
+
 # Labels
 lbls_train = np.zeros((79, 480, 640))
 sample_weight = np.zeros((79, 480, 640))
@@ -363,11 +374,39 @@ for i in range(80, 90):
     img[change_5] = 0
     lbls_val[i-80] = img
 
-print('Labels loaded!')
-
 lbls_val_onehot = tf.keras.utils.to_categorical(lbls_val, num_classes=5, dtype='float32')
 lbls_val = lbls_val.reshape((10, 480, 640, -1))
 # lbls_val_onehot = lbls_val_onehot.reshape((10, num_pixels, 5))
+
+lbls_test = np.zeros((10, 480, 640))
+for i in range(90, 100):
+    # print('Progress: ' + str(i) + ' of 89')
+    path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/000.png'
+    path2 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/002.png'
+    path3 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
+    path4 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/001.png'
+    img1 = cv.imread(path1, 2)
+    img2 = cv.imread(path2, 2)
+    img3 = cv.imread(path3, 2)
+    img4 = cv.imread(path4, 2)
+    change1_to = np.where(img1[:, :] != 0)
+    change2_to = np.where(img2[:, :] != 0)
+    change3_to = np.where(img3[:, :] != 0)
+    change4_to = np.where(img4[:, :] != 0)
+    img1[change1_to] = 1
+    img2[change2_to] = 2
+    img3[change3_to] = 3
+    img4[change4_to] = 4
+    img = img1 + img2 + img3 + img4
+    change_5 = np.where(img[:, :] == 5)
+    img[change_5] = 0
+    lbls_test[i - 90] = img
+
+lbls_test_onehot = tf.keras.utils.to_categorical(lbls_test, num_classes=5, dtype='float32')
+lbls_test = lbls_test.reshape((10, 480, 640, -1))
+# lbls_val_onehot = lbls_val_onehot.reshape((10, num_pixels, 5))
+
+print('Labels loaded!')
 
 imgs_train2 = np.zeros((480, 640, 3))
 (unet, name) = unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
@@ -441,7 +480,7 @@ show_predictions(-1)
 # print(imgs_train.shape)
 # print(lbls_val_onehot.shape)
 # print(imgs_val.shape)
-
+unet.fit
 model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
                          batch_size=1,
                          epochs=epoch,
@@ -489,3 +528,7 @@ plt.legend()
 plt.savefig('Pictures/Training and Validation Loss')
 plt.show()
 plt.close(graph)
+
+print('\n# Evaluate on test data')
+results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
+print('test loss, test acc:', results)
