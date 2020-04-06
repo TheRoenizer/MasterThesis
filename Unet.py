@@ -532,7 +532,7 @@ if train:
     plt.close(graph)
 
     # Save model to file
-    unet.save("Unet_model.h5")
+    unet.save('Unet_model.h5')
     print("Saved model to disk")
 
 elif not train:
@@ -544,4 +544,4 @@ start_time = time.time()
 results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
-print('test loss, test acc:', results)
+print("%s: %.2f%%" % (unet.metrics_names[1], results[1]*100))
