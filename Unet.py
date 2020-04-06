@@ -8,6 +8,7 @@ import cv2 as cv
 import os
 import matplotlib.pyplot as plt
 from IPython.display import clear_output
+import time
 
 try:
     from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
@@ -34,9 +35,9 @@ PATH = 'C:/Users/chris/Google Drive/'
 #PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
-epoch = 100
+epoch = 10
 num_pixels = 480 * 640
-weights = [.5, 1.5, 1.5, 1, 1]
+weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
 # sample_weight = np.zeros((79, num_pixels))
 
 Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
@@ -530,5 +531,7 @@ plt.show()
 plt.close(graph)
 
 print('\n# Evaluate on test data')
+start_time = time.time()
 results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
+print("--- %s seconds ---" % (time.time() - start_time))
 print('test loss, test acc:', results)
