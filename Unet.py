@@ -543,7 +543,10 @@ if train:
 
 elif not train:
     # Load model from file
-    unet = load_model('Unet_model.h5')
+    unet = load_model('Unet_model.h5', compile=False)
+    unet.compile(optimizer='adam',
+                 loss=weighted_categorical_crossentropy(weights),
+                 metrics=['accuracy', iou_coef, dice_coef])
 
     print('\n# Evaluate on test data')
     start_time = time.time()
