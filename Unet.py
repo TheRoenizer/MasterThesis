@@ -553,7 +553,7 @@ elif not train:
     results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
     stop_time = time.time()
     print("--- %s seconds ---" % (stop_time - start_time))
-    print("%s: %.2f%%" % (unet.metrics_names[2], results[2]*100))
+    print("%s: %.2f%%" % (unet.metrics_names[0], results[0]*100))
 
     print('\n# Evaluate on test data 2')
     start_time = time.time()
