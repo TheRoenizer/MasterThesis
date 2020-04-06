@@ -114,10 +114,10 @@ def find_nearest_by_stamp(sequence, stamp):
         return (i-1, sequence[i-1])
 
     # Return the item whose header.stamp is closest to stamp
-    if  (stamp - sequence[i-1].header.stamp) < (sequence[i].header.stamp - stamp):
-       return (i-1, sequence[i-1])
+    if (stamp - sequence[i-1].header.stamp) < (sequence[i].header.stamp - stamp):
+        return (i-1, sequence[i-1])
     else:
-       return (i, sequence[i])
+        return (i, sequence[i])
 
 
 def msg2tf(m):
@@ -202,19 +202,21 @@ t_optical_tcp = t_optical_base.dot(t_base_tcp)
 imgs = [cv_bridge.compressed_imgmsg_to_cv2(m) for m in img_msg]
 
 # Project 3D point to left/right images
-p = stereo_model.project3dToPixel(t_optical_tcp[:3,3])
+p = stereo_model.project3dToPixel(t_optical_tcp[:3, 3])
 
 print(p)
-
+'''
 # Draw circles at projected points
-#def f2i(iterable):
-#    return tuple(int(round(x)) for x in iterable)
+def f2i(iterable):
+    return tuple(int(round(x)) for x in iterable)
 
-#cv.circle(imgs[0], f2i(p[0]), 10, (0, 0, 255), 3)
-#cv.circle(imgs[1], f2i(p[1]), 10, (0, 0, 255), 3)
+
+cv.circle(imgs[0], f2i(p[0]), 10, (0, 0, 255), 3)
+cv.circle(imgs[1], f2i(p[1]), 10, (0, 0, 255), 3)
 
 # Show images
-#fig, ax = plt.subplots(1, 2)
-#ax[0].imshow(cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB))
-#ax[1].imshow(cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB))
-#plt.show()
+fig, ax = plt.subplots(1, 2)
+ax[0].imshow(cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB))
+ax[1].imshow(cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB))
+plt.savefig("rosbag_test.png")
+'''

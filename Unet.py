@@ -12,7 +12,7 @@ import time
 
 try:
     from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
-    from keras.models import Model
+    from keras.models import Model, load_model
 except:
     from tensorflow.keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
     from tensorflow.keras.models import Model
@@ -28,13 +28,14 @@ print('Keras version: '+tf.keras.__version__)
 """Unet model for segmentation of color/greyscale images https://github.com/zhixuhao/unet"""
 
 # Christoffer:
-PATH = 'C:/Users/chris/Google Drive/'
+# PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
 # PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-#PATH = '/home/jsteeen/'
+PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
+train = False
 epoch = 10
 num_pixels = 480 * 640
 weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
@@ -408,130 +409,158 @@ lbls_test = lbls_test.reshape((10, 480, 640, -1))
 # lbls_val_onehot = lbls_val_onehot.reshape((10, num_pixels, 5))
 
 print('Labels loaded!')
+if train:
+    imgs_train2 = np.zeros((480, 640, 3))
+    (unet, name) = unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
 
-imgs_train2 = np.zeros((480, 640, 3))
-(unet, name) = unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
+    # unet.summary()
 
-# unet.summary()
+    if Loss_function == 1:
+        print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
+        unet.compile(optimizer='adam',
+                     loss=categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha),
+                     metrics=['accuracy', iou_coef, dice_coef])  # ,
+    #                 sample_weight_mode="temporal")
+    elif Loss_function == 2:
+        print('Dice Loss')
+        unet.compile(optimizer='adam',
+                     loss=dice_loss(),
+                     metrics=['accuracy', iou_coef, dice_coef])  # ,
+    #                 sample_weight_mode="temporal")
+    elif Loss_function == 3:
+        print('Jaccard Loss')
+        unet.compile(optimizer='adam',
+                     loss=jaccard_loss(),
+                     metrics=['accuracy', iou_coef, dice_coef])  # ,
+    #                 sample_weight_mode="temporal")
+    elif Loss_function == 4:
+        print('Tversky Loss with beta = ' + str(TL_beta))
+        unet.compile(optimizer='adam',
+                     loss=tversky_loss(beta=TL_beta),
+                     metrics=['accuracy', iou_coef, dice_coef])  # ,
+    #                 sample_weight_mode="temporal")
+    elif Loss_function == 5:
+        print('Weighted categorical crossentropy with weights = ' + str(weights))
+        unet.compile(optimizer='adam',
+                     loss=weighted_categorical_crossentropy(weights),
+                     metrics=['accuracy', iou_coef, dice_coef])
+    elif Loss_function == 6:
+        print('Categorical crossentropy')
+        unet.compile(optimizer='adam',
+                     loss='categorical_crossentropy',
+                     metrics=['accuracy', iou_coef, dice_coef])
+    else:
+        print('No loss function')
 
-if Loss_function == 1:
-    print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
-    unet.compile(optimizer='adam',
-                 loss=categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha),
-                 metrics=['accuracy', iou_coef, dice_coef])  # ,
-#                 sample_weight_mode="temporal")
-elif Loss_function == 2:
-    print('Dice Loss')
-    unet.compile(optimizer='adam',
-                 loss=dice_loss(),
-                 metrics=['accuracy', iou_coef, dice_coef])  # ,
-#                 sample_weight_mode="temporal")
-elif Loss_function == 3:
-    print('Jaccard Loss')
-    unet.compile(optimizer='adam',
-                 loss=jaccard_loss(),
-                 metrics=['accuracy', iou_coef, dice_coef])  # ,
-#                 sample_weight_mode="temporal")
-elif Loss_function == 4:
-    print('Tversky Loss with beta = ' + str(TL_beta))
-    unet.compile(optimizer='adam',
-                 loss=tversky_loss(beta=TL_beta),
-                 metrics=['accuracy', iou_coef, dice_coef])  # ,
-#                 sample_weight_mode="temporal")
-elif Loss_function == 5:
-    print('Weighted categorical crossentropy with weights = ' + str(weights))
+    # tf.keras.metrics.MeanIoU(num_classes=2)
+
+
+    def create_mask(pred_mask):
+        pred_mask = tf.argmax(pred_mask, axis=-1)
+        pred_mask = pred_mask[..., tf.newaxis]
+        return pred_mask[0]
+
+
+    def show_predictions(epoch_show_predictions, image_num=1):
+        pred_mask = unet.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
+        display([imgs_val[image_num], lbls_val[image_num], create_mask(pred_mask)], epoch_show_predictions)
+
+
+    class DisplayCallback(tf.keras.callbacks.Callback):
+        # @staticmethod
+        def on_epoch_end(self, epoch_callback, logs=None):
+            clear_output(wait=True)
+            show_predictions(epoch_callback)
+            print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
+
+
+    show_predictions(-1)
+    # imgs_train = imgs_train.reshape((79, num_pixels, 3))
+    # imgs_val = imgs_val.reshape((10, num_pixels, 3))
+    # print(sample_weight.shape)
+    # print(lbls_train_onehot.shape)
+    # print(imgs_train.shape)
+    # print(lbls_val_onehot.shape)
+    # print(imgs_val.shape)
+    unet.fit
+    model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
+                             batch_size=1,
+                             epochs=epoch,
+                             verbose=1,
+                             shuffle=True,
+                             callbacks=[DisplayCallback()])
+    #                         sample_weight=sample_weight)
+
+    show_predictions(101, 2)
+    show_predictions(102, 3)
+    show_predictions(103, 4)
+    show_predictions(104, 5)
+    show_predictions(105, 6)
+
+    loss = model_history.history['loss']
+    val_loss = model_history.history['val_loss']
+    accuracy = model_history.history['accuracy']
+    val_accuracy = model_history.history['val_accuracy']
+    iou_metric = model_history.history['iou_coef']
+    val_iou_metric = model_history.history['val_iou_coef']
+    dice_metric = model_history.history['dice_coef']
+    val_dice_coef = model_history.history['val_dice_coef']
+
+    f = open("Pictures/Metrics.txt", "w+")
+    f.write("loss" + str(loss))
+    f.write("\nval_loss: " + str(val_loss))
+    f.write("\naccuracy: " + str(accuracy))
+    f.write("\nval_accuracy: " + str(val_accuracy))
+    f.write("\niou_coef: " + str(iou_metric))
+    f.write("\nval_iou_coef: " + str(val_iou_metric))
+    f.write("\ndice_coef: " + str(dice_metric))
+    f.write("\nval_dice_coef: " + str(val_dice_coef))
+    f.close()
+
+    epochs = range(epoch)
+
+    graph = plt.figure()
+    plt.plot(epochs, loss, 'r', label='Training loss')
+    plt.plot(epochs, val_loss, 'bo', label='Validation loss')
+    plt.title('Training and Validation Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss Value')
+    plt.legend()
+    plt.savefig('Pictures/Training and Validation Loss')
+    plt.show()
+    plt.close(graph)
+
+    print('\n# Evaluate on test data')
+    start_time = time.time()
+    results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
+    stop_time = time.time()
+    print("--- %s seconds ---" % (stop_time - start_time))
+    print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
+
+    # Save model to file
+    unet.save('Unet_model.h5')
+    print("Saved model to disk")
+
+elif not train:
+    # Load model from file
+    unet = load_model('Unet_model.h5', compile=False)
     unet.compile(optimizer='adam',
                  loss=weighted_categorical_crossentropy(weights),
                  metrics=['accuracy', iou_coef, dice_coef])
-elif Loss_function == 6:
-    print('Categorical crossentropy')
-    unet.compile(optimizer='adam',
-                 loss='categorical_crossentropy',
-                 metrics=['accuracy', iou_coef, dice_coef])
-else:
-    print('No loss function')
 
-# tf.keras.metrics.MeanIoU(num_classes=2)
+    print('\n# Evaluate on test data')
+    start_time = time.time()
+    results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
+    stop_time = time.time()
+    print("--- %s seconds ---" % (stop_time - start_time))
+    print("%s: %.2f" % (unet.metrics_names[0], results[0]))
+    print("%s: %.2f" % (unet.metrics_names[1], results[1]))
+    print("%s: %.2f" % (unet.metrics_names[2], results[2]))
+    print("%s: %.2f" % (unet.metrics_names[3], results[3]))
 
-
-def create_mask(pred_mask):
-    pred_mask = tf.argmax(pred_mask, axis=-1)
-    pred_mask = pred_mask[..., tf.newaxis]
-    return pred_mask[0]
-
-
-def show_predictions(epoch_show_predictions, image_num=1):
-    pred_mask = unet.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
-    display([imgs_val[image_num], lbls_val[image_num], create_mask(pred_mask)], epoch_show_predictions)
-
-
-class DisplayCallback(tf.keras.callbacks.Callback):
-    # @staticmethod
-    def on_epoch_end(self, epoch_callback, logs=None):
-        clear_output(wait=True)
-        show_predictions(epoch_callback)
-        print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
-
-
-show_predictions(-1)
-# imgs_train = imgs_train.reshape((79, num_pixels, 3))
-# imgs_val = imgs_val.reshape((10, num_pixels, 3))
-# print(sample_weight.shape)
-# print(lbls_train_onehot.shape)
-# print(imgs_train.shape)
-# print(lbls_val_onehot.shape)
-# print(imgs_val.shape)
-unet.fit
-model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
-                         batch_size=1,
-                         epochs=epoch,
-                         verbose=1,
-                         shuffle=True,
-                         callbacks=[DisplayCallback()])
-#                         sample_weight=sample_weight)
-
-show_predictions(101, 2)
-show_predictions(102, 3)
-show_predictions(103, 4)
-show_predictions(104, 5)
-show_predictions(105, 6)
-
-
-loss = model_history.history['loss']
-val_loss = model_history.history['val_loss']
-accuracy = model_history.history['accuracy']
-val_accuracy = model_history.history['val_accuracy']
-iou_metric = model_history.history['iou_coef']
-val_iou_metric = model_history.history['val_iou_coef']
-dice_metric = model_history.history['dice_coef']
-val_dice_coef = model_history.history['val_dice_coef']
-
-f = open("Pictures/Metrics.txt", "w+")
-f.write("loss" + str(loss))
-f.write("\nval_loss" + str(val_loss))
-f.write("\naccuracy" + str(accuracy))
-f.write("\nval_accuracy" + str(val_accuracy))
-f.write("\niou_coef: " + str(iou_metric))
-f.write("\nval_iou_coef: " + str(val_iou_metric))
-f.write("\ndice_coef: " + str(dice_metric))
-f.write("\nval_dice_coef" + str(val_dice_coef))
-f.close()
-
-epochs = range(epoch)
-
-graph = plt.figure()
-plt.plot(epochs, loss, 'r', label='Training loss')
-plt.plot(epochs, val_loss, 'bo', label='Validation loss')
-plt.title('Training and Validation Loss')
-plt.xlabel('Epoch')
-plt.ylabel('Loss Value')
-plt.legend()
-plt.savefig('Pictures/Training and Validation Loss')
-plt.show()
-plt.close(graph)
-
-print('\n# Evaluate on test data')
-start_time = time.time()
-results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
-print("--- %s seconds ---" % (time.time() - start_time))
-print('test loss, test acc:', results)
+    print('\n# Evaluate on test data 2')
+    start_time = time.time()
+    results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
+    stop_time = time.time()
+    print("--- %s seconds ---" % (stop_time - start_time))
+    print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
