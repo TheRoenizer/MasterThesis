@@ -28,11 +28,11 @@ print('Keras version: '+tf.keras.__version__)
 """Unet model for segmentation of color/greyscale images https://github.com/zhixuhao/unet"""
 
 # Christoffer:
-PATH = 'C:/Users/chris/Google Drive/'
+# PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
 # PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-#PATH = '/home/jsteeen/'
+PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
 epoch = 10
@@ -508,13 +508,13 @@ val_dice_coef = model_history.history['val_dice_coef']
 
 f = open("Pictures/Metrics.txt", "w+")
 f.write("loss" + str(loss))
-f.write("\nval_loss" + str(val_loss))
-f.write("\naccuracy" + str(accuracy))
-f.write("\nval_accuracy" + str(val_accuracy))
+f.write("\nval_loss: " + str(val_loss))
+f.write("\naccuracy: " + str(accuracy))
+f.write("\nval_accuracy: " + str(val_accuracy))
 f.write("\niou_coef: " + str(iou_metric))
 f.write("\nval_iou_coef: " + str(val_iou_metric))
 f.write("\ndice_coef: " + str(dice_metric))
-f.write("\nval_dice_coef" + str(val_dice_coef))
+f.write("\nval_dice_coef: " + str(val_dice_coef))
 f.close()
 
 epochs = range(epoch)
@@ -533,5 +533,9 @@ plt.close(graph)
 print('\n# Evaluate on test data')
 start_time = time.time()
 results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
-print("--- %s seconds ---" % (time.time() - start_time))
+stop_time = time.time()
+print("--- %s seconds ---" % (stop_time - start_time))
 print('test loss, test acc:', results)
+
+unet.save("Unet_model.h5")
+print("Saved model to disk")
