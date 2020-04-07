@@ -164,7 +164,7 @@ def display(display_list, epoch_display):
         plt.title(title[i])
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
         plt.axis('off')
-    plt.savefig("Pictures/afterEpoch{}.png".format(epoch_display + 1))
+    plt.savefig("C:/Users/chris/Desktop/BiSeNet_pictures/afterEpoch{}.png".format(epoch_display + 1))
     # plt.show()
     plt.close(fig)
 
@@ -176,7 +176,9 @@ def create_mask(pred_mask):
 
 
 def show_predictions(epoch_show_predictions, image_num=1):
-    pred_mask = net.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
+    x = imgs_val[image_num][tf.newaxis, ...]
+    pred_mask = net.predict([x, x]) * 255
+    #pred_mask = net.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
     display([imgs_val[image_num], lbls_val[image_num], create_mask(pred_mask)], epoch_show_predictions)
 
 
