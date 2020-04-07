@@ -13,6 +13,82 @@ import rospy
 import tf2_py as tf2
 import warnings
 
+def nth(iterable, n, default=None):
+    """Returns the n'th item or a default value
+    """
+    return next(itertools.islice(iterable, n, None), default)
+
+# bisect comparator return values
+BISECT_LOWER, BISECT_STOP, BISECT_HIGHER = (-1, 0, 1)
+
+
+def bisect(sequence, comparator, lo=0, hi=None):
+    if hi is None:
+        hi = len(sequence)
+
+    if lo < 0 or hi > len(sequence):
+        raise ValueError
+
+    while lo < hi:
+        mid = (lo + hi) // 2
+
+        if comparator(sequence[mid]) == BISECT_STOP:
+            return mid
+        elif comparator(sequence[mid]) == BISECT_HIGHER:
+            lo = mid + 1
+        else:
+            hi = mid
+
+    return lo
+
+def msg2tf(m):
+    tf = np.identity(4)
+
+    if m._type == 'geometry_msgs/Transform':
+        tf[:3,3] = (m.translation.x, m.translation.y, m.translation.z)
+        tf[:3,:3] = quaternion.as_rotation_matrix(np.quaternion(m.rotation.w, m.rotation.x, m.rotation.y, m.rotation.z))
+    elif m._type == 'geometry_msgs/Pose':
+        tf[:3,3] = (m.position.x, m.position.y, m.position.z)
+        tf[:3,:3] = quaternion.as_rotation_matrix(np.quaternion(m.orientation.w, m.orientation.x, m.orientation.y, m.orientation.z))
+    else:
+        raise ValueError("Bad msg type '{}'".format(m._type))
+
+    return tf
+
+def find_nearest_by_stamp(sequence, stamp):
+    comp = lambda m: BISECT_HIGHER if m.header.stamp < stamp else BISECT_LOWER
+    i = bisect(sequence, comp)
+
+    # Found first or last item
+    if i == 0:
+        return (i, sequence[i])
+    elif i == len(sequence):
+        return (i-1, sequence[i-1])
+
+    # Return the item whose header.stamp is closest to stamp
+    if (stamp - sequence[i-1].header.stamp) < (sequence[i].header.stamp - stamp):
+        return (i-1, sequence[i-1])
+    else:
+        return (i, sequence[i])
+
+def fix_tf_msg(x):
+    """Copy bag message type to system ROS message type (those are different types!)
+    """
+    y = geometry_msgs.msg.TransformStamped()
+    y.header.stamp = x.header.stamp
+    y.header.seq = x.header.seq
+    y.header.frame_id = x.header.frame_id
+    y.child_frame_id = x.child_frame_id
+    y.transform.translation.x = x.transform.translation.x
+    y.transform.translation.y = x.transform.translation.y
+    y.transform.translation.z = x.transform.translation.z
+    y.transform.rotation.x = x.transform.rotation.x
+    y.transform.rotation.y = x.transform.rotation.y
+    y.transform.rotation.z = x.transform.rotation.z
+    y.transform.rotation.w = x.transform.rotation.w
+    return y
+
+
 #path = '/home/christoffer/Documents/rosbags/cool_2019-04-21-02-27-42_0.bag'
 #path = '/home/christoffer/Documents/rosbags/cool_2019-04-21-02-29-36_0.bag'
 #path = '/home/christoffer/Documents/rosbags/grasp_2019-04-21-00-31-48_0.bag'
@@ -33,11 +109,45 @@ with rosbag.Bag(path) as bag:
     cam_info[0] = next(bag.read_messages(topics=['/basler_stereo/left/camera_info']))[1]
     cam_info[1] = next(bag.read_messages(topics=['/basler_stereo/right/camera_info']))[1]
 
-    # Get the 400th left camera image message in the bag
-    img_msg[0] = nth(bag.read_messages(topics=['/basler_stereo/left/image_rect_color/compressed']), 400)[1]
+    for i in range(100, 1000, 20):
+        # Get the i'th right camera image message in the bag
+        img_msg[1] = nth(bag.read_messages(topics=['/basler_stereo/right/image_rect_color/compressed']), i)[1]
 
-    # Find the corresponding (equal time stamp) right camera image message
-    for topic, msg, stamp in bag.read_messages(topics=['/basler_stereo/right/image_rect_color/compressed']):
-        if msg.header.stamp == img_msg[0].header.stamp:
-            img_msg[1] = msg
-            break
+        # Find the corresponding (equal time stamp) left camera image message
+        for topic, msg, stamp in bag.read_messages(topics=['/basler_stereo/left/image_rect_color/compressed']):
+            if msg.header.stamp == img_msg[1].header.stamp:
+                img_msg[0] = msg
+                break
+
+        # de-compress images
+        imgs = [cv_bridge.compressed_imgmsg_to_cv2(m) for m in img_msg]
+
+        img_left = cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB)
+        img_right = cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB)
+
+        cv.imwrite("/home/christoffer/Pictures/rosbag_pictures/img{}_left.png".format(i), img_left)
+        cv.imwrite("/home/christoffer/Pictures/rosbag_pictures/img{}_right.png".format(i), img_right)
+
+    # Read all PSM1 pose messages (instrument TCP wrt. base frame) PSM = patient side manipulator
+    psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
+
+
+
+# Find PSM1 pose message corresponding (nearest time stamp) to the camera frames
+psm1_msg = find_nearest_by_stamp(psm1_msgs, img_msg[0].header.stamp)[1]
+
+# Set up stereo camera model from the image_geometry distributed with ROS
+stereo_model = image_geometry.StereoCameraModel()
+stereo_model.fromCameraInfo(*cam_info)
+
+
+# Get robot base to optical (left camera of stereo pair) transformation (the
+# 'optical' frame seen wrt. the PSM1 robot 'base' frame)
+t_base_optical = msg2tf(tf_buffer.lookup_transform_core('PSM1_base', 'stereo_optical', rospy.Time()).transform)
+t_optical_base = np.linalg.inv(t_base_optical)
+
+# t_base_tcp = np.array([msg2tf(m.pose) for m in psm1_msgs])
+# t_optical_tcp = np.array([t_optical_base.dot(t) for t in t_base_tcp])
+t_base_tcp = msg2tf(psm1_msg.pose)
+t_optical_tcp = t_optical_base.dot(t_base_tcp)
+
