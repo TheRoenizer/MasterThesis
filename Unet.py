@@ -35,7 +35,7 @@ print('Keras version: '+tf.keras.__version__)
 PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
-train = False
+train = True
 epoch = 10
 num_pixels = 480 * 640
 weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
@@ -279,7 +279,7 @@ def display(display_list, epoch_display):
     plt.close(fig)
 
 
-# Images
+# Load images
 imgs_train = np.zeros((79, 480, 640, 3))
 print('Loading images...')
 for i in range(1, 80):
@@ -309,7 +309,7 @@ print('Images loaded!')
 print('Loading labels...')
 
 
-# Labels
+# Load labels
 lbls_train = np.zeros((79, 480, 640))
 sample_weight = np.zeros((79, 480, 640))
 for i in range(1, 80):
@@ -349,8 +349,6 @@ for i in range(1, 80):
 
 lbls_train_onehot = tf.keras.utils.to_categorical(lbls_train, num_classes=5, dtype='float32')
 lbls_train = lbls_train.reshape((79, 480, 640, -1))
-# lbls_train_onehot = lbls_train_onehot.reshape((79, num_pixels, 5))
-# sample_weight = sample_weight.reshape((79, num_pixels))
 
 lbls_val = np.zeros((10, 480, 640))
 for i in range(80, 90):
@@ -378,7 +376,6 @@ for i in range(80, 90):
 
 lbls_val_onehot = tf.keras.utils.to_categorical(lbls_val, num_classes=5, dtype='float32')
 lbls_val = lbls_val.reshape((10, 480, 640, -1))
-# lbls_val_onehot = lbls_val_onehot.reshape((10, num_pixels, 5))
 
 lbls_test = np.zeros((10, 480, 640))
 for i in range(90, 100):
@@ -406,7 +403,6 @@ for i in range(90, 100):
 
 lbls_test_onehot = tf.keras.utils.to_categorical(lbls_test, num_classes=5, dtype='float32')
 lbls_test = lbls_test.reshape((10, 480, 640, -1))
-# lbls_val_onehot = lbls_val_onehot.reshape((10, num_pixels, 5))
 
 print('Labels loaded!')
 if train:
@@ -419,26 +415,22 @@ if train:
         print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
         unet.compile(optimizer='adam',
                      loss=categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha),
-                     metrics=['accuracy', iou_coef, dice_coef])  # ,
-    #                 sample_weight_mode="temporal")
+                     metrics=['accuracy', iou_coef, dice_coef])
     elif Loss_function == 2:
         print('Dice Loss')
         unet.compile(optimizer='adam',
                      loss=dice_loss(),
-                     metrics=['accuracy', iou_coef, dice_coef])  # ,
-    #                 sample_weight_mode="temporal")
+                     metrics=['accuracy', iou_coef, dice_coef])
     elif Loss_function == 3:
         print('Jaccard Loss')
         unet.compile(optimizer='adam',
                      loss=jaccard_loss(),
-                     metrics=['accuracy', iou_coef, dice_coef])  # ,
-    #                 sample_weight_mode="temporal")
+                     metrics=['accuracy', iou_coef, dice_coef])
     elif Loss_function == 4:
         print('Tversky Loss with beta = ' + str(TL_beta))
         unet.compile(optimizer='adam',
                      loss=tversky_loss(beta=TL_beta),
-                     metrics=['accuracy', iou_coef, dice_coef])  # ,
-    #                 sample_weight_mode="temporal")
+                     metrics=['accuracy', iou_coef, dice_coef])
     elif Loss_function == 5:
         print('Weighted categorical crossentropy with weights = ' + str(weights))
         unet.compile(optimizer='adam',
@@ -482,7 +474,6 @@ if train:
     # print(imgs_train.shape)
     # print(lbls_val_onehot.shape)
     # print(imgs_val.shape)
-    unet.fit
     model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
                              batch_size=1,
                              epochs=epoch,
@@ -506,6 +497,7 @@ if train:
     dice_metric = model_history.history['dice_coef']
     val_dice_coef = model_history.history['val_dice_coef']
 
+    # Save metric data to file
     f = open("Pictures/Metrics.txt", "w+")
     f.write("loss" + str(loss))
     f.write("\nval_loss: " + str(val_loss))
@@ -519,6 +511,7 @@ if train:
 
     epochs = range(epoch)
 
+    # Plot statistics
     graph = plt.figure()
     plt.plot(epochs, loss, 'r', label='Training loss')
     plt.plot(epochs, val_loss, 'bo', label='Validation loss')
@@ -530,6 +523,7 @@ if train:
     plt.show()
     plt.close(graph)
 
+    # Evaluate model
     print('\n# Evaluate on test data')
     start_time = time.time()
     results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
@@ -544,10 +538,42 @@ if train:
 elif not train:
     # Load model from file
     unet = load_model('Unet_model.h5', compile=False)
-    unet.compile(optimizer='adam',
-                 loss=weighted_categorical_crossentropy(weights),
-                 metrics=['accuracy', iou_coef, dice_coef])
 
+    # Compile loaded model
+    if Loss_function == 1:
+        print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
+        unet.compile(optimizer='adam',
+                     loss=categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha),
+                     metrics=['accuracy', iou_coef, dice_coef])
+    elif Loss_function == 2:
+        print('Dice Loss')
+        unet.compile(optimizer='adam',
+                     loss=dice_loss(),
+                     metrics=['accuracy', iou_coef, dice_coef])
+    elif Loss_function == 3:
+        print('Jaccard Loss')
+        unet.compile(optimizer='adam',
+                     loss=jaccard_loss(),
+                     metrics=['accuracy', iou_coef, dice_coef])
+    elif Loss_function == 4:
+        print('Tversky Loss with beta = ' + str(TL_beta))
+        unet.compile(optimizer='adam',
+                     loss=tversky_loss(beta=TL_beta),
+                     metrics=['accuracy', iou_coef, dice_coef])
+    elif Loss_function == 5:
+        print('Weighted categorical crossentropy with weights = ' + str(weights))
+        unet.compile(optimizer='adam',
+                     loss=weighted_categorical_crossentropy(weights),
+                     metrics=['accuracy', iou_coef, dice_coef])
+    elif Loss_function == 6:
+        print('Categorical crossentropy')
+        unet.compile(optimizer='adam',
+                     loss='categorical_crossentropy',
+                     metrics=['accuracy', iou_coef, dice_coef])
+    else:
+        print('No loss function')
+
+    # Evaluate loaded model
     print('\n# Evaluate on test data')
     start_time = time.time()
     results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
@@ -557,10 +583,11 @@ elif not train:
     print("%s: %.2f" % (unet.metrics_names[1], results[1]))
     print("%s: %.2f" % (unet.metrics_names[2], results[2]))
     print("%s: %.2f" % (unet.metrics_names[3], results[3]))
-
+'''
     print('\n# Evaluate on test data 2')
     start_time = time.time()
     results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
     stop_time = time.time()
     print("--- %s seconds ---" % (stop_time - start_time))
     print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
+'''
