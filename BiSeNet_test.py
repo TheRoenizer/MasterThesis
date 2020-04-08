@@ -1,8 +1,8 @@
-#from tensorflow.compat.v1 import ConfigProto
-#from tensorflow.compat.v1 import InteractiveSession
-#config = ConfigProto()
-#config.gpu_options.allow_growth = True
-#session = InteractiveSession(config=config)
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
 import tensorflow as tf
 from keras import backend as K
 import numpy as np
