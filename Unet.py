@@ -71,7 +71,7 @@ def load_data(data_path, dtype=np.float32):
 '''
 
 def categorical_focal_loss(gamma=2., alpha=.25):
-    """
+    '''
     Softmax version of focal loss.
            m
       FL = ∑  -alpha * (1 - p_o,c)^gamma * y_o,c * log(p_o,c)
@@ -88,7 +88,7 @@ def categorical_focal_loss(gamma=2., alpha=.25):
         https://www.tensorflow.org/api_docs/python/tf/keras/backend/categorical_crossentropy
     Usage:
      model.compile(loss=[categorical_focal_loss(alpha=.25, gamma=2)], metrics=["accuracy"], optimizer=adam)
-    """
+    '''
     def categorical_focal_loss_fixed(y_true, y_pred):
         """
         :param y_true: A tensor of the same shape as `y_pred`
