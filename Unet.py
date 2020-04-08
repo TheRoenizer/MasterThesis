@@ -47,7 +47,7 @@ FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
 TL_beta = 3         # Tversky loss beta
 
-
+'''
 def load_data(data_path, dtype=np.float32):
     n = 99            # Number of images
     m = 5             # Number of labels
@@ -68,7 +68,7 @@ def load_data(data_path, dtype=np.float32):
             labels[i, ..., j] = cv.normalize(labels[i, ..., j], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
     return images, labels
-
+'''
 
 def categorical_focal_loss(gamma=2., alpha=.25):
     """
