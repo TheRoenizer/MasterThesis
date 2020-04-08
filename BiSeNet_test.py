@@ -36,7 +36,8 @@ history = net.fit([imgs_train,imgs_train],lbls_train,validation_data=[[imgs_val,
 
 """
 
-PATH = 'C:/Users/chris/Google Drive/'
+# PATH = 'C:/Users/chris/Google Drive/'
+PATH = '/home/croen/'
 
 def weighted_categorical_crossentropy(weights=[1]):
     """
@@ -164,7 +165,7 @@ def display(display_list, epoch_display):
         plt.title(title[i])
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
         plt.axis('off')
-    plt.savefig("C:/Users/chris/Desktop/BiSeNet_pictures/afterEpoch{}.png".format(epoch_display + 1))
+    plt.savefig("Pictures/afterEpoch{}.png".format(epoch_display + 1))
     # plt.show()
     plt.close(fig)
 
@@ -191,7 +192,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 
 batch_size = 1
-num_epochs = 10
+num_epochs = 100
 weights = [.5, 1.5, 1.5, 1, 1]
 
 net.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy'])
