@@ -1,9 +1,8 @@
-from tensorflow.compat.v1 import ConfigProto
-from tensorflow.compat.v1 import InteractiveSession
-config = ConfigProto()
-config.gpu_options.allow_growth = True
-session = InteractiveSession(config=config)
-
+#from tensorflow.compat.v1 import ConfigProto
+#from tensorflow.compat.v1 import InteractiveSession
+#config = ConfigProto()
+#config.gpu_options.allow_growth = True
+#session = InteractiveSession(config=config)
 import tensorflow as tf
 from keras import backend as K
 import numpy as np
@@ -36,8 +35,8 @@ history = net.fit([imgs_train,imgs_train],lbls_train,validation_data=[[imgs_val,
 
 """
 
-# PATH = 'C:/Users/chris/Google Drive/'
-PATH = '/home/croen/'
+#PATH = 'C:/Users/chris/Google Drive/'
+PATH = '/home/jsteeen/'
 
 def weighted_categorical_crossentropy(weights=[1]):
     """
@@ -165,7 +164,7 @@ def display(display_list, epoch_display):
         plt.title(title[i])
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
         plt.axis('off')
-    plt.savefig("Pictures/afterEpoch{}.png".format(epoch_display + 1))
+    plt.savefig("Pictures_bisenet/afterEpoch{}.png".format(epoch_display + 1))
     # plt.show()
     plt.close(fig)
 
