@@ -47,7 +47,7 @@ FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
 TL_beta = 3         # Tversky loss beta
 
-
+'''
 def load_data(data_path, dtype=np.float32):
     n = 99            # Number of images
     m = 5             # Number of labels
@@ -68,10 +68,10 @@ def load_data(data_path, dtype=np.float32):
             labels[i, ..., j] = cv.normalize(labels[i, ..., j], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
     return images, labels
-
+'''
 
 def categorical_focal_loss(gamma=2., alpha=.25):
-    """
+    '''
     Softmax version of focal loss.
            m
       FL = ∑  -alpha * (1 - p_o,c)^gamma * y_o,c * log(p_o,c)
@@ -88,7 +88,7 @@ def categorical_focal_loss(gamma=2., alpha=.25):
         https://www.tensorflow.org/api_docs/python/tf/keras/backend/categorical_crossentropy
     Usage:
      model.compile(loss=[categorical_focal_loss(alpha=.25, gamma=2)], metrics=["accuracy"], optimizer=adam)
-    """
+    '''
     def categorical_focal_loss_fixed(y_true, y_pred):
         """
         :param y_true: A tensor of the same shape as `y_pred`
