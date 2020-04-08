@@ -36,7 +36,7 @@ PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
 train = True
-epoch = 10
+epoch = 1000
 num_pixels = 480 * 640
 weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
 # sample_weight = np.zeros((79, num_pixels))
