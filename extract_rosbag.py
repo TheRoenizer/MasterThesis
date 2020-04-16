@@ -127,11 +127,11 @@ with rosbag.Bag(path) as bag:
         # de-compress images
         imgs = [cv_bridge.compressed_imgmsg_to_cv2(m) for m in img_msg]
 
-        img_left = cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB)
-        img_right = cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB)
+        img_left = imgs[0] #cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB)
+        img_right = imgs[1] #cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB)
 
-        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool1/img{}_left.png".format(i), img_left)
-        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool1/img{}_right.png".format(i), img_right)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool1/img{}_left.png".format(i/20), img_left)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool1/img{}_right.png".format(i/20), img_right)
 
     # Read all PSM1 pose messages (instrument TCP wrt. base frame) PSM = patient side manipulator
     psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
