@@ -154,3 +154,5 @@ t_optical_base = np.linalg.inv(t_base_optical)
 # t_optical_tcp = np.array([t_optical_base.dot(t) for t in t_base_tcp])
 t_base_tcp = msg2tf(psm1_msg.pose)
 t_optical_tcp = t_optical_base.dot(t_base_tcp)
+
+print(t_optical_tcp)
