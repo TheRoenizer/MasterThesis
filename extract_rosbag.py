@@ -94,8 +94,8 @@ def fix_tf_msg(x):
     return y
 
 
-path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-27-42_0.bag'
-# path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-29-36_0.bag'
+# path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-27-42_0.bag'
+path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-29-36_0.bag'
 # path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/grasp_2019-04-21-00-31-48_0.bag'
 # path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/grasp_2019-04-21-00-33-18_0.bag'
 
