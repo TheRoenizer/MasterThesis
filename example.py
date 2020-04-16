@@ -153,10 +153,10 @@ def fix_tf_msg(x):
     return y
 
 
-#path = '/home/christoffer/Documents/rosbags/cool_2019-04-21-02-27-42_0.bag'
-#path = '/home/christoffer/Documents/rosbags/cool_2019-04-21-02-29-36_0.bag'
-#path = '/home/christoffer/Documents/rosbags/grasp_2019-04-21-00-31-48_0.bag'
-path = '/home/christoffer/Documents/rosbags/grasp_2019-04-21-00-33-18_0.bag'
+#path = '/home/jsteeen/Documents/rosbags/cool_2019-04-21-02-27-42_0.bag'
+#path = '/home/jsteeen/Documents/rosbags/cool_2019-04-21-02-29-36_0.bag'
+#path = '/home/jsteeen/Documents/rosbags/grasp_2019-04-21-00-31-48_0.bag'
+path = '/home/jsteeen/Documents/rosbags/grasp_2019-04-21-00-33-18_0.bag'
 cv_bridge = cv_bridge.CvBridge()
 tf_buffer = tf2.BufferCore()
 psm1_msgs = []
@@ -207,7 +207,8 @@ imgs = [cv_bridge.compressed_imgmsg_to_cv2(m) for m in img_msg]
 # Project 3D point to left/right images
 p = stereo_model.project3dToPixel(t_optical_tcp[:3, 3])
 
-#print(p)
+# print(p)
+
 
 # Draw circles at projected points
 def f2i(iterable):
@@ -221,6 +222,6 @@ cv.circle(imgs[1], f2i(p[1]), 10, (0, 0, 255), 3)
 fig, ax = plt.subplots(1, 2)
 ax[0].imshow(cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB))
 ax[1].imshow(cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB))
-plt.savefig("/home/christoffer/Documents/rosbag_test4.png")
+plt.savefig("/home/jsteeen/Documents/rosbag_test.png")
 plt.show()
-
+plt.close(fig)
