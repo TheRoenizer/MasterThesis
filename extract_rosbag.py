@@ -95,8 +95,8 @@ def fix_tf_msg(x):
 
 
 # path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-27-42_0.bag'
-path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-29-36_0.bag'
-# path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/grasp_2019-04-21-00-31-48_0.bag'
+# path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-29-36_0.bag'
+path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/grasp_2019-04-21-00-31-48_0.bag'
 # path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/grasp_2019-04-21-00-33-18_0.bag'
 
 cv_bridge = cv_bridge.CvBridge()
@@ -114,7 +114,7 @@ with rosbag.Bag(path) as bag:
     cam_info[0] = next(bag.read_messages(topics=['/basler_stereo/left/camera_info']))[1]
     cam_info[1] = next(bag.read_messages(topics=['/basler_stereo/right/camera_info']))[1]
 
-    for i in range(1, 3528, 35):
+    for i in range(1, 419, 5):
         # Get the i'th right camera image message in the bag
         img_msg[1] = nth(bag.read_messages(topics=['/basler_stereo/right/image_rect_color/compressed']), i)[1]
 
@@ -130,8 +130,8 @@ with rosbag.Bag(path) as bag:
         img_left = imgs[0] #cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB)
         img_right = imgs[1] #cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB)
 
-        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool2/img{}_left.png".format(int(i/35)), img_left)
-        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool2/img{}_right.png".format(int(i/35)), img_right)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/grasp1/img{}_left.png".format(int(i/5)), img_left)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/grasp1/img{}_right.png".format(int(i/5)), img_right)
 
     # Read all PSM1 pose messages (instrument TCP wrt. base frame) PSM = patient side manipulator
     psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
