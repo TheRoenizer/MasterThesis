@@ -155,5 +155,5 @@ with rosbag.Bag(path) as bag:
 
         # print(t_optical_tcp)
         f = open("/home/jsteeen/Pictures/rosbag_pictures/grasp2/poses.txt", "w+")
-        f.write(t_optical_tcp)
+        f.write(str(t_optical_tcp))
         f.close()
