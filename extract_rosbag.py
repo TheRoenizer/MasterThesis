@@ -114,7 +114,7 @@ with rosbag.Bag(path) as bag:
     cam_info[0] = next(bag.read_messages(topics=['/basler_stereo/left/camera_info']))[1]
     cam_info[1] = next(bag.read_messages(topics=['/basler_stereo/right/camera_info']))[1]
 
-    for i in range(1, 1775, 20):
+    for i in range(1, 1775, 35):
         # Get the i'th right camera image message in the bag
         img_msg[1] = nth(bag.read_messages(topics=['/basler_stereo/right/image_rect_color/compressed']), i)[1]
 
@@ -130,8 +130,8 @@ with rosbag.Bag(path) as bag:
         img_left = imgs[0] #cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB)
         img_right = imgs[1] #cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB)
 
-        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool1/img{}_left.png".format(int(i/20)), img_left)
-        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool1/img{}_right.png".format(int(i/20)), img_right)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool1/img{}_left.png".format(int(i/35)), img_left)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool1/img{}_right.png".format(int(i/35)), img_right)
 
     # Read all PSM1 pose messages (instrument TCP wrt. base frame) PSM = patient side manipulator
     psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
