@@ -114,7 +114,7 @@ with rosbag.Bag(path) as bag:
     cam_info[0] = next(bag.read_messages(topics=['/basler_stereo/left/camera_info']))[1]
     cam_info[1] = next(bag.read_messages(topics=['/basler_stereo/right/camera_info']))[1]
 
-    for i in range(100, 1000, 20):
+    for i in range(100, 1775, 20):
         # Get the i'th right camera image message in the bag
         img_msg[1] = nth(bag.read_messages(topics=['/basler_stereo/right/image_rect_color/compressed']), i)[1]
 
