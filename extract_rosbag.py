@@ -13,10 +13,12 @@ import rospy
 import tf2_py as tf2
 import warnings
 
+
 def nth(iterable, n, default=None):
     """Returns the n'th item or a default value
     """
     return next(itertools.islice(iterable, n, None), default)
+
 
 # bisect comparator return values
 BISECT_LOWER, BISECT_STOP, BISECT_HIGHER = (-1, 0, 1)
@@ -41,6 +43,7 @@ def bisect(sequence, comparator, lo=0, hi=None):
 
     return lo
 
+
 def msg2tf(m):
     tf = np.identity(4)
 
@@ -54,6 +57,7 @@ def msg2tf(m):
         raise ValueError("Bad msg type '{}'".format(m._type))
 
     return tf
+
 
 def find_nearest_by_stamp(sequence, stamp):
     comp = lambda m: BISECT_HIGHER if m.header.stamp < stamp else BISECT_LOWER
@@ -70,6 +74,7 @@ def find_nearest_by_stamp(sequence, stamp):
         return (i-1, sequence[i-1])
     else:
         return (i, sequence[i])
+
 
 def fix_tf_msg(x):
     """Copy bag message type to system ROS message type (those are different types!)
@@ -89,10 +94,10 @@ def fix_tf_msg(x):
     return y
 
 
-#path = '/home/christoffer/Documents/rosbags/cool_2019-04-21-02-27-42_0.bag'
-#path = '/home/christoffer/Documents/rosbags/cool_2019-04-21-02-29-36_0.bag'
-#path = '/home/christoffer/Documents/rosbags/grasp_2019-04-21-00-31-48_0.bag'
-path = '/home/christoffer/Documents/rosbags/grasp_2019-04-21-00-33-18_0.bag'
+path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-27-42_0.bag'
+# path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-29-36_0.bag'
+# path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/grasp_2019-04-21-00-31-48_0.bag'
+# path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/grasp_2019-04-21-00-33-18_0.bag'
 
 cv_bridge = cv_bridge.CvBridge()
 tf_buffer = tf2.BufferCore()
@@ -125,12 +130,11 @@ with rosbag.Bag(path) as bag:
         img_left = cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB)
         img_right = cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB)
 
-        cv.imwrite("/home/christoffer/Pictures/rosbag_pictures/img{}_left.png".format(i), img_left)
-        cv.imwrite("/home/christoffer/Pictures/rosbag_pictures/img{}_right.png".format(i), img_right)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool1/img{}_left.png".format(i), img_left)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool1/img{}_right.png".format(i), img_right)
 
     # Read all PSM1 pose messages (instrument TCP wrt. base frame) PSM = patient side manipulator
     psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
-
 
 
 # Find PSM1 pose message corresponding (nearest time stamp) to the camera frames
@@ -150,4 +154,3 @@ t_optical_base = np.linalg.inv(t_base_optical)
 # t_optical_tcp = np.array([t_optical_base.dot(t) for t in t_base_tcp])
 t_base_tcp = msg2tf(psm1_msg.pose)
 t_optical_tcp = t_optical_base.dot(t_base_tcp)
-
