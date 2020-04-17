@@ -159,7 +159,7 @@ with rosbag.Bag(path) as bag:
         t_optical_tcp = t_optical_base.dot(t_base_tcp)
 
         print(t_optical_tcp)
-        poses = np.append(poses, np.atleast_3d(t_optical_tcp), axis=-1)
+        poses = np.append(np.atleast_3d(poses), np.atleast_3d(t_optical_tcp), axis=-1)
         print(poses.shape)
 
     np.save("/home/jsteeen/Pictures/rosbag_pictures/cool1/pose_arr.npy", poses)
