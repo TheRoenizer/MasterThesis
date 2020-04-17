@@ -126,7 +126,7 @@ with rosbag.Bag(path) as bag:
     # Read all PSM1 pose messages (instrument TCP wrt. base frame) PSM = patient side manipulator
     psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
 
-    f = open("/home/jsteeen/Pictures/rosbag_pictures/grasp2/poses.txt", "w+")
+    f = open("/home/jsteeen/poses.txt", "w+")
 
     for i in range(1, 789, 10):
         # Get the i'th right camera image message in the bag
@@ -156,5 +156,5 @@ with rosbag.Bag(path) as bag:
         t_optical_tcp = t_optical_base.dot(t_base_tcp)
 
         # print(t_optical_tcp)
-        f.write(str(t_optical_tcp)+"\n")
+        f.write(str(t_optical_tcp))
     f.close()
