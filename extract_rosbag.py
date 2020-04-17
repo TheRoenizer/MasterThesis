@@ -161,10 +161,12 @@ with rosbag.Bag(path) as bag:
         # print(t_optical_tcp)
         poses = np.stack(t_optical_tcp, axis=-1)
 
+        print("--------------------- Poses from rosbag ---------------------\n")
         print(poses)
 
     np.save("/home/jsteeen/Pictures/rosbag_pictures/cool1/pose_arr.npy", poses)
 
 _ = outfile.seek(0)
+print("--------------------- Poses from file ---------------------\n")
 poses = np.load("/home/jsteeen/Pictures/rosbag_pictures/cool1/pose_arr.npy")
 print(poses)
