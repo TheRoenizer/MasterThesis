@@ -156,5 +156,5 @@ with rosbag.Bag(path) as bag:
         t_optical_tcp = t_optical_base.dot(t_base_tcp)
 
         # print(t_optical_tcp)
-        f.write(str(t_optical_tcp))
+        f.write(str(t_optical_tcp)+"\n")
     f.close()
