@@ -8,6 +8,7 @@ from keras import backend as K
 import numpy as np
 from PIL import Image
 import cv2 as cv
+import time
 import matplotlib.pyplot as plt
 from IPython.display import clear_output
 
@@ -80,6 +81,14 @@ for i in range(80, 90):
     img = img / 255
     imgs_val[i-80] = img
 
+imgs_test = np.zeros((10, 480, 640, 3))
+for i in range(90, 100):
+    # print('Progress: ' + str(i) + ' of 89')
+    path = PATH + '/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
+    img = np.array(Image.open(path))[np.newaxis]
+    img = img / 255
+    imgs_test[i-90] = img
+
 print('Images loaded!')
 print('Loading labels...')
 # Labels
@@ -149,6 +158,33 @@ for i in range(80, 90):
     img[change_5] = 0
     lbls_val[i-80] = img
 
+lbls_test = np.zeros((10, 480, 640))
+for i in range(90, 100):
+    # print('Progress: ' + str(i) + ' of 89')
+    path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/000.png'
+    path2 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/002.png'
+    path3 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
+    path4 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/001.png'
+    img1 = cv.imread(path1, 2)
+    img2 = cv.imread(path2, 2)
+    img3 = cv.imread(path3, 2)
+    img4 = cv.imread(path4, 2)
+    change1_to = np.where(img1[:, :] != 0)
+    change2_to = np.where(img2[:, :] != 0)
+    change3_to = np.where(img3[:, :] != 0)
+    change4_to = np.where(img4[:, :] != 0)
+    img1[change1_to] = 1
+    img2[change2_to] = 2
+    img3[change3_to] = 3
+    img4[change4_to] = 4
+    img = img1 + img2 + img3 + img4
+    change_5 = np.where(img[:, :] == 5)
+    img[change_5] = 0
+    lbls_test[i - 90] = img
+
+lbls_test_onehot = tf.keras.utils.to_categorical(lbls_test, num_classes=5, dtype='float32')
+lbls_test = lbls_test.reshape((10, 480, 640, -1))
+
 print('Labels loaded!')
 
 lbls_val_onehot = tf.keras.utils.to_categorical(lbls_val, num_classes=5, dtype='float32')
@@ -191,7 +227,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 
 batch_size = 1
-num_epochs = 100
+num_epochs = 10
 weights = [.5, 1.5, 1.5, 1, 1]
 
 net.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy'])
@@ -204,3 +240,11 @@ history = net.fit([imgs_train, imgs_train], lbls_train_onehot, validation_data=[
                   verbose=1,
                   shuffle=True,
                   callbacks=[DisplayCallback()])
+
+# Evaluate loaded model
+print('\n# Evaluate on test data')
+start_time = time.time()
+results = net.evaluate([imgs_test, imgs_test], lbls_test_onehot, batch_size=1)
+stop_time = time.time()
+print("--- %s seconds ---" % (stop_time - start_time))
+print("%s: %.2f" % (net.metrics_names[0], results[0]))
