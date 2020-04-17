@@ -129,7 +129,7 @@ with rosbag.Bag(path) as bag:
     # Read all PSM1 pose messages (instrument TCP wrt. base frame) PSM = patient side manipulator
     psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
 
-    poses = np.zeros((4, 4))
+    poses = np.zeros((4, 4, 1))
 
     for i in range(60, 1400, 20):
         # Get the i'th right camera image message in the bag
