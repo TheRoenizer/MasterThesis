@@ -219,8 +219,7 @@ cv.circle(imgs[0], f2i(p[0]), 10, (0, 0, 255), 3)
 cv.circle(imgs[1], f2i(p[1]), 10, (0, 0, 255), 3)
 
 # Show images
-fig = plt.figure()
-fig1, ax = plt.subplots(1, 2)
+fig, ax = plt.subplots(1, 2)
 ax[0].imshow(cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB))
 ax[1].imshow(cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB))
 plt.savefig("/home/jsteeen/Documents/rosbag_test.png")
