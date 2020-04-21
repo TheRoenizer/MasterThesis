@@ -30,9 +30,9 @@ print('Keras version: '+tf.keras.__version__)
 # Christoffer:
 # PATH = 'C:/Users/chris/Google Drive/'
 # Jonathan:
-# PATH = '/Users/jonathansteen/Google Drive/'
+PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
-PATH = '/home/jsteeen/'
+# PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
 train = True
@@ -41,7 +41,7 @@ num_pixels = 480 * 640
 weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
 # sample_weight = np.zeros((79, num_pixels))
 
-Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
+Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss, 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
