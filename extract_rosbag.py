@@ -95,8 +95,8 @@ def fix_tf_msg(x):
     return y
 
 
-path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-27-42_0.bag'
-# path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-29-36_0.bag'
+# path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-27-42_0.bag'
+path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-29-36_0.bag'
 # path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/grasp_2019-04-21-00-31-48_0.bag'
 # path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/grasp_2019-04-21-00-33-18_0.bag'
 
@@ -131,7 +131,7 @@ with rosbag.Bag(path) as bag:
 
     poses = np.zeros((4, 4))
 
-    for i in range(60, 1400, 20):
+    for i in range(0, 3528, 35):
         # Get the i'th right camera image message in the bag
         img_msg[1] = nth(bag.read_messages(topics=['/basler_stereo/right/image_rect_color/compressed']), i)[1]
 
@@ -147,8 +147,8 @@ with rosbag.Bag(path) as bag:
         img_left = imgs[0]  # cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB)
         img_right = imgs[1]  # cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB)
 
-        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/img{}_left.png".format(int((i-60)/20)), img_left)
-        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/img{}_right.png".format(int((i-60)/20)), img_right)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool2/img{}_left.png".format(int((i)/35)), img_left)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool2/img{}_right.png".format(int((i)/35)), img_right)
 
         # Find PSM1 pose message corresponding (nearest time stamp) to the camera frames
         psm1_msg = find_nearest_by_stamp(psm1_msgs, img_msg[0].header.stamp)[1]
@@ -165,8 +165,8 @@ with rosbag.Bag(path) as bag:
 
 poses = np.delete(poses, 0, axis=-1)
 print(poses.shape)
-np.save("/home/jsteeen/Pictures/rosbag_pictures/pose_arr.npy", poses)
-
+np.save("/home/jsteeen/Pictures/rosbag_pictures/cool2/pose_arr.npy", poses)
+'''
 print("--------------------- Poses from rosbag ---------------------\n")
 print(poses.shape)
 print(poses[:, :, 0])
@@ -177,4 +177,5 @@ poses = np.load("/home/jsteeen/Pictures/rosbag_pictures/pose_arr.npy")
 print("--------------------- Poses from file ---------------------\n")
 print(poses.shape)
 print(poses[:, :, 0])
+'''
 print("DONE!")
