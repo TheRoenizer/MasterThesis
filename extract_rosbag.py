@@ -158,12 +158,13 @@ with rosbag.Bag(path) as bag:
         t_base_tcp = msg2tf(psm1_msg.pose)
         t_optical_tcp = t_optical_base.dot(t_base_tcp)
 
-        print(t_optical_tcp)
+        # print(t_optical_tcp)
         poses = np.concatenate([np.atleast_3d(poses), np.atleast_3d(t_optical_tcp)], axis=2)
         # poses = np.append(np.atleast_3d(poses), np.atleast_3d(t_optical_tcp), axis=-1)
         print(poses.shape)
 
-    poses = np.delete(poses, 0, axis=0)
+    poses = np.delete(poses, 0, axis=2)
+    print(poses.shape)
     np.save("/home/jsteeen/Pictures/rosbag_pictures/cool1/pose_arr.npy", poses)
 
 print("--------------------- Poses from rosbag ---------------------\n")
