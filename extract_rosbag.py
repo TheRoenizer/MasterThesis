@@ -131,7 +131,7 @@ with rosbag.Bag(path) as bag:
 
     poses = np.zeros((4, 4))
 
-    for i in range(0, 789, 11):
+    for i in range(110, 209, 2):
         # Get the i'th right camera image message in the bag
         img_msg[1] = nth(bag.read_messages(topics=['/basler_stereo/right/image_rect_color/compressed']), i)[1]
 
@@ -147,8 +147,8 @@ with rosbag.Bag(path) as bag:
         img_left = imgs[0]  # cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB)
         img_right = imgs[1]  # cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB)
 
-        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/grasp2/img{}_left.png".format(int((i)/11)), img_left)
-        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/grasp2/img{}_right.png".format(int((i)/11)), img_right)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/grasp2/img{}_left.png".format(int((i-110)/2)), img_left)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/grasp2/img{}_right.png".format(int((i-110)/2)), img_right)
 
         # Find PSM1 pose message corresponding (nearest time stamp) to the camera frames
         psm1_msg = find_nearest_by_stamp(psm1_msgs, img_msg[0].header.stamp)[1]
