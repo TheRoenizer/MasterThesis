@@ -105,7 +105,7 @@ tf_buffer = tf2.BufferCore()
 psm1_msgs = []
 cam_info = [None, None]
 img_msg = [None, None]
-
+'''
 outfile = TemporaryFile()
 
 with rosbag.Bag(path) as bag:
@@ -170,6 +170,7 @@ print(poses.shape)
 print(poses[:, :, 1])
 
 _ = outfile.seek(0)
+'''
 poses = np.load("/home/jsteeen/Pictures/rosbag_pictures/cool1/pose_arr.npy")
 
 print("--------------------- Poses from file ---------------------\n")
