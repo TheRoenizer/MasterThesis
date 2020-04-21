@@ -105,7 +105,7 @@ tf_buffer = tf2.BufferCore()
 psm1_msgs = []
 cam_info = [None, None]
 img_msg = [None, None]
-'''
+
 outfile = TemporaryFile()
 
 with rosbag.Bag(path) as bag:
@@ -163,17 +163,17 @@ with rosbag.Bag(path) as bag:
         # poses = np.append(np.atleast_3d(poses), np.atleast_3d(t_optical_tcp), axis=-1)
         print(poses.shape)
 
+    poses = np.delete(poses, 0, axis=0)
     np.save("/home/jsteeen/Pictures/rosbag_pictures/cool1/pose_arr.npy", poses)
 
 print("--------------------- Poses from rosbag ---------------------\n")
 print(poses.shape)
-print(poses[:, :, 1])
+print(poses[:, :, 0])
 
 _ = outfile.seek(0)
-'''
 poses = np.load("/home/jsteeen/Pictures/rosbag_pictures/cool1/pose_arr.npy")
 
 print("--------------------- Poses from file ---------------------\n")
 print(poses.shape)
-print(poses[:, :, 1])
+print(poses[:, :, 0])
 print("DONE!")
