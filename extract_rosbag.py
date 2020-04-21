@@ -147,8 +147,8 @@ with rosbag.Bag(path) as bag:
         img_left = imgs[0]  # cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB)
         img_right = imgs[1]  # cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB)
 
-        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool1/img{}_left.png".format(i/20), img_left)
-        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/cool1/img{}_right.png".format(i/20), img_right)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/img{}_left.png".format(i/20), img_left)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/img{}_right.png".format(i/20), img_right)
 
         # Find PSM1 pose message corresponding (nearest time stamp) to the camera frames
         psm1_msg = find_nearest_by_stamp(psm1_msgs, img_msg[0].header.stamp)[1]
@@ -160,19 +160,19 @@ with rosbag.Bag(path) as bag:
 
         # print(t_optical_tcp)
         poses = np.concatenate([np.atleast_3d(poses), np.atleast_3d(t_optical_tcp)], axis=2)
-        # poses = np.append(np.atleast_3d(poses), np.atleast_3d(t_optical_tcp), axis=-1)
-        print(poses.shape)
+        # print(poses.shape)
 
-    poses = np.delete(poses, 0, axis=2)
-    print(poses.shape)
-    np.save("/home/jsteeen/Pictures/rosbag_pictures/cool1/pose_arr.npy", poses)
+
+poses = np.delete(poses, 0, axis=-1)
+print(poses.shape)
+np.save("/home/jsteeen/Pictures/rosbag_pictures/pose_arr.npy", poses)
 
 print("--------------------- Poses from rosbag ---------------------\n")
 print(poses.shape)
 print(poses[:, :, 0])
 
 _ = outfile.seek(0)
-poses = np.load("/home/jsteeen/Pictures/rosbag_pictures/cool1/pose_arr.npy")
+poses = np.load("/home/jsteeen/Pictures/rosbag_pictures/pose_arr.npy")
 
 print("--------------------- Poses from file ---------------------\n")
 print(poses.shape)
