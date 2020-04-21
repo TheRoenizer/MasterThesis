@@ -242,7 +242,14 @@ history = net.fit([imgs_train, imgs_train], lbls_train_onehot, validation_data=[
                   callbacks=[DisplayCallback()])
 
 # Evaluate loaded model
-print('\n# Evaluate on test data')
+print('\n# Evaluate on test data 1')
+start_time = time.time()
+results = net.evaluate([imgs_test, imgs_test], lbls_test_onehot, batch_size=1)
+stop_time = time.time()
+print("--- %s seconds ---" % (stop_time - start_time))
+print("%s: %.2f" % (net.metrics_names[0], results[0]))
+
+print('\n# Evaluate on test data 2')
 start_time = time.time()
 results = net.evaluate([imgs_test, imgs_test], lbls_test_onehot, batch_size=1)
 stop_time = time.time()
