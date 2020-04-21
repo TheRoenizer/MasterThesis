@@ -131,7 +131,7 @@ with rosbag.Bag(path) as bag:
 
     poses = np.zeros((4, 4))
 
-    for i in range(35, 1400, 20):
+    for i in range(35, 1370, 20):
         # Get the i'th right camera image message in the bag
         img_msg[1] = nth(bag.read_messages(topics=['/basler_stereo/right/image_rect_color/compressed']), i)[1]
 
