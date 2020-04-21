@@ -167,12 +167,12 @@ with rosbag.Bag(path) as bag:
 
 print("--------------------- Poses from rosbag ---------------------\n")
 print(poses.shape)
-print(poses[0])
+print(poses[0].shape)
 
 _ = outfile.seek(0)
 poses = np.load("/home/jsteeen/Pictures/rosbag_pictures/cool1/pose_arr.npy")
 
 print("--------------------- Poses from file ---------------------\n")
 print(poses.shape)
-print(poses[0])
+print(poses[0].shape)
 print("DONE!")
