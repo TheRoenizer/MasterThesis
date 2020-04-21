@@ -18,6 +18,7 @@ def ConvAndBatch(x, n_filters=64, kernel=(2, 2), strides=(1, 1), padding='valid'
 
     activation = Activation(activation)
 
+
     x = conv_(x)
     x = batch_norm(x)
     x = activation(x)
