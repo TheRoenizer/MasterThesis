@@ -36,8 +36,8 @@ history = net.fit([imgs_train,imgs_train],lbls_train,validation_data=[[imgs_val,
 
 """
 
-PATH = 'C:/Users/chris/Google Drive/'
-#PATH = '/home/jsteeen/'
+#PATH = 'C:/Users/chris/Google Drive/'
+PATH = '/home/jsteeen/'
 
 def weighted_categorical_crossentropy(weights=[1]):
     """
