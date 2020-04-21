@@ -32,6 +32,7 @@ print('Keras version: '+tf.keras.__version__)
 # Jonathan:
 # PATH = '/Users/jonathansteen/Google Drive/'
 # Linux:
+
 PATH = '/home/jsteeen/'
 # PATH = '/home/croen/'
 
@@ -267,13 +268,15 @@ def unet(input_shape, num_classes=5, droprate=None, linear=False):
 
 def display(display_list, epoch_display):
     fig = plt.figure(figsize=(15, 15))
-
     title = ['Input Image', 'True Mask', 'Predicted Mask after epoch {}'.format(epoch_display + 1)]
     for i in range(len(display_list)):
         plt.subplot(1, len(display_list), i + 1)
         plt.title(title[i])
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
+        # img = tf.keras.preprocessing.image.array_to_img(display_list[i])
+        # img.save("afterEpoch{}.png".format(epoch))
         plt.axis('off')
+
     plt.savefig("Pictures/afterEpoch{}.png".format(epoch_display + 1))
     # plt.show()
     plt.close(fig)
