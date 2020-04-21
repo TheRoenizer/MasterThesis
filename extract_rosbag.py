@@ -95,11 +95,6 @@ def fix_tf_msg(x):
     return y
 
 
-# path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-27-42_0.bag'
-# path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-29-36_0.bag'
-# path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/grasp_2019-04-21-00-31-48_0.bag'
-path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/grasp_2019-04-21-00-33-18_0.bag'
-
 cv_bridge = cv_bridge.CvBridge()
 tf_buffer = tf2.BufferCore()
 psm1_msgs = []
@@ -108,6 +103,176 @@ img_msg = [None, None]
 
 outfile = TemporaryFile()
 
+print("Rosbag 1")
+path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-27-42_0.bag'
+with rosbag.Bag(path) as bag:
+    for topic, msg, stamp in bag.read_messages(topics=['/tf']):
+        for tf in msg.transforms:
+            tf_buffer.set_transform(fix_tf_msg(tf), 'default_authority')
+
+    # camera info msgs do not change during the recording, so we save only the first one
+    cam_info[0] = next(bag.read_messages(topics=['/basler_stereo/left/camera_info']))[1]
+    cam_info[1] = next(bag.read_messages(topics=['/basler_stereo/right/camera_info']))[1]
+
+    # Set up stereo camera model from the image_geometry distributed with ROS
+    stereo_model = image_geometry.StereoCameraModel()
+    stereo_model.fromCameraInfo(*cam_info)
+
+    # Get robot base to optical (left camera of stereo pair) transformation (the
+    # 'optical' frame seen wrt. the PSM1 robot 'base' frame)
+    t_base_optical = msg2tf(tf_buffer.lookup_transform_core('PSM1_base', 'stereo_optical', rospy.Time()).transform)
+    t_optical_base = np.linalg.inv(t_base_optical)
+
+    # Read all PSM1 pose messages (instrument TCP wrt. base frame) PSM = patient side manipulator
+    psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
+
+    poses = np.zeros((4, 4))
+
+    for i in range(60, 1400, 20):
+        # Get the i'th right camera image message in the bag
+        img_msg[1] = nth(bag.read_messages(topics=['/basler_stereo/right/image_rect_color/compressed']), i)[1]
+
+        # Find the corresponding (equal time stamp) left camera image message
+        for topic, msg, stamp in bag.read_messages(topics=['/basler_stereo/left/image_rect_color/compressed']):
+            if msg.header.stamp == img_msg[1].header.stamp:
+                img_msg[0] = msg
+                break
+
+        # de-compress images
+        imgs = [cv_bridge.compressed_imgmsg_to_cv2(m) for m in img_msg]
+
+        img_left = imgs[0]  # cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB)
+        img_right = imgs[1]  # cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB)
+
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/img{}_left.png".format(int((i-60)/20)), img_left)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/img{}_right.png".format(int((i-60)/20)), img_right)
+
+        # Find PSM1 pose message corresponding (nearest time stamp) to the camera frames
+        psm1_msg = find_nearest_by_stamp(psm1_msgs, img_msg[0].header.stamp)[1]
+
+        # t_base_tcp = np.array([msg2tf(m.pose) for m in psm1_msgs])
+        # t_optical_tcp = np.array([t_optical_base.dot(t) for t in t_base_tcp])
+        t_base_tcp = msg2tf(psm1_msg.pose)
+        t_optical_tcp = t_optical_base.dot(t_base_tcp)
+
+        # print(t_optical_tcp)
+        poses = np.concatenate([np.atleast_3d(poses), np.atleast_3d(t_optical_tcp)], axis=2)
+        # print(poses.shape)
+
+print("Rosbag 2")
+path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/cool_2019-04-21-02-29-36_0.bag'
+with rosbag.Bag(path) as bag:
+    for topic, msg, stamp in bag.read_messages(topics=['/tf']):
+        for tf in msg.transforms:
+            tf_buffer.set_transform(fix_tf_msg(tf), 'default_authority')
+
+    # camera info msgs do not change during the recording, so we save only the first one
+    cam_info[0] = next(bag.read_messages(topics=['/basler_stereo/left/camera_info']))[1]
+    cam_info[1] = next(bag.read_messages(topics=['/basler_stereo/right/camera_info']))[1]
+
+    # Set up stereo camera model from the image_geometry distributed with ROS
+    stereo_model = image_geometry.StereoCameraModel()
+    stereo_model.fromCameraInfo(*cam_info)
+
+    # Get robot base to optical (left camera of stereo pair) transformation (the
+    # 'optical' frame seen wrt. the PSM1 robot 'base' frame)
+    t_base_optical = msg2tf(tf_buffer.lookup_transform_core('PSM1_base', 'stereo_optical', rospy.Time()).transform)
+    t_optical_base = np.linalg.inv(t_base_optical)
+
+    # Read all PSM1 pose messages (instrument TCP wrt. base frame) PSM = patient side manipulator
+    psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
+
+    poses = np.zeros((4, 4))
+
+    for i in range(35, 1370, 20):
+        # Get the i'th right camera image message in the bag
+        img_msg[1] = nth(bag.read_messages(topics=['/basler_stereo/right/image_rect_color/compressed']), i)[1]
+
+        # Find the corresponding (equal time stamp) left camera image message
+        for topic, msg, stamp in bag.read_messages(topics=['/basler_stereo/left/image_rect_color/compressed']):
+            if msg.header.stamp == img_msg[1].header.stamp:
+                img_msg[0] = msg
+                break
+
+        # de-compress images
+        imgs = [cv_bridge.compressed_imgmsg_to_cv2(m) for m in img_msg]
+
+        img_left = imgs[0]  # cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB)
+        img_right = imgs[1]  # cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB)
+
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/img{}_left.png".format(int((i-35+67)/20)), img_left)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/img{}_right.png".format(int((i-35+67)/20)), img_right)
+
+        # Find PSM1 pose message corresponding (nearest time stamp) to the camera frames
+        psm1_msg = find_nearest_by_stamp(psm1_msgs, img_msg[0].header.stamp)[1]
+
+        # t_base_tcp = np.array([msg2tf(m.pose) for m in psm1_msgs])
+        # t_optical_tcp = np.array([t_optical_base.dot(t) for t in t_base_tcp])
+        t_base_tcp = msg2tf(psm1_msg.pose)
+        t_optical_tcp = t_optical_base.dot(t_base_tcp)
+
+        # print(t_optical_tcp)
+        poses = np.concatenate([np.atleast_3d(poses), np.atleast_3d(t_optical_tcp)], axis=2)
+        # print(poses.shape)
+
+print("Rosbag 3")
+path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/grasp_2019-04-21-00-31-48_0.bag'
+with rosbag.Bag(path) as bag:
+    for topic, msg, stamp in bag.read_messages(topics=['/tf']):
+        for tf in msg.transforms:
+            tf_buffer.set_transform(fix_tf_msg(tf), 'default_authority')
+
+    # camera info msgs do not change during the recording, so we save only the first one
+    cam_info[0] = next(bag.read_messages(topics=['/basler_stereo/left/camera_info']))[1]
+    cam_info[1] = next(bag.read_messages(topics=['/basler_stereo/right/camera_info']))[1]
+
+    # Set up stereo camera model from the image_geometry distributed with ROS
+    stereo_model = image_geometry.StereoCameraModel()
+    stereo_model.fromCameraInfo(*cam_info)
+
+    # Get robot base to optical (left camera of stereo pair) transformation (the
+    # 'optical' frame seen wrt. the PSM1 robot 'base' frame)
+    t_base_optical = msg2tf(tf_buffer.lookup_transform_core('PSM1_base', 'stereo_optical', rospy.Time()).transform)
+    t_optical_base = np.linalg.inv(t_base_optical)
+
+    # Read all PSM1 pose messages (instrument TCP wrt. base frame) PSM = patient side manipulator
+    psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
+
+    poses = np.zeros((4, 4))
+
+    for i in range(120, 264, 2):
+        # Get the i'th right camera image message in the bag
+        img_msg[1] = nth(bag.read_messages(topics=['/basler_stereo/right/image_rect_color/compressed']), i)[1]
+
+        # Find the corresponding (equal time stamp) left camera image message
+        for topic, msg, stamp in bag.read_messages(topics=['/basler_stereo/left/image_rect_color/compressed']):
+            if msg.header.stamp == img_msg[1].header.stamp:
+                img_msg[0] = msg
+                break
+
+        # de-compress images
+        imgs = [cv_bridge.compressed_imgmsg_to_cv2(m) for m in img_msg]
+
+        img_left = imgs[0]  # cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB)
+        img_right = imgs[1]  # cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB)
+
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/img{}_left.png".format(int((i-120+67+67)/2)), img_left)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/img{}_right.png".format(int((i-120+67+67)/2)), img_right)
+
+        # Find PSM1 pose message corresponding (nearest time stamp) to the camera frames
+        psm1_msg = find_nearest_by_stamp(psm1_msgs, img_msg[0].header.stamp)[1]
+
+        # t_base_tcp = np.array([msg2tf(m.pose) for m in psm1_msgs])
+        # t_optical_tcp = np.array([t_optical_base.dot(t) for t in t_base_tcp])
+        t_base_tcp = msg2tf(psm1_msg.pose)
+        t_optical_tcp = t_optical_base.dot(t_base_tcp)
+
+        # print(t_optical_tcp)
+        poses = np.concatenate([np.atleast_3d(poses), np.atleast_3d(t_optical_tcp)], axis=2)
+        # print(poses.shape)
+
+print("Rosbag 4")
+path = '/home/jsteeen/PycharmProjects/MasterThesis/bagfiles/grasp_2019-04-21-00-33-18_0.bag'
 with rosbag.Bag(path) as bag:
     for topic, msg, stamp in bag.read_messages(topics=['/tf']):
         for tf in msg.transforms:
@@ -147,8 +312,8 @@ with rosbag.Bag(path) as bag:
         img_left = imgs[0]  # cv.cvtColor(imgs[0], cv.COLOR_BGR2RGB)
         img_right = imgs[1]  # cv.cvtColor(imgs[1], cv.COLOR_BGR2RGB)
 
-        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/grasp2/img{}_left.png".format(int((i-110)/2)), img_left)
-        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/grasp2/img{}_right.png".format(int((i-110)/2)), img_right)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/img{}_left.png".format(int((i-110+67+67+72)/2)), img_left)
+        cv.imwrite("/home/jsteeen/Pictures/rosbag_pictures/img{}_right.png".format(int((i-110+67+67+72)/2)), img_right)
 
         # Find PSM1 pose message corresponding (nearest time stamp) to the camera frames
         psm1_msg = find_nearest_by_stamp(psm1_msgs, img_msg[0].header.stamp)[1]
@@ -161,7 +326,6 @@ with rosbag.Bag(path) as bag:
         # print(t_optical_tcp)
         poses = np.concatenate([np.atleast_3d(poses), np.atleast_3d(t_optical_tcp)], axis=2)
         # print(poses.shape)
-
 
 poses = np.delete(poses, 0, axis=-1)
 print(poses.shape)
