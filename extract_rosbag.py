@@ -329,7 +329,7 @@ with rosbag.Bag(path) as bag:
 
 poses = np.delete(poses, 0, axis=-1)
 print(poses.shape)
-np.save("/home/jsteeen/Pictures/rosbag_pictures/grasp2/pose_arr.npy", poses)
+np.save("/home/jsteeen/Pictures/rosbag_pictures/pose_arr.npy", poses)
 '''
 print("--------------------- Poses from rosbag ---------------------\n")
 print(poses.shape)
