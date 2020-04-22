@@ -280,7 +280,6 @@ def display(display_list, epoch_display):
     # plt.show()
     plt.close(fig)
 
-
 # Load images
 imgs_train = np.zeros((79, 480, 640, 3))
 print('Loading images...')
