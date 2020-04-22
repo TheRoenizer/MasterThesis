@@ -342,7 +342,7 @@ poses = np.load("/home/jsteeen/Pictures/rosbag_pictures/pose_arr.npy")
 
 print("--------------------- Poses from file ---------------------\n")
 print(poses.shape)
-print(poses[:, :, 0])
+print("Pose:\n" + poses[:, :, 0])
 
 
 print("DONE!")
