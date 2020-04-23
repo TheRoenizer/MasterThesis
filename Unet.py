@@ -383,10 +383,10 @@ lbls_val = lbls_val.reshape((10, 480, 640, -1))
 # print(lbls_train.shape)
 # print(lbls_val.shape)
 
-imgs_train2 = np.zeros((480, 640, 3))
-(unet, name) = unet(imgs_train2.shape, num_classes=1, droprate=0.0, linear=False)
+#imgs_train2 = np.zeros((480, 640, 3))
+#(unet, name) = unet(imgs_train2.shape, num_classes=1, droprate=0.0, linear=False)
 
-unet.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+#unet.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
 
 def create_mask(pred_mask):
@@ -407,7 +407,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         show_predictions(epoch)
         print('\nSample Prediction after epoch {}\n'.format(epoch+1))
 
-
+'''
 epoch = 5
 show_predictions(0)
 
@@ -425,7 +425,7 @@ show_predictions(epoch, 2)
 show_predictions(epoch, 3)
 show_predictions(epoch, 4)
 show_predictions(epoch, 32)
-
+'''
 lbls_test = np.zeros((10, 480, 640))
 for i in range(90, 100):
     # print('Progress: ' + str(i) + ' of 89')
@@ -495,7 +495,7 @@ if train:
 
     # tf.keras.metrics.MeanIoU(num_classes=2)
 
-
+    '''
     def create_mask(pred_mask):
         pred_mask = tf.argmax(pred_mask, axis=-1)
         pred_mask = pred_mask[..., tf.newaxis]
@@ -513,11 +513,10 @@ if train:
             clear_output(wait=True)
             show_predictions(epoch_callback)
             print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
-
+    '''
 
     train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train_onehot))
     val_dataset = tf.data.Dataset.from_tensor_slices((imgs_val, lbls_val_onehot))
-
 
     show_predictions(-1)
     # imgs_train = imgs_train.reshape((79, num_pixels, 3))
