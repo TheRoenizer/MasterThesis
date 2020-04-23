@@ -388,7 +388,7 @@ lbls_val = lbls_val.reshape((10, 480, 640, -1))
 
 #unet.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-
+'''
 def create_mask(pred_mask):
     pred_mask = tf.argmax(pred_mask, axis=-1)
     pred_mask = pred_mask[..., tf.newaxis]
@@ -407,7 +407,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         show_predictions(epoch)
         print('\nSample Prediction after epoch {}\n'.format(epoch+1))
 
-'''
+
 epoch = 5
 show_predictions(0)
 
@@ -495,7 +495,7 @@ if train:
 
     # tf.keras.metrics.MeanIoU(num_classes=2)
 
-    '''
+
     def create_mask(pred_mask):
         pred_mask = tf.argmax(pred_mask, axis=-1)
         pred_mask = pred_mask[..., tf.newaxis]
@@ -513,7 +513,7 @@ if train:
             clear_output(wait=True)
             show_predictions(epoch_callback)
             print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
-    '''
+
 
     train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train_onehot))
     val_dataset = tf.data.Dataset.from_tensor_slices((imgs_val, lbls_val_onehot))
