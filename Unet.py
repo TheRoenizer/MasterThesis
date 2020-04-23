@@ -264,22 +264,6 @@ def unet(input_shape, num_classes=5, droprate=None, linear=False):
     model = Model(inputs=inputs, outputs=conv10)
     return model, model_name
 
-
-def display(display_list, epoch_display):
-    fig = plt.figure(figsize=(15, 15))
-    title = ['Input Image', 'True Mask', 'Predicted Mask after epoch {}'.format(epoch_display + 1)]
-    for i in range(len(display_list)):
-        plt.subplot(1, len(display_list), i + 1)
-        plt.title(title[i])
-        plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
-        # img = tf.keras.preprocessing.image.array_to_img(display_list[i])
-        # img.save("afterEpoch{}.png".format(epoch))
-        plt.axis('off')
-
-    plt.savefig("Pictures/afterEpoch{}.png".format(epoch_display + 1))
-    # plt.show()
-    plt.close(fig)
-
 # Load images
 imgs_train = np.zeros((79, 480, 640, 3))
 print('Loading images...')
@@ -495,6 +479,20 @@ if train:
 
     # tf.keras.metrics.MeanIoU(num_classes=2)
 
+    def display(display_list, epoch_display):
+        fig = plt.figure(figsize=(15, 15))
+        title = ['Input Image', 'True Mask', 'Predicted Mask after epoch {}'.format(epoch_display + 1)]
+        for i in range(len(display_list)):
+            plt.subplot(1, len(display_list), i + 1)
+            plt.title(title[i])
+            plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
+            # img = tf.keras.preprocessing.image.array_to_img(display_list[i])
+            # img.save("afterEpoch{}.png".format(epoch))
+            plt.axis('off')
+
+        plt.savefig("Pictures/afterEpoch{}.png".format(epoch_display + 1))
+        # plt.show()
+        plt.close(fig)
 
     def create_mask(pred_mask):
         pred_mask = tf.argmax(pred_mask, axis=-1)
@@ -515,8 +513,8 @@ if train:
             print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
 
 
-    train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train_onehot))
-    val_dataset = tf.data.Dataset.from_tensor_slices((imgs_val, lbls_val_onehot))
+    train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train))
+    val_dataset = tf.data.Dataset.from_tensor_slices((imgs_val, lbls_val))
 
     show_predictions(-1)
     # imgs_train = imgs_train.reshape((79, num_pixels, 3))
