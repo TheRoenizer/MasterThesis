@@ -36,8 +36,8 @@ history = net.fit([imgs_train,imgs_train],lbls_train,validation_data=[[imgs_val,
 
 """
 
-#PATH = 'C:/Users/chris/Google Drive/'
-PATH = '/home/jsteeen/'
+PATH = 'C:/Users/chris/Google Drive/'
+#PATH = '/home/jsteeen/'
 
 def weighted_categorical_crossentropy(weights=[1]):
     """
@@ -229,6 +229,11 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 batch_size = 1
 num_epochs = 10
 weights = [.5, 1.5, 1.5, 1, 1]
+
+# use tf.data to improve performance
+
+train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train_onehot))
+val_dataset = tf.data.Dataset.from_tensor_slices((imgs_test, lbls_val_onehot))
 
 net.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy'])
 

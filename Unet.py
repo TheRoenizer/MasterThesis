@@ -515,6 +515,10 @@ if train:
             print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
 
 
+    train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train_onehot))
+    val_dataset = tf.data.Dataset.from_tensor_slices((imgs_val, lbls_val_onehot))
+
+
     show_predictions(-1)
     # imgs_train = imgs_train.reshape((79, num_pixels, 3))
     # imgs_val = imgs_val.reshape((10, num_pixels, 3))
@@ -523,7 +527,7 @@ if train:
     # print(imgs_train.shape)
     # print(lbls_val_onehot.shape)
     # print(imgs_val.shape)
-    model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
+    model_history = unet.fit(train_dataset, validation_data=[val_dataset],
                              batch_size=1,
                              epochs=epoch,
                              verbose=1,
@@ -621,7 +625,7 @@ elif not train:
                      metrics=['accuracy', iou_coef, dice_coef])
     else:
         print('No loss function')
-
+'''
 # Evaluate loaded model
 print('\n# Evaluate on test data')
 start_time = time.time()
@@ -639,3 +643,4 @@ results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
+'''
