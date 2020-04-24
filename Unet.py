@@ -528,7 +528,7 @@ if train:
     # print(imgs_train.shape)
     # print(lbls_val_onehot.shape)
     # print(imgs_val.shape)
-    model_history = unet.fit(train_dataset, validation_data=val_dataset,
+    unet.fit(train_dataset, validation_data=val_dataset,
                              epochs=epoch)
     #                         verbose=1,
     #                         shuffle=True,
