@@ -23,7 +23,8 @@ from IPython.display import clear_output
 import time
 
 try:
-    from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape, concatenate
+    from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape, \
+        concatenate, ZeroPadding2D, Cropping2D
     from keras.models import Model, load_model
 except:
     from tensorflow.keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
@@ -33,25 +34,32 @@ config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
-# Christoffer:
-# PATH = 'C:/Users/chris/Google Drive/'
-# Linux:
-PATH = '/home/jsteeen/'
-
+which_path = 2 # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 100
 #num_pixels = 480 * 640
 weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
 
+if which_path == 1:
+    # Christoffer:
+    PATH = 'C:/Users/chris/Google Drive/'
+elif which_path == 2:
+    # Linux:
+    PATH = '/home/jsteeen/'
 
 def deep_unet(input_shape, num_classes=5, droprate=None, linear=False):
     model_name = 'deep_unet'
     inputs = Input(shape=input_shape)
 
+    # add zero padding such to the height so it is divisible by 128 (2*7)
+    x = ZeroPadding2D((16, 0))(inputs)
+    #print("inputs: " + str(inputs.shape))
+    #print("x: "+str(x.shape))
+
     # Down pooling stage
     # 1. down
     #conv1_0 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(inputs)
-    conv1_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(inputs)
+    conv1_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(x)
     conv1_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv1_1)
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1_2)
 
@@ -93,76 +101,84 @@ def deep_unet(input_shape, num_classes=5, droprate=None, linear=False):
 
     # Up sampling stage
     # 1. up
-    # no concat in beginning of first layer due to no conv/filters
+    # no concat in beginning of first block due to no conv/filters
     conv8_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool7)
     conv8_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv8_1)
     y8 = add([pool7, conv8_2])
     up1 = UpSampling2D(size=(2, 2))(y8)
 
+    '''
+    print("conv1_2: " + str(conv1_2.shape))
+    print("conv2_2: " + str(conv2_2.shape))
+    print("conv3_2: " + str(conv3_2.shape))
+    print("conv4_2: " + str(conv4_2.shape))
+    print("conv5_2: " + str(conv5_2.shape))
+    print("conv6_2: " + str(conv6_2.shape))
+    print("conv7_2: " + str(conv7_2.shape))
+    print("conv8_2: " + str(conv8_2.shape))
+    print("pool1: " + str(pool1.shape))
+    print("pool2: " + str(pool2.shape))
+    print("pool3: " + str(pool3.shape))
+    print("pool4: " + str(pool4.shape))
+    print("pool5: " + str(pool5.shape))
     print("pool6: " + str(pool6.shape))
     print("up1: " +  str(up1.shape))
+    print("y2: " + str(y2.shape))
+    print("y3: " + str(y3.shape))
+    print("y4: " + str(y4.shape))
+    print("y5: " + str(y5.shape))
+    print("y6: " + str(y6.shape))
+    print("y7: " + str(y7.shape))
+    print("y8: " + str(y8.shape))
+    '''
 
-    concat1 = concatenate([pool6, up1], axis=-1)
-
-    up2 = UpSampling2D(size=(2, 2))(y8)
-    add2 = add([y6, up2])
-    conv9_1 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(add2)
+    # 2. up
+    concat2 = concatenate([pool6, up1], axis=-1)
+    conv9_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(concat2)
     conv9_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9_1)
-    y9 = conv9_2 * tf.keras.activations.relu(conv9_2, alpha=0.0, max_value=None, threshold=0)(conv9_1 * y8) + y8
+    y9 = add([pool6, conv9_2])
+    up2 = UpSampling2D(size=(2, 2))(y9)
 
-    up3 = UpSampling2D(size=(2, 2))(y9)
-    add3 = add([y5, up3])
-    conv10_1 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(add3)
+    # 3. up
+    concat3 = concatenate([pool5, up2], axis=-1)
+    conv10_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(concat3)
     conv10_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv10_1)
-    y10 = conv10_2 * tf.keras.activations.relu(conv10_2, alpha=0.0, max_value=None, threshold=0)(conv10_1 * y9) + y9
+    y10 = add([pool5, conv10_2])
+    up3 = UpSampling2D(size=(2, 2))(y10)
 
-    up4 = UpSampling2D(size=(2, 2))(y10)
-    add4 = add([y4, up4])
-    conv11_1 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(add4)
+    # 4. up
+    concat4 = concatenate([pool4, up3], axis=-1)
+    conv11_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(concat4)
     conv11_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv11_1)
-    y11 = conv11_2 * tf.keras.activations.relu(conv11_2, alpha=0.0, max_value=None, threshold=0)(conv11_1 * y10) + y10
+    y11 = add([pool4, conv11_2])
+    up4 = UpSampling2D(size=(2, 2))(y11)
 
-    up5 = UpSampling2D(size=(2, 2))(y11)
-    add5 = add([y3, up5])
-    conv12_1 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(add5)
+    # 5. up
+    concat5 = concatenate([pool3, up4], axis=-1)
+    conv12_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(concat5)
     conv12_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv12_1)
-    y12 = conv12_2 * tf.keras.activations.relu(conv12_2, alpha=0.0, max_value=None, threshold=0)(conv12_1 * y11) + y11
+    y12 = add([pool3, conv12_2])
+    up5 = UpSampling2D(size=(2, 2))(y12)
 
-    up6 = UpSampling2D(size=(2, 2))(y12)
-    add6 = add([y2, up6])
-    conv13_1 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(add6)
+    # 6. up
+    concat6 = concatenate([pool2, up5], axis=-1)
+    conv13_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(concat6)
     conv13_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv13_1)
-    y13 = conv13_2 * tf.keras.activations.relu(conv13_2, alpha=0.0, max_value=None, threshold=0)(conv13_1 * y12) + y12
+    y13 = add([pool2, conv13_2])
+    up6 = UpSampling2D(size=(2, 2))(y13)
 
-    up7 = UpSampling2D(size=(2, 2))(y13)
-    add7 = add([y1, up7])
-    conv14_1 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(add7)
+    # 7. up
+    concat7 = concatenate([pool1, up6], axis=-1)
+    conv14_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(concat7)
     conv14_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv14_1)
-    y14 = conv14_2 * tf.keras.activations.relu(conv14_2, alpha=0.0, max_value=None, threshold=0)(conv14_1 * y13) + y13
+    y14 = add([pool1, conv14_2])
+    up7 = UpSampling2D(size=(2, 2))(y14)
 
-    conv_final = Conv2D(num_classes, 1, activation='softmax')(y14)
+    conv_final = Conv2D(num_classes, 1, activation='softmax')(up7)
+    x = Cropping2D((16, 0))(conv_final)
 
-    model = Model(inputs=inputs, outputs=conv_final)
+    model = Model(inputs=inputs, outputs=x)
     return model, model_name
-
-'''
-def down_block(i, inputs1):
-    conv1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(inputs1)
-    conv2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv1)
-    y = conv2 * tf.keras.activations.relu(conv2, alpha=0.0, max_value=None, threshold=0)(conv1 * inputs1) + inputs1
-    pool1 = MaxPooling2D(pool_size=(2, 2))(y)
-    return pool, y
-
-
-def up_block(inputs1):
-    up1 = UpSampling2D(size=(2, 2))(inputs1)
-    add1 = add([y7, up1])
-    conv1 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(up1)
-    conv2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv1)
-    y = conv2 * tf.keras.activations.relu(conv2, alpha=0.0, max_value=None, threshold=0)(conv1 * pool) + pool
-
-    return conv1
-'''
 
 def weighted_categorical_crossentropy(weights=[1]):
     """
@@ -200,7 +216,7 @@ def display(display_list, epoch_display):
         plt.title(title[i])
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
         plt.axis('off')
-    plt.savefig("Pictures/afterEpoch{}.png".format(epoch_display + 1))
+    plt.savefig("Pictures_DeepUnet/afterEpoch{}.png".format(epoch_display + 1))
     # plt.show()
     plt.close(fig)
 
