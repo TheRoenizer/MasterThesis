@@ -1,3 +1,16 @@
+import os
+
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+
+# Hvis du vil bruge "kort 1":
+#os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
+# ellers:
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
+# hvis du træne på CPU'en:
+#os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
 from tensorflow.compat.v1 import ConfigProto
 from tensorflow.compat.v1 import InteractiveSession
 import tensorflow as tf
@@ -5,7 +18,6 @@ from keras import backend as K
 import numpy as np
 from PIL import Image
 import cv2 as cv
-import os
 import matplotlib.pyplot as plt
 from IPython.display import clear_output
 import time
