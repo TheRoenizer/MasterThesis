@@ -516,6 +516,10 @@ if train:
     train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train))
     val_dataset = tf.data.Dataset.from_tensor_slices((imgs_val, lbls_val))
 
+    # Slice the dataset
+    train_dataset = train_dataset.batch(1)
+    val_dataset = val_dataset.batch(1)
+
     show_predictions(-1)
     # imgs_train = imgs_train.reshape((79, num_pixels, 3))
     # imgs_val = imgs_val.reshape((10, num_pixels, 3))
@@ -524,8 +528,7 @@ if train:
     # print(imgs_train.shape)
     # print(lbls_val_onehot.shape)
     # print(imgs_val.shape)
-    model_history = unet.fit(train_dataset, validation_data=[val_dataset],
-                             batch_size=1,
+    model_history = unet.fit(train_dataset, validation_data=val_dataset,
                              epochs=epoch,
                              verbose=1,
                              shuffle=True,
