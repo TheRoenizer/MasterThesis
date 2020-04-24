@@ -98,6 +98,10 @@ def deep_unet(input_shape, num_classes=5, droprate=None, linear=False):
     conv8_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv8_1)
     y8 = add([pool7, conv8_2])
     up1 = UpSampling2D(size=(2, 2))(y8)
+
+    print("pool6: " + str(pool6.shape))
+    print("up1: " +  str(up1.shape))
+
     concat1 = concatenate([pool6, up1], axis=-1)
 
     up2 = UpSampling2D(size=(2, 2))(y8)
