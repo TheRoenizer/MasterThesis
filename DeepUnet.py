@@ -11,7 +11,7 @@ from IPython.display import clear_output
 import time
 
 try:
-    from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
+    from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape, concatenate
     from keras.models import Model, load_model
 except:
     from tensorflow.keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
@@ -37,51 +37,56 @@ def deep_unet(input_shape, num_classes=5, droprate=None, linear=False):
     inputs = Input(shape=input_shape)
 
     # Down pooling stage
+    # 1. down
     conv1_0 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(inputs)
     conv1_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv1_0)
     conv1_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv1_1)
-    #y1 = conv1_2*tf.keras.activations.relu(conv1_1*conv1_0, alpha = 0.0, max_value = None, threshold = 0) + conv1_0
-    y1 = add([conv1_2, conv1_0])
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1_2)
-    print(pool1.shape)
 
+    # 2. down
     conv2_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool1)
     conv2_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv2_1)
-
-    y2 = conv2_2 * tf.keras.activations.relu(conv2_2, alpha=0.0, max_value=None, threshold=0)(conv2_1 * pool1) + pool1
+    y2 = add([pool1, conv2_2])
     pool2 = MaxPooling2D(pool_size=(2, 2))(y2)
 
+    # 3. down
     conv3_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool2)
     conv3_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv3_1)
-    y3 = conv3_2 * tf.keras.activations.relu(conv3_2, alpha=0.0, max_value=None, threshold=0)(conv3_1 * pool2) + pool2
+    y3 = add([pool2, conv3_2])
     pool3 = MaxPooling2D(pool_size=(2, 2))(y3)
 
+    # 4. down
     conv4_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool3)
     conv4_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv4_1)
-    y4 = conv4_2 * tf.keras.activations.relu(conv4_2, alpha=0.0, max_value=None, threshold=0)(conv4_1 * pool3) + pool3
+    y4 = add([pool3, conv4_2])
     pool4 = MaxPooling2D(pool_size=(2, 2))(y4)
 
+    # 4. down
     conv5_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool4)
     conv5_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv5_1)
-    y5 = conv5_2 * tf.keras.activations.relu(conv5_2, alpha=0.0, max_value=None, threshold=0)(conv5_1 * pool4) + pool4
+    y5 = add([pool4, conv5_2])
     pool5 = MaxPooling2D(pool_size=(2, 2))(y5)
 
+    # 6. down
     conv6_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool5)
     conv6_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv6_1)
-    y6 = conv6_2 * tf.keras.activations.relu(conv6_2, alpha=0.0, max_value=None, threshold=0)(conv6_1 * pool5) + pool5
+    y6 = add([pool5, conv6_2])
     pool6 = MaxPooling2D(pool_size=(2, 2))(y6)
 
+    # 7. down
     conv7_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool6)
     conv7_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv7_1)
-    y7 = conv7_2 * tf.keras.activations.relu(conv7_2, alpha=0.0, max_value=None, threshold=0)(conv7_1 * pool6) + pool6
+    y7 = add([pool6, conv7_2])
     pool7 = MaxPooling2D(pool_size=(2, 2))(y7)
 
     # Up sampling stage
-    up1 = UpSampling2D(size=(2, 2))(pool7)
-    add1 = add([y7, up1])
-    conv8_1 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(add1)
+    # 1. up
+    # no concat in beginning of first layer due to no conv/filters
+    conv8_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool7)
     conv8_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv8_1)
-    y8 = conv8_2 * tf.keras.activations.relu(conv8_2, alpha=0.0, max_value=None, threshold=0)(conv8_1 * pool7) + pool7
+    y8 = add([pool7, conv8_2])
+    up1 = UpSampling2D(size=(2, 2))(y8)
+    concat1 = concatenate([pool6, up1], axis=-1)
 
     up2 = UpSampling2D(size=(2, 2))(y8)
     add2 = add([y6, up2])
