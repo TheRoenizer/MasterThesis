@@ -34,9 +34,9 @@ config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
 # Christoffer:
-PATH = 'C:/Users/chris/Google Drive/'
+# PATH = 'C:/Users/chris/Google Drive/'
 # Linux:
-#PATH = '/home/jsteeen/'
+PATH = '/home/jsteeen/'
 
 batch_size = 1
 num_epochs = 100
