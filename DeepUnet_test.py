@@ -200,7 +200,7 @@ show_predictions(-1)
 model_history = deep_unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
                   batch_size=batch_size,
                   epochs=num_epochs,
-                  verbose=0,
+                  verbose=2,
                   shuffle=True,
                   callbacks=[DisplayCallback()])
 
