@@ -200,7 +200,7 @@ show_predictions(-1)
 model_history = deep_unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
                   batch_size=batch_size,
                   epochs=num_epochs,
-                  verbose=1,
+                  verbose=0,
                   shuffle=True,
                   callbacks=[DisplayCallback()])
 
@@ -225,7 +225,7 @@ f.write("\ndice_coef: " + str(dice_metric))
 f.write("\nval_dice_coef: " + str(val_dice_coef))
 f.close()
 
-epochs = range(epoch)
+epochs = range(num_epochs)
 
 # Plot statistics
 graph = plt.figure()
