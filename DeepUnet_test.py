@@ -20,7 +20,7 @@ session = InteractiveSession(config=config)
 from DeepUnet import *
 from Loss_functions import *
 
-which_path = 1 # 1 = local, 2 = remote
+which_path = 2 # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 100
 #num_pixels = 480 * 640
