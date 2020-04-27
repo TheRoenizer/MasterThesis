@@ -21,14 +21,7 @@ print('Tensorflow version: '+tf.__version__)
 print('Numpy version: '+np.__version__)
 print('Keras version: '+tf.keras.__version__)
 
-# Christoffer:
-# PATH = 'C:/Users/chris/Google Drive/'
-# Jonathan:
-# PATH = '/Users/jonathansteen/Google Drive/'
-# Linux:
-PATH = '/home/jsteeen/'
-# PATH = '/home/croen/'
-
+which_path = 3
 train = True
 epoch = 100
 num_pixels = 480 * 640
@@ -40,6 +33,16 @@ Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss,
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
 TL_beta = 3         # Tversky loss beta
+
+if which_path == 1:
+    # Christoffer:
+    PATH = 'C:/Users/chris/Google Drive/'
+elif which_path ==2:
+    # Jonathan
+    PATH = '/Users/jonathansteen/Google Drive/'
+elif which_path == 3:
+    # Linux:
+    PATH = '/home/jsteeen/'
 
 # Functions used to display images after each epoch
 def display(display_list, epoch_display):

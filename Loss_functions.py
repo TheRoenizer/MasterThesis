@@ -1,4 +1,5 @@
 from keras import backend as K
+import tensorflow as tf
 
 def categorical_focal_loss(gamma=2., alpha=.25):
     """

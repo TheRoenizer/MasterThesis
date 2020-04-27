@@ -203,3 +203,5 @@ history = deep_unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val
                   verbose=1,
                   shuffle=True,
                   callbacks=[DisplayCallback()])
+
+
