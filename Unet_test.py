@@ -273,12 +273,17 @@ if train:
     # print(imgs_train.shape)
     # print(lbls_val_onehot.shape)
     # print(imgs_val.shape)
-    model_history = unet.fit(train_dataset, epochs=epoch)
-    #                         validation_data=val_dataset
-    #                         verbose=1,
-    #                         shuffle=True,
-    #                         callbacks=[DisplayCallback()])
-    #                         sample_weight=sample_weight)
+    #model_history = unet.fit(train_dataset, epochs=epoch)
+
+
+
+    model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
+                             batch_size = 1,
+                             epochs=epoch,
+                             verbose=1,
+                             shuffle=True,
+                             callbacks=[DisplayCallback()])
+                             #sample_weight=sample_weight)
 
     show_predictions(101, 2)
     show_predictions(102, 3)
