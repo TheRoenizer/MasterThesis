@@ -222,8 +222,8 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 if train:
 # use tf.data to improve performance
 
-    train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train_onehot))
-    val_dataset = tf.data.Dataset.from_tensor_slices((imgs_test, lbls_val_onehot))
+    #train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train_onehot))
+    #val_dataset = tf.data.Dataset.from_tensor_slices((imgs_test, lbls_val_onehot))
 
     net.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy'])
 
