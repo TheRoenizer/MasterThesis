@@ -21,7 +21,7 @@ print('Tensorflow version: '+tf.__version__)
 print('Numpy version: '+np.__version__)
 print('Keras version: '+tf.keras.__version__)
 
-which_path = 3
+which_path = 3 # 1 = local c, 2 = local j, 3 = remote
 train = True
 epoch = 100
 num_pixels = 480 * 640
@@ -262,7 +262,7 @@ if train:
     val_dataset = tf.data.Dataset.from_tensor_slices((imgs_val, lbls_val))
 
     # Slice the dataset
-    train_dataset = train_dataset.batch(1)
+    train_dataset = train_dataset.shuffle(100).batch(1)
     val_dataset = val_dataset.batch(1)
 
     show_predictions(-1)
