@@ -12,7 +12,7 @@ except:
     from tensorflow.keras.layers import Input, Flatten, Dense
     from tensorflow.keras.models import Model, load_model
 
-which_path = 2
+which_path = 3
 
 if which_path == 1:
     # Christoffer:
@@ -214,17 +214,8 @@ h1 = Dense(50, activation='relu')(x)
 '''
 poses = np.load(PATH + "rosbag_annotations/pose_arr.npy")
 
-print("--------------------- Poses from file ---------------------\n")
+print("--------------------- Poses from file ---------------------")
 print(poses.shape)
-print("Pose:\n")
 
-annotated_pose = np.zeros((4, 4))
-for i in range(0, 50):
-    annotated_pose = np.concatenate([np.atleast_3d(annotated_pose), np.atleast_3d(poses[:, :, i])], axis=2)
-for i in range(122, 152):
-    annotated_pose = np.concatenate([np.atleast_3d(annotated_pose), np.atleast_3d(poses[:, :, i])], axis=2)
-
-print(annotated_pose.shape)
-print(annotated_pose[:, :, 50])
 
 print("DONE!")
