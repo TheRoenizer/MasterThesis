@@ -20,9 +20,7 @@ session = InteractiveSession(config=config)
 from DeepUnet import *
 from Loss_functions import *
 
-print(deep_unet.summary())
-
-train = False
+train = True
 which_path = 2 # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 100
@@ -196,6 +194,8 @@ print('Labels loaded!')
 if train:
     imgs_train2 = np.zeros((480, 640, 3))
     (deep_unet, name) = deep_unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
+
+    deep_unet.summary()
 
     deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
 
