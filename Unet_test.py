@@ -10,6 +10,17 @@ import matplotlib.pyplot as plt
 from IPython.display import clear_output
 import time
 
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+
+# Hvis du vil bruge "kort 1":
+#os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
+# ellers:
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
+# hvis du træne på CPU'en:
+#os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
 config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
