@@ -5,10 +5,10 @@ from tensorflow.compat.v1 import InteractiveSession
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 
 # Hvis du vil bruge "kort 1":
-#os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 # ellers:
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+#os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 # hvis du træne på CPU'en:
 #os.environ["CUDA_VISIBLE_DEVICES"] = ""
@@ -20,6 +20,7 @@ session = InteractiveSession(config=config)
 from DeepUnet import *
 from Loss_functions import *
 
+train = True
 which_path = 2 # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 100
@@ -190,55 +191,67 @@ lbls_test = lbls_test.reshape((10, 480, 640, -1))
 
 print('Labels loaded!')
 
-imgs_train2 = np.zeros((480, 640, 3))
-(deep_unet, name) = deep_unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
+if train:
+    imgs_train2 = np.zeros((480, 640, 3))
+    (deep_unet, name) = deep_unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
 
-deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
+    deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
 
-show_predictions(-1)
+    show_predictions(-1)
 
-model_history = deep_unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
-                  batch_size=batch_size,
-                  epochs=num_epochs,
-                  verbose=2,
-                  shuffle=True,
-                  callbacks=[DisplayCallback()])
+    model_history = deep_unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
+                      batch_size=batch_size,
+                      epochs=num_epochs,
+                      verbose=2,
+                      shuffle=True,
+                      callbacks=[DisplayCallback()])
 
-loss = model_history.history['loss']
-val_loss = model_history.history['val_loss']
-accuracy = model_history.history['accuracy']
-val_accuracy = model_history.history['val_accuracy']
-iou_metric = model_history.history['iou_coef']
-val_iou_metric = model_history.history['val_iou_coef']
-dice_metric = model_history.history['dice_coef']
-val_dice_coef = model_history.history['val_dice_coef']
+    loss = model_history.history['loss']
+    val_loss = model_history.history['val_loss']
+    accuracy = model_history.history['accuracy']
+    val_accuracy = model_history.history['val_accuracy']
+    iou_metric = model_history.history['iou_coef']
+    val_iou_metric = model_history.history['val_iou_coef']
+    dice_metric = model_history.history['dice_coef']
+    val_dice_coef = model_history.history['val_dice_coef']
 
-# Save metric data to file
-f = open("Pictures_DeepUnet/Metrics.txt", "w+")
-f.write("loss" + str(loss))
-f.write("\nval_loss: " + str(val_loss))
-f.write("\naccuracy: " + str(accuracy))
-f.write("\nval_accuracy: " + str(val_accuracy))
-f.write("\niou_coef: " + str(iou_metric))
-f.write("\nval_iou_coef: " + str(val_iou_metric))
-f.write("\ndice_coef: " + str(dice_metric))
-f.write("\nval_dice_coef: " + str(val_dice_coef))
-f.close()
+    # Save metric data to file
+    f = open("Pictures_DeepUnet/Metrics.txt", "w+")
+    f.write("loss" + str(loss))
+    f.write("\nval_loss: " + str(val_loss))
+    f.write("\naccuracy: " + str(accuracy))
+    f.write("\nval_accuracy: " + str(val_accuracy))
+    f.write("\niou_coef: " + str(iou_metric))
+    f.write("\nval_iou_coef: " + str(val_iou_metric))
+    f.write("\ndice_coef: " + str(dice_metric))
+    f.write("\nval_dice_coef: " + str(val_dice_coef))
+    f.close()
 
-epochs = range(num_epochs)
+    epochs = range(num_epochs)
 
-# Plot statistics
-graph = plt.figure()
-plt.plot(epochs, loss, 'r', label='Training loss')
-plt.plot(epochs, val_loss, 'bo', label='Validation loss')
-plt.title('Training and Validation Loss')
-plt.xlabel('Epoch')
-plt.ylabel('Loss Value')
-plt.legend()
-plt.savefig('Pictures_DeepUnet/Training and Validation Loss')
-plt.show()
-plt.close(graph)
+    # Plot statistics
+    graph = plt.figure()
+    plt.plot(epochs, loss, 'r', label='Training loss')
+    plt.plot(epochs, val_loss, 'bo', label='Validation loss')
+    plt.title('Training and Validation Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss Value')
+    plt.legend()
+    plt.savefig('Pictures_DeepUnet/Training and Validation Loss')
+    plt.show()
+    plt.close(graph)
 
+    deep_unet.save('deep_unet_model.h5')
+    print("Saved model to disk")
+
+elif not train:
+    # Load model from file
+    deep_unet = load_model('deep_unet_model.h5', compile=False)
+
+    #compile saved model
+    deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
+
+#evaluate loaded model
 print('\n# Evaluate on test data')
 start_time = time.time()
 results = deep_unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
