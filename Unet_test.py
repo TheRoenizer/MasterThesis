@@ -33,7 +33,7 @@ print('Numpy version: '+np.__version__)
 print('Keras version: '+tf.keras.__version__)
 
 which_path = 3 # 1 = local c, 2 = local j, 3 = remote
-train = True
+train = False
 epoch = 100
 num_pixels = 480 * 640
 weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
@@ -387,7 +387,7 @@ elif not train:
     else:
         print('No loss function')
 
-'''
+
 # Evaluate loaded model
 print('\n# Evaluate on test data')
 start_time = time.time()
@@ -405,4 +405,24 @@ results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
-'''
+
+print('\n# Evaluate on test data 3')
+start_time = time.time()
+results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
+stop_time = time.time()
+print("--- %s seconds ---" % (stop_time - start_time))
+print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
+
+print('\n# Evaluate on test data 4')
+start_time = time.time()
+results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
+stop_time = time.time()
+print("--- %s seconds ---" % (stop_time - start_time))
+print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
+
+print('\n# Evaluate on test data 5')
+start_time = time.time()
+results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
+stop_time = time.time()
+print("--- %s seconds ---" % (stop_time - start_time))
+print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
