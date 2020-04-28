@@ -12,18 +12,18 @@ except:
     from tensorflow.keras.layers import Input, Flatten, Dense
     from tensorflow.keras.models import Model, load_model
 
-which_path = 3
+which_path = 2
 
 if which_path == 1:
     # Christoffer:
     PATH = 'C:/Users/chris/Google Drive/Master Thesis/'
 elif which_path == 2:
-    # Jonathan
+    # Jonathan:
     PATH = '/Users/jonathansteen/Google Drive/Master Thesis/'
 elif which_path == 3:
     # Linux:
     PATH = '/home/jsteeen/'
-'''
+
 # Load images
 print("Loading images...")
 # Train images
@@ -121,8 +121,8 @@ for i in range(0, 64):
     lbls_train_right[i] = lbl_right
 
 # Validation labels
-lbls_val_left = np.zeros((64, 800, 1280))
-lbls_val_right = np.zeros((64, 800, 1280))
+lbls_val_left = np.zeros((8, 800, 1280))
+lbls_val_right = np.zeros((8, 800, 1280))
 for i in range(64, 72):
     # Left
     path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
@@ -163,8 +163,8 @@ for i in range(64, 72):
     lbls_val_right[i-64] = lbl_right
 
 # Test labels
-lbls_test_left = np.zeros((64, 800, 1280))
-lbls_test_right = np.zeros((64, 800, 1280))
+lbls_test_left = np.zeros((8, 800, 1280))
+lbls_test_right = np.zeros((8, 800, 1280))
 for i in range(72, 80):
     # Left
     path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
@@ -206,16 +206,11 @@ for i in range(72, 80):
 
 print("Labels loaded!")
 
-
-
-inputs = Input(shape=(1280, 800, 3))
-x = Flatten()(inputs)
-h1 = Dense(50, activation='relu')(x)
-'''
 poses = np.load(PATH + "rosbag_annotations/pose_arr.npy")
 
-print("--------------------- Poses from file ---------------------")
-print(poses.shape)
+inputs = Input(shape=(800, 1280))
+x = Flatten()(inputs)
+h1 = Dense(50, activation='relu')(x)
 
 
 print("DONE!")
