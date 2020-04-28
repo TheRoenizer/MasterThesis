@@ -5,7 +5,14 @@ from keras.layers import Dense
 from PIL import Image
 import cv2 as cv
 
-which_path = 3
+try:
+    from keras.layers import Input, Flatten, Dense
+    from keras.models import Model, load_model
+except:
+    from tensorflow.keras.layers import Input, Flatten, Dense
+    from tensorflow.keras.models import Model, load_model
+
+which_path = 2
 
 if which_path == 1:
     # Christoffer:
@@ -16,15 +23,15 @@ elif which_path == 2:
 elif which_path == 3:
     # Linux:
     PATH = '/home/jsteeen/'
-
+'''
 # Load images
 print("Loading images...")
 # Train images
-imgs_train_left = np.zeros((64, 1280, 800, 3))
-imgs_train_right = np.zeros((64, 1280, 800, 3))
+imgs_train_left = np.zeros((64, 800, 1280, 3))
+imgs_train_right = np.zeros((64, 800, 1280, 3))
 for i in range(0, 64):
-    path_left = PATH + 'rosbag_annotations/img('+str(i)+')_left/data/002.png'
-    path_right = PATH + 'rosbag_annotations/img('+str(i)+')_right/data/002.png'
+    path_left = PATH + 'rosbag_annotations/img'+str(i)+'_left/data/002.png'
+    path_right = PATH + 'rosbag_annotations/img'+str(i)+'_right/data/002.png'
 
     img_left = np.array(Image.open(path_left))[np.newaxis]
     img_right = np.array(Image.open(path_right))[np.newaxis]
@@ -36,11 +43,11 @@ for i in range(0, 64):
     imgs_train_right[i] = img_right
 
 # Validation images
-imgs_val_left = np.zeros((8, 1280, 800, 3))
-imgs_val_right = np.zeros((8, 1280, 800, 3))
+imgs_val_left = np.zeros((8, 800, 1280, 3))
+imgs_val_right = np.zeros((8, 800, 1280, 3))
 for i in range(64, 72):
-    path_left = PATH + 'rosbag_annotations/img(' + str(i) + ')_left/data/002.png'
-    path_right = PATH + 'rosbag_annotations/img(' + str(i) + ')_right/data/002.png'
+    path_left = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/002.png'
+    path_right = PATH + 'rosbag_annotations/img' + str(i) + '_right/data/002.png'
 
     img_left = np.array(Image.open(path_left))[np.newaxis]
     img_right = np.array(Image.open(path_right))[np.newaxis]
@@ -48,15 +55,15 @@ for i in range(64, 72):
     img_left = img_left / 255
     img_right = img_right / 255
 
-    imgs_val_left[i] = img_left
-    imgs_val_right[i] = img_right
+    imgs_val_left[i-64] = img_left
+    imgs_val_right[i-64] = img_right
 
 # Test images
-imgs_test_left = np.zeros((8, 1280, 800, 3))
-imgs_test_right = np.zeros((8, 1280, 800, 3))
+imgs_test_left = np.zeros((8, 800, 1280, 3))
+imgs_test_right = np.zeros((8, 800, 1280, 3))
 for i in range(72, 80):
-    path_left = PATH + 'rosbag_annotations/img(' + str(i) + ')_left/data/002.png'
-    path_right = PATH + 'rosbag_annotations/img(' + str(i) + ')_right/data/002.png'
+    path_left = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/002.png'
+    path_right = PATH + 'rosbag_annotations/img' + str(i) + '_right/data/002.png'
 
     img_left = np.array(Image.open(path_left))[np.newaxis]
     img_right = np.array(Image.open(path_right))[np.newaxis]
@@ -64,20 +71,20 @@ for i in range(72, 80):
     img_left = img_left / 255
     img_right = img_right / 255
 
-    imgs_test_left[i] = img_left
-    imgs_test_right[i] = img_right
+    imgs_test_left[i-72] = img_left
+    imgs_test_right[i-72] = img_right
 
 print("Images loaded!")
 
 # Load labels
 print("Loading labels...")
 # Train labels
-lbls_train_left = np.zeros((64, 1280, 800))
-lbls_train_right = np.zeros((64, 1280, 800))
+lbls_train_left = np.zeros((64, 800, 1280))
+lbls_train_right = np.zeros((64, 800, 1280))
 for i in range(0, 64):
     # Left
-    path_left1 = PATH + 'rosbag_annotations/img(' + str(i) + ')_left/data/000.png'
-    path_left2 = PATH + 'rosbag_annotations/img(' + str(i) + ')_left/data/001.png'
+    path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
+    path_left2 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/001.png'
 
     lbl_left1 = cv.imread(path_left1, 2)
     lbl_left2 = cv.imread(path_left2, 2)
@@ -95,8 +102,8 @@ for i in range(0, 64):
     lbls_train_left[i] = lbl_left
 
     # Right
-    path_right1 = PATH + 'rosbag_annotations/img(' + str(i) + ')_right/data/000.png'
-    path_right2 = PATH + 'rosbag_annotations/img(' + str(i) + ')_right/data/001.png'
+    path_right1 = PATH + 'rosbag_annotations/img' + str(i) + '_right/data/000.png'
+    path_right2 = PATH + 'rosbag_annotations/img' + str(i) + '_right/data/001.png'
 
     lbl_right1 = cv.imread(path_right1, 2)
     lbl_right2 = cv.imread(path_right2, 2)
@@ -114,12 +121,12 @@ for i in range(0, 64):
     lbls_train_right[i] = lbl_right
 
 # Validation labels
-lbls_val_left = np.zeros((64, 1280, 800))
-lbls_val_right = np.zeros((64, 1280, 800))
+lbls_val_left = np.zeros((64, 800, 1280))
+lbls_val_right = np.zeros((64, 800, 1280))
 for i in range(64, 72):
     # Left
-    path_left1 = PATH + 'rosbag_annotations/img(' + str(i) + ')_left/data/000.png'
-    path_left2 = PATH + 'rosbag_annotations/img(' + str(i) + ')_left/data/001.png'
+    path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
+    path_left2 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/001.png'
 
     lbl_left1 = cv.imread(path_left1, 2)
     lbl_left2 = cv.imread(path_left2, 2)
@@ -134,11 +141,11 @@ for i in range(64, 72):
 
     change_left_overlap = np.where(lbl_left[:, :] == 3)
     lbl_left[change_left_overlap] = 0
-    lbls_val_left[i] = lbl_left
+    lbls_val_left[i-64] = lbl_left
 
     # Right
-    path_right1 = PATH + 'rosbag_annotations/img(' + str(i) + ')_right/data/000.png'
-    path_right2 = PATH + 'rosbag_annotations/img(' + str(i) + ')_right/data/001.png'
+    path_right1 = PATH + 'rosbag_annotations/img' + str(i) + '_right/data/000.png'
+    path_right2 = PATH + 'rosbag_annotations/img' + str(i) + '_right/data/001.png'
 
     lbl_right1 = cv.imread(path_right1, 2)
     lbl_right2 = cv.imread(path_right2, 2)
@@ -153,15 +160,15 @@ for i in range(64, 72):
 
     change_right_overlap = np.where(lbl_right[:, :] == 3)
     lbl_right[change_right_overlap] = 0
-    lbls_val_right[i] = lbl_right
+    lbls_val_right[i-64] = lbl_right
 
 # Test labels
-lbls_test_left = np.zeros((64, 1280, 800))
-lbls_test_right = np.zeros((64, 1280, 800))
+lbls_test_left = np.zeros((64, 800, 1280))
+lbls_test_right = np.zeros((64, 800, 1280))
 for i in range(72, 80):
     # Left
-    path_left1 = PATH + 'rosbag_annotations/img(' + str(i) + ')_left/data/000.png'
-    path_left2 = PATH + 'rosbag_annotations/img(' + str(i) + ')_left/data/001.png'
+    path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
+    path_left2 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/001.png'
 
     lbl_left1 = cv.imread(path_left1, 2)
     lbl_left2 = cv.imread(path_left2, 2)
@@ -176,11 +183,11 @@ for i in range(72, 80):
 
     change_left_overlap = np.where(lbl_left[:, :] == 3)
     lbl_left[change_left_overlap] = 0
-    lbls_test_left[i] = lbl_left
+    lbls_test_left[i-72] = lbl_left
 
     # Right
-    path_right1 = PATH + 'rosbag_annotations/img(' + str(i) + ')_right/data/000.png'
-    path_right2 = PATH + 'rosbag_annotations/img(' + str(i) + ')_right/data/001.png'
+    path_right1 = PATH + 'rosbag_annotations/img' + str(i) + '_right/data/000.png'
+    path_right2 = PATH + 'rosbag_annotations/img' + str(i) + '_right/data/001.png'
 
     lbl_right1 = cv.imread(path_right1, 2)
     lbl_right2 = cv.imread(path_right2, 2)
@@ -195,6 +202,29 @@ for i in range(72, 80):
 
     change_right_overlap = np.where(lbl_right[:, :] == 3)
     lbl_right[change_right_overlap] = 0
-    lbls_test_right[i] = lbl_right
+    lbls_test_right[i-72] = lbl_right
 
 print("Labels loaded!")
+
+
+
+inputs = Input(shape=(1280, 800, 3))
+x = Flatten()(inputs)
+h1 = Dense(50, activation='relu')(x)
+'''
+poses = np.load(PATH + "rosbag_annotations/pose_arr.npy")
+
+print("--------------------- Poses from file ---------------------\n")
+print(poses.shape)
+print("Pose:\n")
+
+annotated_pose = np.zeros((4, 4))
+for i in range(0, 50):
+    annotated_pose = np.concatenate([np.atleast_3d(annotated_pose), np.atleast_3d(poses[:, :, i])], axis=2)
+for i in range(122, 152):
+    annotated_pose = np.concatenate([np.atleast_3d(annotated_pose), np.atleast_3d(poses[:, :, i])], axis=2)
+
+print(annotated_pose.shape)
+print(annotated_pose[:, :, 50])
+
+print("DONE!")
