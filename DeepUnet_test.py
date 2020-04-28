@@ -20,7 +20,7 @@ session = InteractiveSession(config=config)
 from DeepUnet import *
 from Loss_functions import *
 
-train = True
+train = False
 which_path = 2 # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 100
@@ -251,7 +251,7 @@ elif not train:
     #compile saved model
     deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
 
-#evaluate loaded model
+#evaluate model
 print('\n# Evaluate on test data')
 start_time = time.time()
 results = deep_unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)

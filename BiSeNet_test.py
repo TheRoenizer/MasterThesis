@@ -14,16 +14,25 @@ from IPython.display import clear_output
 
 try:
     from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
-    from keras.models import Model
+    from keras.models import Model, load_model
 except:
     from tensorflow.keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
     from tensorflow.keras.models import Model
 import os
 
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+
+# Hvis du vil bruge "kort 1":
+#os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
+# ellers:
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
+# hvis du træne på CPU'en:
+#os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 from BiSeNet import bise_net
+from Loss_functions import *
 
 net = bise_net((480,640,3), 5)
 
@@ -36,33 +45,18 @@ history = net.fit([imgs_train,imgs_train],lbls_train,validation_data=[[imgs_val,
 
 """
 
-PATH = 'C:/Users/chris/Google Drive/'
-#PATH = '/home/jsteeen/'
+train = True
+which_path = 2 # 1 = local, 2 = remote
+batch_size = 1
+num_epochs = 10
+weights = [.5, 1.5, 1.5, 1, 1]
 
-def weighted_categorical_crossentropy(weights=[1]):
-    """
-    A weighted version of keras.objectives.categorical_crossentropy
-    Variables:
-        weights: numpy array of shape (C,) where C is the number of classes
-    Usage:
-        weights = np.array([0.5,2,10]) # Class one at 0.5, class 2 twice the normal weights, class 3 10x.
-        loss = weighted_categorical_crossentropy(weights)
-        model.compile(loss=loss,optimizer='adam')
-    """
-
-    weights = K.variable(weights)
-
-    def loss(y_true, y_pred):
-        # scale predictions so that the class probas of each sample sum to 1
-        y_pred /= K.sum(y_pred, axis=-1, keepdims=True)
-        # clip to prevent NaN's and Inf's
-        y_pred = K.clip(y_pred, K.epsilon(), 1 - K.epsilon())
-        # calc
-        loss = y_true * -K.log(y_pred) * weights
-        loss = K.sum(loss, -1)
-        return loss
-
-    return loss
+if which_path == 1:
+    # Christoffer:
+    PATH = 'C:/Users/chris/Google Drive/'
+elif which_path == 2:
+    # Linux:
+    PATH = '/home/jsteeen/'
 
 imgs_train = np.zeros((79, 480, 640, 3))
 print('Loading images...')
@@ -225,28 +219,35 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         show_predictions(epoch_callback)
         print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
 
-
-batch_size = 1
-num_epochs = 10
-weights = [.5, 1.5, 1.5, 1, 1]
-
+if train:
 # use tf.data to improve performance
 
-train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train_onehot))
-val_dataset = tf.data.Dataset.from_tensor_slices((imgs_test, lbls_val_onehot))
+    #train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train_onehot))
+    #val_dataset = tf.data.Dataset.from_tensor_slices((imgs_test, lbls_val_onehot))
 
-net.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy'])
+    net.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy'])
 
-show_predictions(-1)
+    show_predictions(-1)
 
-history = net.fit([imgs_train, imgs_train], lbls_train_onehot, validation_data=[[imgs_val, imgs_val], lbls_val_onehot],
-                  batch_size=batch_size,
-                  epochs=num_epochs,
-                  verbose=1,
-                  shuffle=True,
-                  callbacks=[DisplayCallback()])
+    history = net.fit([imgs_train, imgs_train], lbls_train_onehot, validation_data=[[imgs_val, imgs_val], lbls_val_onehot],
+                      batch_size=batch_size,
+                      epochs=num_epochs,
+                      verbose=1,
+                      shuffle=True,
+                      callbacks=[DisplayCallback()])
 
-# Evaluate loaded model
+    net.save('net_model.h5')
+    print("Saved model to disk")
+
+elif not train:
+    # Load model from file
+    net = load_model('net_model.h5', compile=False)
+
+    # compile saved model
+    net.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights),
+                      metrics=['accuracy', iou_coef, dice_coef])
+
+# Evaluate model
 print('\n# Evaluate on test data 1')
 start_time = time.time()
 results = net.evaluate([imgs_test, imgs_test], lbls_test_onehot, batch_size=1)
