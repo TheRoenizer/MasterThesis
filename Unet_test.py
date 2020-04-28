@@ -280,7 +280,7 @@ if train:
     model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
                              batch_size = 1,
                              epochs=epoch,
-                             verbose=1,
+                             verbose=2,
                              shuffle=True,
                              callbacks=[DisplayCallback()])
                              #sample_weight=sample_weight)
