@@ -251,7 +251,7 @@ elif not train:
     #compile saved model
     deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
 
-#evaluate loaded model
+#evaluate model
 print('\n# Evaluate on test data')
 start_time = time.time()
 results = deep_unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
