@@ -32,6 +32,8 @@ print('Tensorflow version: '+tf.__version__)
 print('Numpy version: '+np.__version__)
 print('Keras version: '+tf.keras.__version__)
 
+print(unet.summary())
+
 which_path = 3 # 1 = local c, 2 = local j, 3 = remote
 train = False
 epoch = 100

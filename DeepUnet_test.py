@@ -20,6 +20,8 @@ session = InteractiveSession(config=config)
 from DeepUnet import *
 from Loss_functions import *
 
+print(deep_unet.summary())
+
 train = False
 which_path = 2 # 1 = local, 2 = remote
 batch_size = 1
