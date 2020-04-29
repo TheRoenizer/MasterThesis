@@ -102,12 +102,12 @@ lbls_train = labels[0:79]
 lbls_val = labels[79:89]
 lbls_test = labels[89:99]
 
-lbls_display_train = labels[0:79]
-lbls_display_val = labels[79:89]
-lbls_display_test = labels[89:99]
+lbls_display_train = labels_display[0:79]
+lbls_display_val = labels_display[79:89]
+lbls_display_test = labels_display[89:99]
 
 print("imgs_val: " + str(imgs_val.shape))
-print("lbls_display: " + str(lbls_display_val.shape))
+print("lbls_display_val: " + str(lbls_display_val.shape))
 imgs_train2 = np.zeros((480, 640, 3))
 (unet, name) = unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
 
