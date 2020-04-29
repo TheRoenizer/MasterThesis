@@ -32,7 +32,7 @@ print('Tensorflow version: '+tf.__version__)
 print('Numpy version: '+np.__version__)
 print('Keras version: '+tf.keras.__version__)
 
-which_path = 3 # 1 = local c, 2 = local j, 3 = remote
+which_path = 1 # 1 = local c, 2 = local j, 3 = remote
 train = True
 epoch = 100
 num_pixels = 480 * 640
@@ -117,6 +117,7 @@ for i in range(90, 100):
     img = img / 255
     imgs_test[i-90] = img
 
+
 print('Images loaded!')
 print('Loading labels...')
 
@@ -160,7 +161,10 @@ for i in range(1, 80):
     sample_weight[i-1] = weight
 
 lbls_train_onehot = tf.keras.utils.to_categorical(lbls_train, num_classes=5, dtype='float32')
+print("lbls_train_onehot: " + str(lbls_train_onehot.shape))
+print("lbls_train: " + str(lbls_train.shape))
 lbls_train = lbls_train.reshape((79, 480, 640, -1))
+print("lbls_train: " + str(lbls_train.shape))
 
 lbls_val = np.zeros((10, 480, 640))
 for i in range(80, 90):
