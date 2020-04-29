@@ -290,8 +290,8 @@ if train:
     # print(imgs_val.shape)
     #model_history = unet.fit(train_dataset, epochs=epoch)
 
-    print(imgs_val.shape)
-    print(lbls_val.shape)
+    print("imgs_val: " + str(imgs_val.shape))
+    print("lbls_display: " + str(lbls_val.shape))
 
     model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
                              batch_size = 1,
