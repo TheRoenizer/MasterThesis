@@ -27,7 +27,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 def load_data(data_path, dtype=np.float32):
     N = 99            # Number of images
-    M = 4             # Number of labels
+    M = 5             # Number of labels
     DIM = (480, 640)  # Image dimensions
 
     images = np.empty((N, *DIM, 3), dtype=dtype)
@@ -92,7 +92,8 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 epoch = 100
 weights = [.5, 1.5, 1.5, 1, 1]
 
-images, labels, labels_display = load_data('/home/jsteeen/Jigsaw annotations')
+#images, labels, labels_display = load_data('/home/jsteeen/Jigsaw annotations')
+images, labels, labels_display = load_data('C:/Users/chris/Google Drive/Jigsaw annotations')
 
 imgs_train = images[0:79]
 imgs_val = images[79:89]
@@ -118,6 +119,6 @@ unet.compile(optimizer='adam',
 model_history = unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
                              batch_size = 1,
                              epochs=epoch,
-                             verbose=2,
+                             verbose=1,
                              shuffle=True,
                              callbacks=[DisplayCallback()])
