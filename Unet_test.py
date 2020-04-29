@@ -33,7 +33,7 @@ print('Numpy version: '+np.__version__)
 print('Keras version: '+tf.keras.__version__)
 
 which_path = 3 # 1 = local c, 2 = local j, 3 = remote
-train = False
+train = True
 epoch = 100
 num_pixels = 480 * 640
 weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
@@ -232,7 +232,7 @@ if train:
     imgs_train2 = np.zeros((480, 640, 3))
     (unet, name) = unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
 
-    # unet.summary()
+    unet.summary()
 
     if Loss_function == 1:
         print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
