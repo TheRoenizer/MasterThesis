@@ -23,7 +23,7 @@ elif which_path == 2:
 elif which_path == 3:
     # Linux:
     PATH = '/home/jsteeen/'
-
+'''
 # Load images
 print("Loading images...")
 # Train images
@@ -205,8 +205,10 @@ for i in range(72, 80):
     lbls_test_right[i-72] = lbl_right
 
 print("Labels loaded!")
-
+'''
 poses = np.load(PATH + "rosbag_annotations/pose_arr.npy")
+
+print(poses.shape)
 
 inputs = Input(shape=(800, 1280))
 x = Flatten()(inputs)
