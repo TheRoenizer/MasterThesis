@@ -27,7 +27,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 def load_data(data_path, dtype=np.float32):
     N = 99            # Number of images
-    M = 5             # Number of labels
+    M = 4             # Number of labels
     DIM = (480, 640)  # Image dimensions
 
     images = np.empty((N, *DIM, 3), dtype=dtype)
