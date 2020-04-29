@@ -100,7 +100,7 @@ tf_buffer = tf2.BufferCore()
 psm1_msgs = []
 cam_info = [None, None]
 img_msg = [None, None]
-'''
+
 outfile = TemporaryFile()
 
 print("Rosbag 1")
@@ -126,7 +126,7 @@ with rosbag.Bag(path) as bag:
     # Read all PSM1 pose messages (instrument TCP wrt. base frame) PSM = patient side manipulator
     psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
 
-    poses = np.zeros((4, 4))
+    poses = np.empty((4, 4))
 
     for i in range(120, 264, 2):
         # Get the i'th right camera image message in the bag
@@ -182,7 +182,7 @@ with rosbag.Bag(path) as bag:
     # Read all PSM1 pose messages (instrument TCP wrt. base frame) PSM = patient side manipulator
     psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
 
-    # poses = np.zeros((4, 4))
+    # poses = np.empty((4, 4))
 
     for i in range(110, 209, 2):
         # Get the i'th right camera image message in the bag
@@ -238,7 +238,7 @@ with rosbag.Bag(path) as bag:
     # Read all PSM1 pose messages (instrument TCP wrt. base frame) PSM = patient side manipulator
     psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
 
-    # poses = np.zeros((4, 4))
+    # poses = np.empty((4, 4))
 
     for i in range(60, 1400, 20):
         # Get the i'th right camera image message in the bag
@@ -294,7 +294,7 @@ with rosbag.Bag(path) as bag:
     # Read all PSM1 pose messages (instrument TCP wrt. base frame) PSM = patient side manipulator
     psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
 
-    # poses = np.zeros((4, 4))
+    # poses = np.empty((4, 4))
 
     for i in range(35, 1370, 20):
         # Get the i'th right camera image message in the bag
@@ -328,22 +328,21 @@ with rosbag.Bag(path) as bag:
         # print(poses.shape)
 
 
-poses = np.delete(poses, 0, axis=-1)
-print(poses.shape)
-np.save("/home/jsteeen/Pictures/rosbag_pictures/pose_arr.npy", poses)
+#print(poses.shape)
+#np.save("/home/jsteeen/Pictures/rosbag_pictures/pose_arr_.npy", poses)
 
 print("--------------------- Poses from rosbag ---------------------\n")
 print(poses.shape)
 print(poses[:, :, 0])
-
-_ = outfile.seek(0)
 '''
+_ = outfile.seek(0)
+
 poses = np.load("/home/jsteeen/Pictures/rosbag_pictures/pose_arr.npy")
 
 print("--------------------- Poses from file ---------------------\n")
 print(poses.shape)
 print("Pose:\n")
 print(poses[:, :, 151])
-
+'''
 
 print("DONE!")
