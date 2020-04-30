@@ -250,7 +250,7 @@ model.fit([imgs_train_left, imgs_train_right], poses_train,
           verbose=1,
           validation_data=([imgs_val_left, imgs_val_right], poses_val))
 
-predicted_pose = model.predict([imgs_test_left, imgs_test_right])
-print(np.reshape(poses_test, (4, 4, 8)))
+predicted_pose = model.predict([imgs_test_left[0], imgs_test_right[0]])
+print(poses_test[0, :, :].T)
 print(predicted_pose)
 print("DONE!")
