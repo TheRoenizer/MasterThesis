@@ -97,7 +97,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 # A little test:
 
-epoch = 10
+epoch = 100
 weights = [1.5, 1.5, 1, 1, 0.1]  #[gripper, gripper, shaft, shaft, background]
 
 images, labels, labels_display = load_data('/home/jsteeen/Jigsaw annotations')
