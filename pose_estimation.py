@@ -6,10 +6,10 @@ from PIL import Image
 import cv2 as cv
 
 try:
-    from keras.layers import Input, Flatten, Dense, add
+    from keras.layers import Input, Flatten, Dense, add, Reshape
     from keras.models import Model, load_model
 except:
-    from tensorflow.keras.layers import Input, Flatten, Dense, Add
+    from tensorflow.keras.layers import Input, Flatten, Dense, add, Reshape
     from tensorflow.keras.models import Model, load_model
 
 which_path = 2
@@ -211,6 +211,10 @@ poses = np.load(PATH + "rosbag_annotations/pose_arr.npy")
 poses_train = poses[:, :, 0:64]
 poses_val = poses[:, :, 64:72]
 poses_test = poses[:, :, 72:80]
+poses_train = np.reshape(poses_train, (64, 4, 4))
+poses_val = np.reshape(poses_val, (8, 4, 4))
+poses_test = np.reshape(poses_test, (8, 4, 4))
+
 
 print("Poses loaded!")
 
@@ -222,15 +226,19 @@ add = add([x1, x2])
 h1 = Dense(25, activation='relu')(add)
 h2 = Dense(25, activation='relu')(h1)
 h3 = Dense(25, activation='relu')(h2)
-out = Dense(16, activation='linear')(h3)
-
-model = Model(inputs=input([in1, in2]), outputs=out)
+h4 = Dense(16, activation='relu')(h3)
+out = Reshape((4, 4))(h4)
+print("TEST 1")
+model = Model(inputs=[in1, in2], outputs=out)
+print("TEST 2")
 model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
+print("TEST 3")
+model.summary()
 
 model.fit([lbls_train_left, lbls_train_right], poses_train,
           batch_size=1,
           epochs=10,
           verbose=1,
           validation_data=([lbls_val_left, lbls_val_right], poses_val))
-
+print("TEST 4")
 print("DONE!")
