@@ -31,7 +31,7 @@ def load_data(data_path, dtype=np.float32):
     DIM = (480, 640)  # Image dimensions
 
     images = np.empty((N, *DIM, 3), dtype=dtype)
-    labels = np.empty((N, *DIM, M+1), dtype=dtype)
+    labels = np.empty((N, *DIM, M), dtype=dtype)
     labels_display = np.empty((N, *DIM, 1), dtype=dtype)
     temp = np.empty((N, *DIM, 1), dtype=dtype)
 
@@ -45,11 +45,11 @@ def load_data(data_path, dtype=np.float32):
             labels[i,...,j] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
             labels_display[i, ..., 0] += labels[i, ..., j]
             labels[i,...,j] = cv.threshold(labels[i,...,j], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY)[1]
-            temp[i,..., 0] += labels[i, ..., j]
+            #temp[i,..., 0] += labels[i, ..., j]
             labels[i,...,j] = cv.normalize(labels[i,...,j], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
-        temp[i,...,0] = cv.threshold(temp[i,...,0], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY_INV)[1]
-        labels[i,...,M] = temp[i,...,0]
+        #temp[i,...,0] = cv.threshold(temp[i,...,0], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY_INV)[1]
+        #labels[i,...,M] = temp[i,...,0]
     return images, labels, labels_display
 
 # Functions used to display images after each epoch
@@ -90,11 +90,11 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 # A little test:
 
-epoch = 100
-weights = [1.5, 1.5, 1, 1, 0.5]  #[gripper, gripper, shaft, shaft, background]
+epoch = 10
+weights = [1.5, 1.5, 1, 1]  #[gripper, gripper, shaft, shaft, background]
 
-images, labels, labels_display = load_data('/home/jsteeen/Jigsaw annotations')
-#images, labels, labels_display = load_data('C:/Users/chris/Google Drive/Jigsaw annotations')
+#images, labels, labels_display = load_data('/home/jsteeen/Jigsaw annotations')
+images, labels, labels_display = load_data('C:/Users/chris/Google Drive/Jigsaw annotations')
 
 #cv.imwrite("labels_display.jpg", labels_display[0])
 #cv.imwrite("background.jpg", labels[0,...,4])
@@ -115,7 +115,7 @@ lbls_display_test = labels_display[89:99]
 print("imgs_val: " + str(imgs_val.shape))
 print("lbls_display_val: " + str(lbls_display_val.shape))
 imgs_train2 = np.zeros((480, 640, 3))
-(unet, name) = unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
+(unet, name) = unet(imgs_train2.shape, num_classes=4, droprate=0.0, linear=False)
 
 unet.compile(optimizer='adam',
                      loss=weighted_categorical_crossentropy(weights),
