@@ -12,7 +12,7 @@ except:
     from tensorflow.keras.layers import Input, Flatten, Dense, add, Reshape
     from tensorflow.keras.models import Model, load_model
 
-which_path = 2
+which_path = 3
 
 if which_path == 1:
     # Christoffer:
