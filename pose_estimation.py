@@ -13,6 +13,7 @@ except:
     from tensorflow.keras.models import Model, load_model
 
 which_path = 3
+epochs = 100
 
 if which_path == 1:
     # Christoffer:
@@ -228,17 +229,16 @@ h2 = Dense(25, activation='relu')(h1)
 h3 = Dense(25, activation='relu')(h2)
 h4 = Dense(16, activation='relu')(h3)
 out = Reshape((4, 4))(h4)
-print("TEST 1")
+
 model = Model(inputs=[in1, in2], outputs=out)
-print("TEST 2")
 model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
-print("TEST 3")
+
 model.summary()
 
 model.fit([lbls_train_left, lbls_train_right], poses_train,
           batch_size=1,
-          epochs=10,
+          epochs=epochs,
           verbose=1,
           validation_data=([lbls_val_left, lbls_val_right], poses_val))
-print("TEST 4")
+
 print("DONE!")
