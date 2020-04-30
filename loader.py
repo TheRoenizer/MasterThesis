@@ -93,8 +93,8 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 epoch = 10
 weights = [1.5, 1.5, 1, 1]  #[gripper, gripper, shaft, shaft, background]
 
-#images, labels, labels_display = load_data('/home/jsteeen/Jigsaw annotations')
-images, labels, labels_display = load_data('C:/Users/chris/Google Drive/Jigsaw annotations')
+images, labels, labels_display = load_data('/home/jsteeen/Jigsaw annotations')
+#images, labels, labels_display = load_data('C:/Users/chris/Google Drive/Jigsaw annotations')
 
 #cv.imwrite("labels_display.jpg", labels_display[0])
 #cv.imwrite("background.jpg", labels[0,...,4])
