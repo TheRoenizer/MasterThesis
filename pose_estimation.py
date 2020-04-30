@@ -214,9 +214,14 @@ poses_train = poses[:, :, 0:64]
 poses_val = poses[:, :, 64:72]
 poses_test = poses[:, :, 72:80]
 print(poses_test[:, :, 0])
+poses_train = poses_train.T
+poses_val = poses_val.T
+poses_test = poses_test.T
+'''
 poses_train = np.reshape(poses_train, (64, 4, 4))
 poses_val = np.reshape(poses_val, (8, 4, 4))
 poses_test = np.reshape(poses_test, (8, 4, 4))
+'''
 print(poses_test[0, :, :])
 
 print("Poses loaded!")
