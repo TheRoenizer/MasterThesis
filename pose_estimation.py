@@ -13,7 +13,7 @@ except:
     from tensorflow.keras.models import Model, load_model
 
 which_path = 3
-epochs = 100
+epochs = 10
 
 if which_path == 1:
     # Christoffer:
@@ -241,4 +241,7 @@ model.fit([lbls_train_left, lbls_train_right], poses_train,
           verbose=1,
           validation_data=([lbls_val_left, lbls_val_right], poses_val))
 
+predicted_pose = model.predict(poses_test[0, :, :])
+print(poses_test[0, :, :])
+print(predicted_pose)
 print("DONE!")
