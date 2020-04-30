@@ -209,19 +209,27 @@ print("Labels loaded!")
 print("Loading poses...")
 
 poses = np.load(PATH + "rosbag_annotations/pose_arr.npy")
+print(poses.shape)
 poses_train = poses[:, :, 0:64]
 poses_val = poses[:, :, 64:72]
 poses_test = poses[:, :, 72:80]
+print(poses_test[:, :, 0])
+poses_train = poses_train.T
+poses_val = poses_val.T
+poses_test = poses_test.T
+'''
 poses_train = np.reshape(poses_train, (64, 4, 4))
 poses_val = np.reshape(poses_val, (8, 4, 4))
 poses_test = np.reshape(poses_test, (8, 4, 4))
+'''
+print(poses_test[0, :, :])
 
 print("Poses loaded!")
 
 # Build model
-in1 = Input(shape=(800, 1280))
+in1 = Input(shape=(800, 1280, 3))
 x1 = Flatten()(in1)
-in2 = Input(shape=(800, 1280))
+in2 = Input(shape=(800, 1280, 3))
 x2 = Flatten()(in2)
 add = add([x1, x2])
 h1 = Dense(25, activation='relu')(add)
@@ -236,13 +244,13 @@ model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
 model.summary()
 
 # Train model
-model.fit([lbls_train_left, lbls_train_right], poses_train,
+model.fit([imgs_train_left, imgs_train_right], poses_train,
           batch_size=1,
           epochs=epochs,
           verbose=1,
-          validation_data=([lbls_val_left, lbls_val_right], poses_val))
+          validation_data=([imgs_val_left, imgs_val_right], poses_val))
 
-predicted_pose = model.predict([lbls_test_left, lbls_test_right])
+predicted_pose = model.predict([imgs_test_left, imgs_test_right])
 print(np.reshape(poses_test, (4, 4, 8)))
 print(predicted_pose)
 print("DONE!")
