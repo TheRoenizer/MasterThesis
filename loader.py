@@ -27,28 +27,29 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 def load_data(data_path, dtype=np.float32):
     N = 99            # Number of images
-    M = 5             # Number of labels
+    M = 4             # Number of labels
     DIM = (480, 640)  # Image dimensions
 
     images = np.empty((N, *DIM, 3), dtype=dtype)
-    labels = np.empty((N, *DIM, M), dtype=dtype)
+    labels = np.empty((N, *DIM, M+1), dtype=dtype)
     labels_display = np.empty((N, *DIM, 1), dtype=dtype)
+    temp = np.empty((N, *DIM, 1), dtype=dtype)
 
     for i in range(N):
         image_path = os.path.join(data_path, 'Images/Suturing ({}).png'.format(i + 1))
         images[i] = cv.imread(image_path).astype(dtype)
         images[i] = cv.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
-        #d = {}
-
         for j in range(M):
             label_path = os.path.join(data_path, 'Annotated/Suturing ({})/data/00{}.png'.format(i + 1, j))
             labels[i,...,j] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
             labels_display[i, ..., 0] += labels[i, ..., j]
             labels[i,...,j] = cv.threshold(labels[i,...,j], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY)[1]
+            temp[i,..., 0] += labels[i, ..., j]
             labels[i,...,j] = cv.normalize(labels[i,...,j], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
-
+        temp[i,...,0] = cv.threshold(temp[i,...,0], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY_INV)[1]
+        labels[i,...,M] = temp[i,...,0]
     return images, labels, labels_display
 
 # Functions used to display images after each epoch
@@ -63,7 +64,7 @@ def display(display_list, epoch_display):
         # img.save("afterEpoch{}.png".format(epoch))
         plt.axis('off')
 
-    plt.savefig("Pictures/afterEpoch{}.png".format(epoch_display + 1))
+    plt.savefig("pictures_unet/afterEpoch{}.png".format(epoch_display + 1))
     # plt.show()
     plt.close(fig)
 
@@ -90,10 +91,14 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 # A little test:
 
 epoch = 100
-weights = [.5, 1.5, 1.5, 1, 1]
+weights = [1.5, 1.5, 1, 1, 0.5]  #[gripper, gripper, shaft, shaft, background]
 
 images, labels, labels_display = load_data('/home/jsteeen/Jigsaw annotations')
 #images, labels, labels_display = load_data('C:/Users/chris/Google Drive/Jigsaw annotations')
+
+#cv.imwrite("labels_display.jpg", labels_display[0])
+#cv.imwrite("background.jpg", labels[0,...,4])
+#print("images saved")
 
 imgs_train = images[0:79]
 imgs_val = images[79:89]
@@ -115,6 +120,8 @@ imgs_train2 = np.zeros((480, 640, 3))
 unet.compile(optimizer='adam',
                      loss=weighted_categorical_crossentropy(weights),
                      metrics=['accuracy', iou_coef, dice_coef])
+
+show_predictions(-1)
 
 model_history = unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
                              batch_size = 1,
