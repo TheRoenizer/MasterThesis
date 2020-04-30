@@ -216,9 +216,9 @@ poses_train = np.reshape(poses_train, (64, 4, 4))
 poses_val = np.reshape(poses_val, (8, 4, 4))
 poses_test = np.reshape(poses_test, (8, 4, 4))
 
-
 print("Poses loaded!")
 
+# Build model
 in1 = Input(shape=(800, 1280))
 x1 = Flatten()(in1)
 in2 = Input(shape=(800, 1280))
@@ -235,13 +235,14 @@ model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
 
 model.summary()
 
+# Train model
 model.fit([lbls_train_left, lbls_train_right], poses_train,
           batch_size=1,
           epochs=epochs,
           verbose=1,
           validation_data=([lbls_val_left, lbls_val_right], poses_val))
 
-predicted_pose = model.predict(poses_test[0, :, :])
-print([lbls_test_left, lbls_test_right])
+predicted_pose = model.predict([lbls_test_left, lbls_test_right])
+print(poses_test[0, :, :])
 print(predicted_pose)
 print("DONE!")
