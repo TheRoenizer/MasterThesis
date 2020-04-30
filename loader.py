@@ -48,7 +48,7 @@ def load_data(data_path, dtype=np.float32):
             temp[i, ..., 0] += labels[i, ..., j]
             labels[i,...,j] = cv.normalize(labels[i,...,j], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
-        for j in range(M):
+        for j in range(M-1):
             label_path = os.path.join(data_path, 'Annotated/Suturing ({})/data/00{}.png'.format(i + 1, j))
             im = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
             mask = cv.threshold(im, dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY)[1]
@@ -98,7 +98,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 # A little test:
 
-epoch = 100
+epoch = 10
 weights = [0.1, 1.5, 1.5, 1, 1] #[gripper, gripper, shaft, shaft, background]
 
 images, labels, labels_display = load_data('/home/jsteeen/Jigsaw annotations')
