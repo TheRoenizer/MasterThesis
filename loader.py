@@ -17,10 +17,10 @@ from Loss_functions import *
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 
 # Hvis du vil bruge "kort 1":
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+#os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 # ellers:
-#os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 # hvis du træne på CPU'en:
 #os.environ["CUDA_VISIBLE_DEVICES"] = ""
@@ -93,8 +93,8 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 epoch = 100
 weights = [1.5, 1.5, 1, 1, 0.5]  #[gripper, gripper, shaft, shaft, background]
 
-images, labels, labels_display = load_data('/home/jsteeen/Jigsaw annotations')
-#images, labels, labels_display = load_data('C:/Users/chris/Google Drive/Jigsaw annotations')
+#images, labels, labels_display = load_data('/home/jsteeen/Jigsaw annotations')
+images, labels, labels_display = load_data('C:/Users/chris/Google Drive/Jigsaw annotations')
 
 #cv.imwrite("labels_display.jpg", labels_display[0])
 #cv.imwrite("background.jpg", labels[0,...,4])
