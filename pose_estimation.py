@@ -6,10 +6,10 @@ from PIL import Image
 import cv2 as cv
 
 try:
-    from keras.layers import Input, Flatten, Dense
+    from keras.layers import Input, Flatten, Dense, add
     from keras.models import Model, load_model
 except:
-    from tensorflow.keras.layers import Input, Flatten, Dense
+    from tensorflow.keras.layers import Input, Flatten, Dense, Add
     from tensorflow.keras.models import Model, load_model
 
 which_path = 2
@@ -23,7 +23,7 @@ elif which_path == 2:
 elif which_path == 3:
     # Linux:
     PATH = '/home/jsteeen/'
-'''
+
 # Load images
 print("Loading images...")
 # Train images
@@ -205,14 +205,32 @@ for i in range(72, 80):
     lbls_test_right[i-72] = lbl_right
 
 print("Labels loaded!")
-'''
+print("Loading poses...")
+
 poses = np.load(PATH + "rosbag_annotations/pose_arr.npy")
+poses_train = poses[:, :, 0:64]
+poses_val = poses[:, :, 64:72]
+poses_test = poses[:, :, 72:80]
 
-print(poses.shape)
+print("Poses loaded!")
 
-inputs = Input(shape=(800, 1280))
-x = Flatten()(inputs)
-h1 = Dense(50, activation='relu')(x)
+in1 = Input(shape=(800, 1280))
+x1 = Flatten()(in1)
+in2 = Input(shape=(800, 1280))
+x2 = Flatten()(in2)
+add = add([x1, x2])
+h1 = Dense(25, activation='relu')(add)
+h2 = Dense(25, activation='relu')(h1)
+h3 = Dense(25, activation='relu')(h2)
+out = Dense(16, activation='linear')(h3)
 
+model = Model(inputs=input([in1, in2]), outputs=out)
+model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
+
+model.fit([lbls_train_left, lbls_train_right], poses_train,
+          batch_size=1,
+          epochs=10,
+          verbose=1,
+          validation_data=([lbls_val_left, lbls_val_right], poses_val))
 
 print("DONE!")
