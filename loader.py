@@ -27,11 +27,11 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 def load_data(data_path, dtype=np.float32):
     N = 99            # Number of images
-    M = 4             # Number of labels
+    M = 5             # Number of labels
     DIM = (480, 640)  # Image dimensions
 
     images = np.empty((N, *DIM, 3), dtype=dtype)
-    labels = np.empty((N, *DIM, M+1), dtype=dtype)
+    labels = np.empty((N, *DIM, M), dtype=dtype)
     labels_display = np.empty((N, *DIM, 1), dtype=dtype)
     temp = np.empty((N, *DIM, 1), dtype=dtype)
 
@@ -40,7 +40,7 @@ def load_data(data_path, dtype=np.float32):
         images[i] = cv.imread(image_path).astype(dtype)
         images[i] = cv.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
-        for j in range(M):
+        for j in range(1,M):
             label_path = os.path.join(data_path, 'Annotated/Suturing ({})/data/00{}.png'.format(i + 1, j))
             labels[i,...,j] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
             #labels_display[i, ..., 0] += labels[i, ..., j]
@@ -57,7 +57,7 @@ def load_data(data_path, dtype=np.float32):
 
         temp[i,...,0] = cv.threshold(temp[i,...,0], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY_INV)[1]
         temp[i,...,0] = cv.normalize(temp[i,...,0], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
-        labels[i,...,M] = temp[i,...,0]
+        labels[i,...,0] = temp[i,...,0]
     return images, labels, labels_display
 
 # Functions used to display images after each epoch
@@ -99,7 +99,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 # A little test:
 
 epoch = 100
-weights = [1.5, 1.5, 1, 1, 0.1] #[gripper, gripper, shaft, shaft, background]
+weights = [0.1, 1.5, 1.5, 1, 1] #[gripper, gripper, shaft, shaft, background]
 
 images, labels, labels_display = load_data('/home/jsteeen/Jigsaw annotations')
 #images, labels, labels_display = load_data('C:/Users/chris/Google Drive/Jigsaw annotations')
