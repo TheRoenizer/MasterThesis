@@ -45,7 +45,7 @@ def load_data(data_path, dtype=np.float32):
             labels[i,...,j] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
             #labels_display[i, ..., 0] += labels[i, ..., j]
             labels[i,...,j] = cv.threshold(labels[i,...,j], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY)[1]
-            temp[i,..., 0] += labels[i, ..., j]
+            temp[i, ..., 0] += labels[i, ..., j]
             labels[i,...,j] = cv.normalize(labels[i,...,j], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
         for j in range(M):
@@ -56,6 +56,7 @@ def load_data(data_path, dtype=np.float32):
             labels_display[i][k] = (j + 1) * 30  # set pixel value here
 
         temp[i,...,0] = cv.threshold(temp[i,...,0], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY_INV)[1]
+        temp[i,...,0] = cv.normalize(temp[i,...,0], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
         labels[i,...,M] = temp[i,...,0]
     return images, labels, labels_display
 
@@ -98,15 +99,19 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 # A little test:
 
 epoch = 100
-weights = [10, 1.5, 1.5, 1, 1] #[gripper, gripper, shaft, shaft, background]
+weights = [1.5, 1.5, 1, 1, 0.1] #[gripper, gripper, shaft, shaft, background]
 
 images, labels, labels_display = load_data('/home/jsteeen/Jigsaw annotations')
 #images, labels, labels_display = load_data('C:/Users/chris/Google Drive/Jigsaw annotations')
-
-cv.imwrite("labels_display.png", labels_display[0])
-cv.imwrite("background.png", labels[0,...,4])
-#print("images saved")
-
+'''
+cv.imwrite("labels_display0.png", labels_display[0])
+cv.imwrite("label0.png", labels[0,...,0])
+cv.imwrite("label1.png", labels[0,...,1])
+cv.imwrite("label2.png", labels[0,...,2])
+cv.imwrite("label3.png", labels[0,...,3])
+cv.imwrite("label4.png", labels[0,...,4])
+print("images saved")
+'''
 imgs_train = images[0:79]
 imgs_val = images[79:89]
 imgs_test = images[89:99]
