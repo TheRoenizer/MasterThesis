@@ -227,16 +227,19 @@ print(poses_test[0, :, :].T)
 print("Poses loaded!")
 
 # Build model
-in1 = Input(shape=(800, 1280, 3))
+in1 = Input(shape=(800, 1280))
 x1 = Flatten()(in1)
-in2 = Input(shape=(800, 1280, 3))
+in2 = Input(shape=(800, 1280))
 x2 = Flatten()(in2)
 add = add([x1, x2])
-h1 = Dense(25, activation='relu')(add)
-h2 = Dense(25, activation='relu')(h1)
+# add = add([in1, in2])
+h1 = Dense(100, activation='relu')(add)
+h2 = Dense(50, activation='relu')(h1)
 h3 = Dense(25, activation='relu')(h2)
-h4 = Dense(16, activation='relu')(h3)
-out = Reshape((4, 4))(h4)
+h4 = Dense(25, activation='relu')(h3)
+h5 = Dense(16)(h4)
+out = Reshape((4, 4))(h5)
+
 
 model = Model(inputs=[in1, in2], outputs=out)
 model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
@@ -244,13 +247,13 @@ model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
 model.summary()
 
 # Train model
-model.fit([imgs_train_left, imgs_train_right], poses_train,
+model.fit([lbls_train_left, lbls_train_right], poses_train,
           batch_size=1,
           epochs=epochs,
           verbose=1,
-          validation_data=([imgs_val_left, imgs_val_right], poses_val))
+          validation_data=([lbls_val_left, lbls_val_right], poses_val))
 
-predicted_pose = model.predict([imgs_test_left[0], imgs_test_right[0]])
-print(poses_test[0, :, :].T)
-print(predicted_pose)
+predicted_poses = model.predict([lbls_test_left, lbls_test_right])
+print(poses_test.T)
+print(predicted_poses)
 print("DONE!")
