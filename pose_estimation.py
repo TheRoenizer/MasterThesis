@@ -217,7 +217,7 @@ poses_test = poses[:, :, 72:80]
 print(poses_test[:, :, 0])
 poses_train = poses_train.T
 poses_val = poses_val.T
-poses_test = poses_test.Tx
+poses_test = poses_test.T
 print(poses_test[0, :, :].T)
 
 print("Poses loaded!")
