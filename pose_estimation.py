@@ -14,9 +14,7 @@ except:
     from tensorflow.keras.models import Model, load_model
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-
-# Hvis du vil bruge "kort 1":
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 which_path = 3
 epochs = 10
