@@ -236,7 +236,7 @@ add = add([x1, x2])
 h1 = Dense(25, activation='relu')(add)
 h2 = Dense(25, activation='relu')(h1)
 h3 = Dense(25, activation='relu')(h2)
-h4 = Dense(16, activation='relu')(h3)
+h4 = Dense(16)(h3)
 out = Reshape((4, 4))(h4)
 
 
@@ -252,7 +252,7 @@ model.fit([lbls_train_left, lbls_train_right], poses_train,
           verbose=1,
           validation_data=([lbls_val_left, lbls_val_right], poses_val))
 
-predicted_pose = model.predict([lbls_test_left, lbls_test_right])
+predicted_poses = model.predict([lbls_test_left, lbls_test_right])
 print(poses_test[0, :, :].T)
-print(predicted_pose)
+print(predicted_poses)
 print("DONE!")
