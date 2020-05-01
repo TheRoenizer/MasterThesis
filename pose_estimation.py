@@ -1,3 +1,5 @@
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
 import tensorflow as tf
 import numpy as np
 from keras.models import Sequential
@@ -15,6 +17,10 @@ except:
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
 
 which_path = 3
 epochs = 10
