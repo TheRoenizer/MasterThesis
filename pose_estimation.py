@@ -246,7 +246,7 @@ model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
 model.summary()
 
 # Train model
-model.fit([imgs_train_left, imgs_train_right], poses_train,
+model.fit([lbls_train_left, lbls_train_right], poses_train,
           batch_size=1,
           epochs=epochs,
           verbose=1,
