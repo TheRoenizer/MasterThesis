@@ -141,3 +141,5 @@ model_history = unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls
                              verbose=1,
                              shuffle=True,
                              callbacks=[DisplayCallback()])
+
+#unet.predict(imgs_test)
