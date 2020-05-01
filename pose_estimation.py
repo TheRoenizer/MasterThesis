@@ -4,6 +4,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from PIL import Image
 import cv2 as cv
+import os
 
 try:
     from keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, BatchNormalization, MaxPooling2D, Dropout
@@ -11,6 +12,11 @@ try:
 except:
     from tensorflow.keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, BatchNormalization, MaxPooling2D
     from tensorflow.keras.models import Model, load_model
+
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+
+# Hvis du vil bruge "kort 1":
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 which_path = 3
 epochs = 10
