@@ -232,11 +232,13 @@ x1 = Flatten()(in1)
 in2 = Input(shape=(800, 1280, 3))
 x2 = Flatten()(in2)
 add = add([x1, x2])
+# add = add([in1, in2])
 h1 = Dense(25, activation='relu')(add)
 h2 = Dense(25, activation='relu')(h1)
 h3 = Dense(25, activation='relu')(h2)
 h4 = Dense(16, activation='relu')(h3)
 out = Reshape((4, 4))(h4)
+
 
 model = Model(inputs=[in1, in2], outputs=out)
 model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
