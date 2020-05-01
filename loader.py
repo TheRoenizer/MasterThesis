@@ -40,13 +40,13 @@ def load_data(data_path, dtype=np.float32):
         images[i] = cv.imread(image_path).astype(dtype)
         images[i] = cv.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
-        for j in range(1,M):
+        for j in range(0,M-1):
             label_path = os.path.join(data_path, 'Annotated/Suturing ({})/data/00{}.png'.format(i + 1, j))
-            labels[i,...,j] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
+            labels[i,...,j+1] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
             #labels_display[i, ..., 0] += labels[i, ..., j]
-            labels[i,...,j] = cv.threshold(labels[i,...,j], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY)[1]
-            temp[i, ..., 0] += labels[i, ..., j]
-            labels[i,...,j] = cv.normalize(labels[i,...,j], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
+            labels[i,...,j+1] = cv.threshold(labels[i,...,j+1], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY)[1]
+            temp[i, ..., 0] += labels[i, ..., j+1]
+            labels[i,...,j+1] = cv.normalize(labels[i,...,j+1], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
         for j in range(M-1):
             label_path = os.path.join(data_path, 'Annotated/Suturing ({})/data/00{}.png'.format(i + 1, j))
@@ -58,6 +58,7 @@ def load_data(data_path, dtype=np.float32):
         temp[i,...,0] = cv.threshold(temp[i,...,0], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY_INV)[1]
         temp[i,...,0] = cv.normalize(temp[i,...,0], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
         labels[i,...,0] = temp[i,...,0]
+        images = images[..., ::-1] # flip from BGR to RGB (for display purposes)
     return images, labels, labels_display
 
 # Functions used to display images after each epoch
@@ -99,11 +100,11 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 # A little test:
 
 epoch = 100
-weights = [0.1, 5, 1, 2, 1] #[background, r_gripper, r_shaft, l_gripper, l_shaft]
+weights = [0.1, 2, 1, 2, 1] #[background, r_gripper, r_shaft, l_gripper, l_shaft]
 
 images, labels, labels_display = load_data('/home/jsteeen/Jigsaw annotations')
 #images, labels, labels_display = load_data('C:/Users/chris/Google Drive/Jigsaw annotations')
-'''
+
 cv.imwrite("labels_display0.png", labels_display[0])
 cv.imwrite("label0.png", labels[0,...,0])
 cv.imwrite("label1.png", labels[0,...,1])
@@ -111,7 +112,7 @@ cv.imwrite("label2.png", labels[0,...,2])
 cv.imwrite("label3.png", labels[0,...,3])
 cv.imwrite("label4.png", labels[0,...,4])
 print("images saved")
-'''
+
 imgs_train = images[0:79]
 imgs_val = images[79:89]
 imgs_test = images[89:99]
