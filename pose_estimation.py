@@ -253,6 +253,6 @@ model.fit([lbls_train_left, lbls_train_right], poses_train,
           validation_data=([lbls_val_left, lbls_val_right], poses_val))
 
 predicted_poses = model.predict([lbls_test_left, lbls_test_right])
-print(poses_test[0, :, :].T)
+print(poses_test)
 print(predicted_poses)
 print("DONE!")
