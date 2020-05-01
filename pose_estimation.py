@@ -227,9 +227,9 @@ print(poses_test[0, :, :].T)
 print("Poses loaded!")
 
 # Build model
-in1 = Input(shape=(800, 1280, 3))
+in1 = Input(shape=(800, 1280))
 x1 = Flatten()(in1)
-in2 = Input(shape=(800, 1280, 3))
+in2 = Input(shape=(800, 1280))
 x2 = Flatten()(in2)
 add = add([x1, x2])
 # add = add([in1, in2])
