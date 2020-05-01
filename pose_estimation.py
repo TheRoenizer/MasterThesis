@@ -23,7 +23,7 @@ config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
 which_path = 3
-epochs = 10
+epochs = 100
 droprate = 0.0
 
 if which_path == 1:
@@ -287,6 +287,6 @@ model.fit([imgs_train_left, imgs_train_right], poses_train,
           validation_data=([imgs_val_left, imgs_val_right], poses_val))
 
 predicted_poses = model.predict([imgs_test_left, imgs_test_right])
-print(poses_test.T)
+print(poses_test)
 print(predicted_poses)
 print("DONE!")
