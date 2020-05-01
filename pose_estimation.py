@@ -6,14 +6,15 @@ from PIL import Image
 import cv2 as cv
 
 try:
-    from keras.layers import Input, Flatten, Dense, add, Reshape
+    from keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, BatchNormalization, MaxPooling2D, Dropout
     from keras.models import Model, load_model
 except:
-    from tensorflow.keras.layers import Input, Flatten, Dense, add, Reshape
+    from tensorflow.keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, BatchNormalization, MaxPooling2D
     from tensorflow.keras.models import Model, load_model
 
 which_path = 3
 epochs = 10
+droprate = 0.0
 
 if which_path == 1:
     # Christoffer:
@@ -216,32 +217,54 @@ poses_test = poses[:, :, 72:80]
 print(poses_test[:, :, 0])
 poses_train = poses_train.T
 poses_val = poses_val.T
-poses_test = poses_test.T
-'''
-poses_train = np.reshape(poses_train, (64, 4, 4))
-poses_val = np.reshape(poses_val, (8, 4, 4))
-poses_test = np.reshape(poses_test, (8, 4, 4))
-'''
+poses_test = poses_test.Tx
 print(poses_test[0, :, :].T)
 
 print("Poses loaded!")
 
 # Build model
+
+inputs1 = Input(shape=(800, 1280))
+inputs2 = Input(shape=(800, 1280))
+add = add([inputs1, inputs2])
+
+conv1 = Conv2D(16, 3, activation='relu', padding='same')(add)
+conv1 = BatchNormalization(axis=-1)(conv1)
+pool1 = MaxPooling2D(pool_size=2)(conv1)
+pool1 = Dropout(droprate)(pool1)
+
+conv2 = Conv2D(32, 3, activation='relu', padding='same')(pool1)
+conv2 = BatchNormalization(axis=-1)(conv2)
+pool2 = MaxPooling2D(pool_size=2)(conv2)
+pool2 = Dropout(droprate)(pool2)
+
+conv3 = Conv2D(64, 3, activation='relu', padding='same')(pool2)
+conv3 = BatchNormalization(axis=-1)(conv3)
+pool3 = MaxPooling2D(pool_size=2)(conv3)
+pool3 = Dropout(droprate)(pool3)
+
+flat = Flatten()(pool3)
+fc1 = Dense(32, activation='relu')(flat)
+fc1 = BatchNormalization(axis=-1)(fc1)
+fc1 = Dropout(0.5)(fc1)
+
+output = Dense(16)(fc1)
+output = Reshape((4, 4))(output)
+'''
 in1 = Input(shape=(800, 1280))
 x1 = Flatten()(in1)
 in2 = Input(shape=(800, 1280))
 x2 = Flatten()(in2)
 add = add([x1, x2])
-# add = add([in1, in2])
 h1 = Dense(100, activation='relu')(add)
 h2 = Dense(50, activation='relu')(h1)
 h3 = Dense(25, activation='relu')(h2)
 h4 = Dense(25, activation='relu')(h3)
 h5 = Dense(16)(h4)
 out = Reshape((4, 4))(h5)
+'''
 
-
-model = Model(inputs=[in1, in2], outputs=out)
+model = Model(inputs=[inputs1, inputs2], outputs=output)
 model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
 
 model.summary()
