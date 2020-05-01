@@ -224,8 +224,8 @@ print("Poses loaded!")
 
 # Build model
 
-inputs1 = Input(shape=(800, 1280))
-inputs2 = Input(shape=(800, 1280))
+inputs1 = Input(shape=(800, 1280, 3))
+inputs2 = Input(shape=(800, 1280, 3))
 add = add([inputs1, inputs2])
 
 conv1 = Conv2D(16, 3, activation='relu', padding='same')(add)
@@ -270,13 +270,13 @@ model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
 model.summary()
 
 # Train model
-model.fit([lbls_train_left, lbls_train_right], poses_train,
+model.fit([imgs_train_left, imgs_train_right], poses_train,
           batch_size=1,
           epochs=epochs,
           verbose=1,
-          validation_data=([lbls_val_left, lbls_val_right], poses_val))
+          validation_data=([imgs_val_left, imgs_val_right], poses_val))
 
-predicted_poses = model.predict([lbls_test_left, lbls_test_right])
+predicted_poses = model.predict([imgs_test_left, imgs_test_right])
 print(poses_test.T)
 print(predicted_poses)
 print("DONE!")
