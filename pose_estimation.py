@@ -429,14 +429,14 @@ model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
 model.summary()
 
 # Train model
-history = model.fit([imgs_train_left, imgs_train_right], poses_train,
+history = model.fit([lbls_train_left, lbls_train_right], poses_train,
                     batch_size=1,
                     epochs=epochs,
                     verbose=1,
-                    validation_data=([imgs_val_left, imgs_val_right], poses_val))
+                    validation_data=([lbls_val_left, lbls_val_right], poses_val))
 
-predicted_poses = model.predict([imgs_test_left, imgs_test_right])
-score = model.evaluate([imgs_test_left, imgs_test_right], poses_test)
+predicted_poses = model.predict([lbls_test_left, lbls_test_right])
+score = model.evaluate([lbls_test_left, lbls_test_right], poses_test)
 print(poses_test[0, :, :].T)
 print(predicted_poses[0, :, :].T)
 print("DONE!")
