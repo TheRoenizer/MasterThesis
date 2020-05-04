@@ -264,7 +264,7 @@ if train:
     val_dice_coef = model_history.history['val_dice_coef']
 
     # Save metric data to file
-    f = open("Pictures_DeepUnet/Metrics.txt", "w+")
+    f = open("Pictures_bisenet/Metrics.txt", "w+")
     f.write("loss" + str(loss))
     f.write("\nval_loss: " + str(val_loss))
     f.write("\naccuracy: " + str(accuracy))
@@ -273,6 +273,7 @@ if train:
     f.write("\nval_iou_coef: " + str(val_iou_metric))
     f.write("\ndice_coef: " + str(dice_metric))
     f.write("\nval_dice_coef: " + str(val_dice_coef))
+    f.write("\nweights: " + str(weights))
     f.close()
 
     epochs = range(num_epochs)
@@ -285,7 +286,7 @@ if train:
     plt.xlabel('Epoch')
     plt.ylabel('Loss Value')
     plt.legend()
-    plt.savefig('Pictures_DeepUnet/Training and Validation Loss')
+    plt.savefig('Pictures_bisenet/Training and Validation Loss')
     plt.show()
     plt.close(graph)
 
