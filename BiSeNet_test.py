@@ -49,7 +49,7 @@ train = True
 which_path = 2 # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 100
-weights = [.5, 1.5, 1.5, 1, 1]
+weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
 
 if which_path == 1:
     # Christoffer:
