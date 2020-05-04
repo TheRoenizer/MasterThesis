@@ -391,8 +391,8 @@ print("Poses loaded!")
 
 # Build model
 
-inputs1 = Input(shape=(800, 1280))
-inputs2 = Input(shape=(800, 1280))
+inputs1 = Input(shape=(800, 1280, 1))
+inputs2 = Input(shape=(800, 1280, 1))
 add = add([inputs1, inputs2])
 
 conv1 = Conv2D(16, 3, activation='relu', padding='same')(add)
