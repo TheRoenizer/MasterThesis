@@ -20,7 +20,7 @@ config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
-which_path = 2
+which_path = 0
 epochs = 100
 droprate = 0.5
 
@@ -32,7 +32,6 @@ if which_path == 1:
 elif which_path == 2:
     # Jonathan:
     PATH = '/Users/jonathansteen/Google Drive/Master Thesis/'
-
 
 # Load images
 print("Loading images...")
@@ -127,7 +126,7 @@ for i in range(77, 80):
     imgs_test_right[i-72] = img_right
 
 print("Images loaded!")
-'''
+
 # Load labels
 print("Loading labels...")
 # Train labels
@@ -371,7 +370,8 @@ for i in range(77, 80):
     lbls_test_right[i-72] = lbl_right
 
 print("Labels loaded!")
-'''
+
+# Load poses
 print("Loading poses...")
 
 poses = np.load(PATH + "rosbag_annotations/pose_arr.npy")
