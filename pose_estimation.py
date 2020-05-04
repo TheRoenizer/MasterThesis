@@ -2,15 +2,13 @@ from tensorflow.compat.v1 import ConfigProto
 from tensorflow.compat.v1 import InteractiveSession
 import tensorflow as tf
 import numpy as np
-from keras.models import Sequential
-from keras.layers import Dense
 from PIL import Image
 import cv2 as cv
 import os
 
 try:
     from keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, BatchNormalization, MaxPooling2D, Dropout
-    from keras.models import Model, load_model
+    from keras.models import Model, Sequential, load_model
 except:
     from tensorflow.keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, BatchNormalization, MaxPooling2D
     from tensorflow.keras.models import Model, load_model
@@ -22,19 +20,19 @@ config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
-which_path = 3
+which_path = 30
 epochs = 100
-droprate = 0.0
+droprate = 0.5
 
+# Linux:
+PATH = '/home/jsteeen/'
 if which_path == 1:
     # Christoffer:
     PATH = 'C:/Users/chris/Google Drive/Master Thesis/'
 elif which_path == 2:
     # Jonathan:
     PATH = '/Users/jonathansteen/Google Drive/Master Thesis/'
-elif which_path == 3:
-    # Linux:
-    PATH = '/home/jsteeen/'
+
 
 # Load images
 print("Loading images...")
@@ -48,6 +46,7 @@ for i in range(0, 40):
     img_left = np.array(Image.open(path_left))[np.newaxis]
     img_right = np.array(Image.open(path_right))[np.newaxis]
 
+    # Normalize data
     img_left = img_left / 255
     img_right = img_right / 255
 
@@ -60,6 +59,7 @@ for i in range(50, 74):
     img_left = np.array(Image.open(path_left))[np.newaxis]
     img_right = np.array(Image.open(path_right))[np.newaxis]
 
+    # Normalize data
     img_left = img_left / 255
     img_right = img_right / 255
 
@@ -76,6 +76,7 @@ for i in range(40, 45):
     img_left = np.array(Image.open(path_left))[np.newaxis]
     img_right = np.array(Image.open(path_right))[np.newaxis]
 
+    # Normalize data
     img_left = img_left / 255
     img_right = img_right / 255
 
@@ -88,6 +89,7 @@ for i in range(74, 77):
     img_left = np.array(Image.open(path_left))[np.newaxis]
     img_right = np.array(Image.open(path_right))[np.newaxis]
 
+    # Normalize data
     img_left = img_left / 255
     img_right = img_right / 255
 
@@ -104,6 +106,7 @@ for i in range(45, 50):
     img_left = np.array(Image.open(path_left))[np.newaxis]
     img_right = np.array(Image.open(path_right))[np.newaxis]
 
+    # Normalize data
     img_left = img_left / 255
     img_right = img_right / 255
 
@@ -116,6 +119,7 @@ for i in range(77, 80):
     img_left = np.array(Image.open(path_left))[np.newaxis]
     img_right = np.array(Image.open(path_right))[np.newaxis]
 
+    # Normalize data
     img_left = img_left / 255
     img_right = img_right / 255
 
@@ -406,7 +410,12 @@ conv3 = BatchNormalization(axis=-1)(conv3)
 pool3 = MaxPooling2D(pool_size=2)(conv3)
 pool3 = Dropout(droprate)(pool3)
 
-flat = Flatten()(pool3)
+conv4 = Conv2D(128, 3, activation='relu', padding='same')(pool3)
+conv4 = BatchNormalization(axis=-1)(conv4)
+pool4 = MaxPooling2D(pool_size=2)(conv4)
+pool4 = Dropout(droprate)(pool4)
+
+flat = Flatten()(pool4)
 fc1 = Dense(32, activation='relu')(flat)
 fc1 = BatchNormalization(axis=-1)(fc1)
 fc1 = Dropout(0.5)(fc1)
@@ -440,6 +449,6 @@ model.fit([imgs_train_left, imgs_train_right], poses_train,
           validation_data=([imgs_val_left, imgs_val_right], poses_val))
 
 predicted_poses = model.predict([imgs_test_left, imgs_test_right])
-print(poses_test)
-print(predicted_poses)
+print(poses_test[0, :, :].T)
+print(predicted_poses[0, :, :].T)
 print("DONE!")
