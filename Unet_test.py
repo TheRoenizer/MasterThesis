@@ -342,6 +342,7 @@ if train:
     f.write("\nval_iou_coef: " + str(val_iou_metric))
     f.write("\ndice_coef: " + str(dice_metric))
     f.write("\nval_dice_coef: " + str(val_dice_coef))
+    f.write("\nweights: " + str(weights))
     f.close()
 
     epochs = range(epoch)

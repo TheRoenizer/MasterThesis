@@ -250,6 +250,7 @@ if train:
     f.write("\nval_iou_coef: " + str(val_iou_metric))
     f.write("\ndice_coef: " + str(dice_metric))
     f.write("\nval_dice_coef: " + str(val_dice_coef))
+    f.write("\nweights: " + str(weights))
     f.close()
 
     epochs = range(num_epochs)
@@ -277,6 +278,7 @@ elif not train:
     deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
 
 #evaluate model
+'''
 print('\n# Evaluate on test data')
 start_time = time.time()
 results = deep_unet.evaluate(imgs_test, lbls_test, batch_size=1)
@@ -293,4 +295,21 @@ results = deep_unet.evaluate(imgs_test, lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f%%" % (deep_unet.metrics_names[1], results[1] * 100))
+'''
 
+print('\n# Evaluate on test data')
+start_time = time.time()
+results = deep_unet.evaluate(imgs_test, lbls_test, batch_size=1)
+stop_time = time.time()
+print("--- %s seconds ---" % (stop_time - start_time))
+print("%s: %.2f" % (deep_unet.metrics_names[0], results[0]))
+print("%s: %.2f" % (deep_unet.metrics_names[1], results[1]))
+print("%s: %.2f" % (deep_unet.metrics_names[2], results[2]))
+print("%s: %.2f" % (deep_unet.metrics_names[3], results[3]))
+
+print('\n# Evaluate on test data 2')
+start_time = time.time()
+results = deep_unet.evaluate(imgs_test, lbls_test, batch_size=1)
+stop_time = time.time()
+print("--- %s seconds ---" % (stop_time - start_time))
+print("%s: %.2f%%" % (deep_unet.metrics_names[1], results[1] * 100))
