@@ -45,11 +45,11 @@ history = net.fit([imgs_train,imgs_train],lbls_train,validation_data=[[imgs_val,
 
 """
 
-train = False
+train = True
 which_path = 2 # 1 = local, 2 = remote
 batch_size = 1
-num_epochs = 10
-weights = [.5, 1.5, 1.5, 1, 1]
+num_epochs = 100
+weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
 
 if which_path == 1:
     # Christoffer:
@@ -247,12 +247,47 @@ if train:
 
     show_predictions(-1)
 
-    history = net.fit([imgs_train, imgs_train], lbls_train, validation_data=[[imgs_val, imgs_val], lbls_val],
+    model_history = net.fit([imgs_train, imgs_train], lbls_train, validation_data=[[imgs_val, imgs_val], lbls_val],
                       batch_size=batch_size,
                       epochs=num_epochs,
                       verbose=1,
                       shuffle=True,
                       callbacks=[DisplayCallback()])
+
+    loss = model_history.history['loss']
+    val_loss = model_history.history['val_loss']
+    accuracy = model_history.history['accuracy']
+    val_accuracy = model_history.history['val_accuracy']
+    iou_metric = model_history.history['iou_coef']
+    val_iou_metric = model_history.history['val_iou_coef']
+    dice_metric = model_history.history['dice_coef']
+    val_dice_coef = model_history.history['val_dice_coef']
+
+    # Save metric data to file
+    f = open("Pictures_DeepUnet/Metrics.txt", "w+")
+    f.write("loss" + str(loss))
+    f.write("\nval_loss: " + str(val_loss))
+    f.write("\naccuracy: " + str(accuracy))
+    f.write("\nval_accuracy: " + str(val_accuracy))
+    f.write("\niou_coef: " + str(iou_metric))
+    f.write("\nval_iou_coef: " + str(val_iou_metric))
+    f.write("\ndice_coef: " + str(dice_metric))
+    f.write("\nval_dice_coef: " + str(val_dice_coef))
+    f.close()
+
+    epochs = range(num_epochs)
+
+    # Plot statistics
+    graph = plt.figure()
+    plt.plot(epochs, loss, 'r', label='Training loss')
+    plt.plot(epochs, val_loss, 'bo', label='Validation loss')
+    plt.title('Training and Validation Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss Value')
+    plt.legend()
+    plt.savefig('Pictures_DeepUnet/Training and Validation Loss')
+    plt.show()
+    plt.close(graph)
 
     net.save('net_model.h5')
     print("Saved model to disk")
