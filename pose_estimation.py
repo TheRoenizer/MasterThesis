@@ -7,20 +7,20 @@ import cv2 as cv
 import os
 
 try:
-    from keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, BatchNormalization, MaxPooling2D, Dropout
+    from keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, Conv1D, BatchNormalization, MaxPooling2D, Dropout
     from keras.models import Model, Sequential, load_model
 except:
     from tensorflow.keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, BatchNormalization, MaxPooling2D
     from tensorflow.keras.models import Model, load_model
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
-which_path = 30
+which_path = 0
 epochs = 100
 droprate = 0.5
 
@@ -391,26 +391,26 @@ print("Poses loaded!")
 
 # Build model
 
-inputs1 = Input(shape=(800, 1280, 3))
-inputs2 = Input(shape=(800, 1280, 3))
+inputs1 = Input(shape=(800, 1280))
+inputs2 = Input(shape=(800, 1280))
 add = add([inputs1, inputs2])
 
-conv1 = Conv2D(16, 3, activation='relu', padding='same')(add)
+conv1 = Conv1D(16, 3, activation='relu', padding='same')(add)
 conv1 = BatchNormalization(axis=-1)(conv1)
 pool1 = MaxPooling2D(pool_size=2)(conv1)
 pool1 = Dropout(droprate)(pool1)
 
-conv2 = Conv2D(32, 3, activation='relu', padding='same')(pool1)
+conv2 = Conv1D(32, 3, activation='relu', padding='same')(pool1)
 conv2 = BatchNormalization(axis=-1)(conv2)
 pool2 = MaxPooling2D(pool_size=2)(conv2)
 pool2 = Dropout(droprate)(pool2)
 
-conv3 = Conv2D(64, 3, activation='relu', padding='same')(pool2)
+conv3 = Conv1D(64, 3, activation='relu', padding='same')(pool2)
 conv3 = BatchNormalization(axis=-1)(conv3)
 pool3 = MaxPooling2D(pool_size=2)(conv3)
 pool3 = Dropout(droprate)(pool3)
 
-conv4 = Conv2D(128, 3, activation='relu', padding='same')(pool3)
+conv4 = Conv1D(128, 3, activation='relu', padding='same')(pool3)
 conv4 = BatchNormalization(axis=-1)(conv4)
 pool4 = MaxPooling2D(pool_size=2)(conv4)
 pool4 = Dropout(droprate)(pool4)
@@ -422,19 +422,6 @@ fc1 = Dropout(0.5)(fc1)
 
 output = Dense(16)(fc1)
 output = Reshape((4, 4))(output)
-'''
-in1 = Input(shape=(800, 1280))
-x1 = Flatten()(in1)
-in2 = Input(shape=(800, 1280))
-x2 = Flatten()(in2)
-add = add([x1, x2])
-h1 = Dense(100, activation='relu')(add)
-h2 = Dense(50, activation='relu')(h1)
-h3 = Dense(25, activation='relu')(h2)
-h4 = Dense(25, activation='relu')(h3)
-h5 = Dense(16)(h4)
-out = Reshape((4, 4))(h5)
-'''
 
 model = Model(inputs=[inputs1, inputs2], outputs=output)
 model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
@@ -442,13 +429,14 @@ model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
 model.summary()
 
 # Train model
-model.fit([imgs_train_left, imgs_train_right], poses_train,
-          batch_size=1,
-          epochs=epochs,
-          verbose=1,
-          validation_data=([imgs_val_left, imgs_val_right], poses_val))
+history = model.fit([lbls_train_left, lbls_train_right], poses_train,
+                    batch_size=1,
+                    epochs=epochs,
+                    verbose=1,
+                    validation_data=([lbls_val_left, lbls_val_right], poses_val))
 
-predicted_poses = model.predict([imgs_test_left, imgs_test_right])
+predicted_poses = model.predict([lbls_test_left, lbls_test_right])
+score = model.evaluate([lbls_test_left, lbls_test_right], poses_test)
 print(poses_test[0, :, :].T)
 print(predicted_poses[0, :, :].T)
 print("DONE!")
