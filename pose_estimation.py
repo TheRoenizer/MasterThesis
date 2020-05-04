@@ -22,7 +22,7 @@ config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
-which_path = 2
+which_path = 3
 epochs = 100
 droprate = 0.0
 
@@ -371,11 +371,11 @@ print("Loading poses...")
 
 poses = np.load(PATH + "rosbag_annotations/pose_arr.npy")
 print(poses.shape)
-poses_train = np.concatenate(poses[:, :, 0:40], poses[:, :, 50:74])
+poses_train = np.concatenate((poses[:, :, 0:40], poses[:, :, 50:74]), axis=-1)
 print(poses_train.shape)
-poses_val = np.concatenate(poses[:, :, 40:45], poses[:, :, 74:77])
+poses_val = np.concatenate((poses[:, :, 40:45], poses[:, :, 74:77]), axis=-1)
 print(poses_val.shape)
-poses_test = np.concatenate(poses[:, :, 45:50], poses[:, :, 77:80])
+poses_test = np.concatenate((poses[:, :, 45:50], poses[:, :, 77:80]), axis=-1)
 print(poses_test.shape)
 print(poses_test[:, :, 0])
 poses_train = poses_train.T
