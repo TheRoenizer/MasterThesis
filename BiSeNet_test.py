@@ -45,10 +45,10 @@ history = net.fit([imgs_train,imgs_train],lbls_train,validation_data=[[imgs_val,
 
 """
 
-train = False
+train = True
 which_path = 2 # 1 = local, 2 = remote
 batch_size = 1
-num_epochs = 10
+num_epochs = 100
 weights = [.5, 1.5, 1.5, 1, 1]
 
 if which_path == 1:
