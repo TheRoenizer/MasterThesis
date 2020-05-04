@@ -20,7 +20,7 @@ config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
-which_path = 30
+which_path = 0
 epochs = 100
 droprate = 0.5
 
@@ -422,19 +422,6 @@ fc1 = Dropout(0.5)(fc1)
 
 output = Dense(16)(fc1)
 output = Reshape((4, 4))(output)
-'''
-in1 = Input(shape=(800, 1280))
-x1 = Flatten()(in1)
-in2 = Input(shape=(800, 1280))
-x2 = Flatten()(in2)
-add = add([x1, x2])
-h1 = Dense(100, activation='relu')(add)
-h2 = Dense(50, activation='relu')(h1)
-h3 = Dense(25, activation='relu')(h2)
-h4 = Dense(25, activation='relu')(h3)
-h5 = Dense(16)(h4)
-out = Reshape((4, 4))(h5)
-'''
 
 model = Model(inputs=[inputs1, inputs2], outputs=output)
 model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
@@ -442,13 +429,14 @@ model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
 model.summary()
 
 # Train model
-model.fit([imgs_train_left, imgs_train_right], poses_train,
-          batch_size=1,
-          epochs=epochs,
-          verbose=1,
-          validation_data=([imgs_val_left, imgs_val_right], poses_val))
+history = model.fit([imgs_train_left, imgs_train_right], poses_train,
+                    batch_size=1,
+                    epochs=epochs,
+                    verbose=1,
+                    validation_data=([imgs_val_left, imgs_val_right], poses_val))
 
 predicted_poses = model.predict([imgs_test_left, imgs_test_right])
+score = model.evaluate([imgs_test_left, imgs_test_right], poses_test)
 print(poses_test[0, :, :].T)
 print(predicted_poses[0, :, :].T)
 print("DONE!")
