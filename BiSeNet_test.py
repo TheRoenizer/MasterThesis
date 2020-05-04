@@ -32,7 +32,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 #os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 from BiSeNet import bise_net
-from Loss_functions import *
+from functions import *
 
 net = bise_net((480,640,3), 5)
 
@@ -53,11 +53,29 @@ weights = [.5, 1.5, 1.5, 1, 1]
 
 if which_path == 1:
     # Christoffer:
-    PATH = 'C:/Users/chris/Google Drive/'
+    PATH = 'C:/Users/chris/Google Drive/Jigsaw annotations'
 elif which_path == 2:
     # Linux:
-    PATH = '/home/jsteeen/'
+    PATH = '/home/jsteeen/Jigsaw annotations'
 
+# Load images and labels
+images, labels, labels_display = load_data(PATH)
+
+imgs_train = images[0:79]
+imgs_val = images[79:89]
+imgs_test = images[89:99]
+
+lbls_train = labels[0:79]
+lbls_val = labels[79:89]
+lbls_test = labels[89:99]
+
+lbls_display_train = labels_display[0:79]
+lbls_display_val = labels_display[79:89]
+lbls_display_test = labels_display[89:99]
+
+print('Images and labels loaded!')
+
+'''
 imgs_train = np.zeros((79, 480, 640, 3))
 print('Loading images...')
 for i in range(1, 80):
@@ -183,7 +201,7 @@ print('Labels loaded!')
 
 lbls_val_onehot = tf.keras.utils.to_categorical(lbls_val, num_classes=5, dtype='float32')
 lbls_val = lbls_val.reshape((10, 480, 640, -1))
-
+'''
 
 def display(display_list, epoch_display):
     fig = plt.figure(figsize=(15, 15))
@@ -209,7 +227,7 @@ def show_predictions(epoch_show_predictions, image_num=1):
     x = imgs_val[image_num][tf.newaxis, ...]
     pred_mask = net.predict([x, x]) * 255
     #pred_mask = net.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
-    display([imgs_val[image_num], lbls_val[image_num], create_mask(pred_mask)], epoch_show_predictions)
+    display([imgs_val[image_num], lbls_display_val[image_num], create_mask(pred_mask)], epoch_show_predictions)
 
 
 class DisplayCallback(tf.keras.callbacks.Callback):
@@ -229,7 +247,7 @@ if train:
 
     show_predictions(-1)
 
-    history = net.fit([imgs_train, imgs_train], lbls_train_onehot, validation_data=[[imgs_val, imgs_val], lbls_val_onehot],
+    history = net.fit([imgs_train, imgs_train], lbls_train, validation_data=[[imgs_val, imgs_val], lbls_val],
                       batch_size=batch_size,
                       epochs=num_epochs,
                       verbose=1,
@@ -250,35 +268,35 @@ elif not train:
 # Evaluate model
 print('\n# Evaluate on test data 1')
 start_time = time.time()
-results = net.evaluate([imgs_test, imgs_test], lbls_test_onehot, batch_size=1)
+results = net.evaluate([imgs_test, imgs_test], lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f" % (net.metrics_names[0], results[0]))
 
 print('\n# Evaluate on test data 2')
 start_time = time.time()
-results = net.evaluate([imgs_test, imgs_test], lbls_test_onehot, batch_size=1)
+results = net.evaluate([imgs_test, imgs_test], lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f" % (net.metrics_names[0], results[0]))
 
 print('\n# Evaluate on test data 3')
 start_time = time.time()
-results = net.evaluate([imgs_test, imgs_test], lbls_test_onehot, batch_size=1)
+results = net.evaluate([imgs_test, imgs_test], lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f" % (net.metrics_names[0], results[0]))
 
 print('\n# Evaluate on test data 4')
 start_time = time.time()
-results = net.evaluate([imgs_test, imgs_test], lbls_test_onehot, batch_size=1)
+results = net.evaluate([imgs_test, imgs_test], lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f" % (net.metrics_names[0], results[0]))
 
 print('\n# Evaluate on test data 5')
 start_time = time.time()
-results = net.evaluate([imgs_test, imgs_test], lbls_test_onehot, batch_size=1)
+results = net.evaluate([imgs_test, imgs_test], lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f" % (net.metrics_names[0], results[0]))

@@ -12,7 +12,7 @@ config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
 from Unet import *
-from Loss_functions import *
+from functions import *
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 

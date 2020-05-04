@@ -26,7 +26,7 @@ config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
 from Unet import *
-from Loss_functions import *
+from functions import *
 
 print('Tensorflow version: '+tf.__version__)
 print('Numpy version: '+np.__version__)
@@ -47,13 +47,13 @@ TL_beta = 3         # Tversky loss beta
 
 if which_path == 1:
     # Christoffer:
-    PATH = 'C:/Users/chris/Google Drive/'
+    PATH = 'C:/Users/chris/Google Drive/Jigsaw annotations'
 elif which_path ==2:
     # Jonathan
-    PATH = '/Users/jonathansteen/Google Drive/'
+    PATH = '/Users/jonathansteen/Google Drive/Jigsaw annotations'
 elif which_path == 3:
     # Linux:
-    PATH = '/home/jsteeen/'
+    PATH = '/home/jsteeen/Jigsaw annotations'
 
 # Functions used to display images after each epoch
 def display(display_list, epoch_display):
@@ -80,7 +80,7 @@ def create_mask(pred_mask):
 
 def show_predictions(epoch_show_predictions, image_num=1):
     pred_mask = unet.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
-    display([imgs_val[image_num], lbls_val[image_num], create_mask(pred_mask)], epoch_show_predictions)
+    display([imgs_val[image_num], lbls_display_val[image_num], create_mask(pred_mask)], epoch_show_predictions)
 
 
 class DisplayCallback(tf.keras.callbacks.Callback):
@@ -91,7 +91,24 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
 
 
-# Load images
+# Load images and labels
+images, labels, labels_display = load_data(PATH)
+
+imgs_train = images[0:79]
+imgs_val = images[79:89]
+imgs_test = images[89:99]
+
+lbls_train = labels[0:79]
+lbls_val = labels[79:89]
+lbls_test = labels[89:99]
+
+lbls_display_train = labels_display[0:79]
+lbls_display_val = labels_display[79:89]
+lbls_display_test = labels_display[89:99]
+
+print('Images and labels loaded!')
+
+'''
 imgs_train = np.zeros((79, 480, 640, 3))
 print('Loading images...')
 for i in range(1, 80):
@@ -229,8 +246,7 @@ for i in range(90, 100):
 
 lbls_test_onehot = tf.keras.utils.to_categorical(lbls_test, num_classes=5, dtype='float32')
 lbls_test = lbls_test.reshape((10, 480, 640, -1))
-
-print('Labels loaded!')
+'''
 
 if train:
     imgs_train2 = np.zeros((480, 640, 3))
@@ -273,12 +289,12 @@ if train:
 
     # tf.keras.metrics.MeanIoU(num_classes=2)
 
-    train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train))
-    val_dataset = tf.data.Dataset.from_tensor_slices((imgs_val, lbls_val))
+    #train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train))
+    #val_dataset = tf.data.Dataset.from_tensor_slices((imgs_val, lbls_val))
 
     # Slice the dataset
-    train_dataset = train_dataset.shuffle(100).batch(1)
-    val_dataset = val_dataset.batch(1)
+    #train_dataset = train_dataset.shuffle(100).batch(1)
+    #val_dataset = val_dataset.batch(1)
 
     show_predictions(-1)
     # imgs_train = imgs_train.reshape((79, num_pixels, 3))
@@ -290,10 +306,10 @@ if train:
     # print(imgs_val.shape)
     #model_history = unet.fit(train_dataset, epochs=epoch)
 
-    print("imgs_val: " + str(imgs_val.shape))
-    print("lbls_display: " + str(lbls_val.shape))
+    #print("imgs_val: " + str(imgs_val.shape))
+    #print("lbls_display: " + str(lbls_val.shape))
 
-    model_history = unet.fit(imgs_train, lbls_train_onehot, validation_data=[imgs_val, lbls_val_onehot],
+    model_history = unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
                              batch_size = 1,
                              epochs=epoch,
                              verbose=2,
@@ -396,7 +412,7 @@ elif not train:
 # Evaluate loaded model
 print('\n# Evaluate on test data')
 start_time = time.time()
-results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
+results = unet.evaluate(imgs_test, lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f" % (unet.metrics_names[0], results[0]))
@@ -406,28 +422,28 @@ print("%s: %.2f" % (unet.metrics_names[3], results[3]))
 
 print('\n# Evaluate on test data 2')
 start_time = time.time()
-results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
+results = unet.evaluate(imgs_test, lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
 
 print('\n# Evaluate on test data 3')
 start_time = time.time()
-results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
+results = unet.evaluate(imgs_test, lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
 
 print('\n# Evaluate on test data 4')
 start_time = time.time()
-results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
+results = unet.evaluate(imgs_test, lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
 
 print('\n# Evaluate on test data 5')
 start_time = time.time()
-results = unet.evaluate(imgs_test, lbls_test_onehot, batch_size=1)
+results = unet.evaluate(imgs_test, lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
