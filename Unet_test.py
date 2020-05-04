@@ -333,7 +333,7 @@ if train:
     val_dice_coef = model_history.history['val_dice_coef']
 
     # Save metric data to file
-    f = open("Pictures/Metrics.txt", "w+")
+    f = open("pictures_unet/Metrics.txt", "w+")
     f.write("loss" + str(loss))
     f.write("\nval_loss: " + str(val_loss))
     f.write("\naccuracy: " + str(accuracy))
@@ -355,7 +355,7 @@ if train:
     plt.xlabel('Epoch')
     plt.ylabel('Loss Value')
     plt.legend()
-    plt.savefig('Pictures/Training and Validation Loss')
+    plt.savefig('pictures_unet/Training and Validation Loss')
     plt.show()
     plt.close(graph)
     '''
