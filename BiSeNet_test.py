@@ -243,7 +243,7 @@ if train:
     #train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train_onehot))
     #val_dataset = tf.data.Dataset.from_tensor_slices((imgs_test, lbls_val_onehot))
 
-    net.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy'])
+    net.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
 
     show_predictions(-1)
 
