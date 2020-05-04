@@ -20,7 +20,7 @@ config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
-which_path = 0
+which_path = 2
 epochs = 100
 droprate = 0.5
 
@@ -127,7 +127,7 @@ for i in range(77, 80):
     imgs_test_right[i-72] = img_right
 
 print("Images loaded!")
-
+'''
 # Load labels
 print("Loading labels...")
 # Train labels
@@ -371,6 +371,7 @@ for i in range(77, 80):
     lbls_test_right[i-72] = lbl_right
 
 print("Labels loaded!")
+'''
 print("Loading poses...")
 
 poses = np.load(PATH + "rosbag_annotations/pose_arr.npy")
@@ -391,26 +392,26 @@ print("Poses loaded!")
 
 # Build model
 
-inputs1 = Input(shape=(800, 1280))
-inputs2 = Input(shape=(800, 1280))
+inputs1 = Input(shape=(800, 1280, 3))
+inputs2 = Input(shape=(800, 1280, 3))
 add = add([inputs1, inputs2])
 
-conv1 = Conv1D(16, 3, activation='relu', padding='same')(add)
+conv1 = Conv2D(16, 3, activation='relu', padding='same')(add)
 conv1 = BatchNormalization(axis=-1)(conv1)
 pool1 = MaxPooling2D(pool_size=2)(conv1)
 pool1 = Dropout(droprate)(pool1)
 
-conv2 = Conv1D(32, 3, activation='relu', padding='same')(pool1)
+conv2 = Conv2D(32, 3, activation='relu', padding='same')(pool1)
 conv2 = BatchNormalization(axis=-1)(conv2)
 pool2 = MaxPooling2D(pool_size=2)(conv2)
 pool2 = Dropout(droprate)(pool2)
 
-conv3 = Conv1D(64, 3, activation='relu', padding='same')(pool2)
+conv3 = Conv2D(64, 3, activation='relu', padding='same')(pool2)
 conv3 = BatchNormalization(axis=-1)(conv3)
 pool3 = MaxPooling2D(pool_size=2)(conv3)
 pool3 = Dropout(droprate)(pool3)
 
-conv4 = Conv1D(128, 3, activation='relu', padding='same')(pool3)
+conv4 = Conv2D(128, 3, activation='relu', padding='same')(pool3)
 conv4 = BatchNormalization(axis=-1)(conv4)
 pool4 = MaxPooling2D(pool_size=2)(conv4)
 pool4 = Dropout(droprate)(pool4)
@@ -429,14 +430,14 @@ model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
 model.summary()
 
 # Train model
-history = model.fit([lbls_train_left, lbls_train_right], poses_train,
+history = model.fit([imgs_train_left, imgs_train_right], poses_train,
                     batch_size=1,
                     epochs=epochs,
                     verbose=1,
-                    validation_data=([lbls_val_left, lbls_val_right], poses_val))
+                    validation_data=([imgs_val_left, imgs_val_right], poses_val))
 
-predicted_poses = model.predict([lbls_test_left, lbls_test_right])
-score = model.evaluate([lbls_test_left, lbls_test_right], poses_test)
+predicted_poses = model.predict([imgs_test_left, imgs_test_right])
+score = model.evaluate([imgs_test_left, imgs_test_right], poses_test)
 print(poses_test[0, :, :].T)
 print(predicted_poses[0, :, :].T)
 print("DONE!")
