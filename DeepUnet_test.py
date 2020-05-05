@@ -33,7 +33,7 @@ if which_path == 1:
     PATH = 'C:/Users/chris/Google Drive/'
 elif which_path == 2:
     # Linux:
-    PATH = '/home/jsteeen/Jigsaw annotations'
+    PATH = '/home/jsteeen/'
 
 # functions used to display images after each epoch
 def display(display_list, epoch_display):
