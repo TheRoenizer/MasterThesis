@@ -282,9 +282,17 @@ print('\n# Predict on test data 1')
 start_time = time.time()
 results = deep_unet.predict(imgs_test, batch_size=1)
 stop_time = time.time()
-results = results * 255
 print("--- %s seconds ---" % (stop_time - start_time))
 print(results.shape)
+
+predicted_lables = np.empty((10, 480, 640, 1), dtype=np.float32)
+for i in range(10):
+    for j in range(5):
+            mask = cv.threshold(results[i,...,j], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY)[1]
+            k = np.where(mask == 255)
+            predicted_lables[i][k] = (j + 1) * 30  # set pixel value here
+
+cv.imwrite("Pictures_DeepUnet/results/predicted", predicted_lables[0])
 cv.imwrite("Pictures_DeepUnet/results/result0_0.png", results[0,...,0])
 cv.imwrite("Pictures_DeepUnet/results/result0_1.png", results[0,...,1])
 cv.imwrite("Pictures_DeepUnet/results/result0_2.png", results[0,...,2])
