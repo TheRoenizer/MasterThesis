@@ -282,6 +282,7 @@ print('\n# Predict on test data 1')
 start_time = time.time()
 results = deep_unet.predict(imgs_test, batch_size=1)
 stop_time = time.time()
+results = results * 255
 print("--- %s seconds ---" % (stop_time - start_time))
 print(results.shape)
 cv.imwrite("Pictures_DeepUnet/results/result0_0.png", results[0,...,0])
