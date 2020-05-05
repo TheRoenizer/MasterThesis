@@ -53,6 +53,7 @@ def load_data_EndoVis(data_path, dtype=np.float32):
     for l in range(1,4):
         for i in range(int(N/3)):
             image_path = os.path.join(data_path, 'Segmentation_Rigid_Training/Training/OP{}/Raw/img_{}_raw.png'.format(l, str(i + 1).zfill(2)))
+            print(image_path)
             images[i] = cv.imread(image_path).astype(dtype)
             images[i] = cv.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
