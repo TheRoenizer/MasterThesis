@@ -21,6 +21,7 @@ from DeepUnet import *
 from functions import *
 
 train = False
+which_data = 2 # 1 = jigsaw, 2 = EndoVis
 which_path = 2 # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 100
@@ -29,7 +30,7 @@ weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
 
 if which_path == 1:
     # Christoffer:
-    PATH = 'C:/Users/chris/Google Drive/Jigsaw annotations'
+    PATH = 'C:/Users/chris/Google Drive/'
 elif which_path == 2:
     # Linux:
     PATH = '/home/jsteeen/Jigsaw annotations'
@@ -65,28 +66,31 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
 
 # Load images and labels
-images, labels, labels_display = load_data(PATH)
-'''
-cv.imwrite("labels_display0.png", labels_display[0])
-cv.imwrite("label0.png", labels[0,...,0])
-cv.imwrite("label1.png", labels[0,...,1])
-cv.imwrite("label2.png", labels[0,...,2])
-cv.imwrite("label3.png", labels[0,...,3])
-cv.imwrite("label4.png", labels[0,...,4])
-print("images saved")
-'''
-imgs_train = images[0:79]
-imgs_val = images[79:89]
-imgs_test = images[89:99]
+if which_data == 1:
+    images, labels, labels_display = load_data(PATH)
+    '''
+    cv.imwrite("labels_display0.png", labels_display[0])
+    cv.imwrite("label0.png", labels[0,...,0])
+    cv.imwrite("label1.png", labels[0,...,1])
+    cv.imwrite("label2.png", labels[0,...,2])
+    cv.imwrite("label3.png", labels[0,...,3])
+    cv.imwrite("label4.png", labels[0,...,4])
+    print("images saved")
+    '''
+    imgs_train = images[0:79]
+    imgs_val = images[79:89]
+    imgs_test = images[89:99]
 
-lbls_train = labels[0:79]
-lbls_val = labels[79:89]
-lbls_test = labels[89:99]
+    lbls_train = labels[0:79]
+    lbls_val = labels[79:89]
+    lbls_test = labels[89:99]
 
-lbls_display_train = labels_display[0:79]
-lbls_display_val = labels_display[79:89]
-lbls_display_test = labels_display[89:99]
+    lbls_display_train = labels_display[0:79]
+    lbls_display_val = labels_display[79:89]
+    lbls_display_test = labels_display[89:99]
 
+if which_data == 2:
+    images, labels, labels_display = load_data_EndoVis(PATH)
 '''
 imgs_train = np.zeros((79, 480, 640, 3))
 print('Loading images...')
