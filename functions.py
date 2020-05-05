@@ -2,7 +2,7 @@ from keras import backend as K
 import tensorflow as tf
 import numpy as np
 import os
-import cv as cv
+import cv2 as cv
 
 def load_data(data_path, dtype=np.float32):
     N = 99            # Number of images
