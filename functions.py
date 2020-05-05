@@ -61,6 +61,7 @@ def load_data_EndoVis(data_path, dtype=np.float32):
                 label_path = os.path.join(data_path, 'Segmentation_Rigid_Training/Training/OP{}/Masks/img_{}_class.png'.format(l, str(i + 1).zfill(2)))
                 print(label_path)
                 labels_temp[i] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
+                labels_temp[i] = labels_temp[i] / 70
                 '''
                 #k = np.where(label == 0)
                 #labels[i,...,j][k] = 
