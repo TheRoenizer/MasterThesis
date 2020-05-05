@@ -283,6 +283,7 @@ start_time = time.time()
 results = deep_unet.predict(imgs_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
+print(results.shape)
 
 print('\n# Predict on test data 2')
 start_time = time.time()
