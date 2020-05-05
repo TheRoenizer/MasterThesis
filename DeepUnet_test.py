@@ -292,7 +292,7 @@ for i in range(10):
             k = np.where(mask == 255)
             predicted_lables[i][k] = (j + 1) * 30  # set pixel value here
 
-cv.imwrite("Pictures_DeepUnet/results/predicted", predicted_lables[0])
+cv.imwrite("Pictures_DeepUnet/results/predicted.png", predicted_lables[0])
 cv.imwrite("Pictures_DeepUnet/results/result0_0.png", results[0,...,0])
 cv.imwrite("Pictures_DeepUnet/results/result0_1.png", results[0,...,1])
 cv.imwrite("Pictures_DeepUnet/results/result0_2.png", results[0,...,2])
