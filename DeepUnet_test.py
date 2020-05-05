@@ -290,7 +290,7 @@ for i in range(10):
     for j in range(5):
         mask = cv.threshold(results[i,...,j], dst=None, thresh=0.5, maxval=255, type=cv.THRESH_BINARY)[1]
         k = np.where(mask == 255)
-        predicted_labels[i][k] = (j + 1) * 30  # set pixel value here
+        predicted_labels[i][k] = (j + 1) * 50  # set pixel value here
 
 cv.imwrite("Pictures_DeepUnet/results/predicted.png", predicted_labels[0])
 cv.imwrite("Pictures_DeepUnet/results/result0_0.png", results[0,...,0])
