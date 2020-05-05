@@ -278,9 +278,11 @@ elif not train:
     deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
 
 #evaluate model
-
+print('\n# Predict on test data')
+start_time = time.time()
 results = deep_unet.predict(imgs_test, batch_size=1)
-
+stop_time = time.time()
+print("--- %s seconds ---" % (stop_time - start_time))
 '''
 print('\n# Evaluate on test data')
 start_time = time.time()
