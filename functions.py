@@ -49,7 +49,7 @@ def load_data_EndoVis(data_path, dtype=np.float32):
     labels = np.empty((N, *DIM, M), dtype=dtype)
     labels_display = np.empty((N, *DIM, 1), dtype=dtype)
     temp = np.empty((N, *DIM, 1), dtype=dtype)
-    labels_temp = np.empty((N, *DIM, 1), dtype=dtype)
+    labels_temp = np.empty((N, *DIM), dtype=dtype)
     for l in range(1,4):
         for i in range(int(N/3)):
             image_path = os.path.join(data_path, 'Segmentation_Rigid_Training/Training/OP{}/Raw/img_{}_raw.png'.format(l, str(i + 1).zfill(2)))
