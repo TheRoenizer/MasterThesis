@@ -20,7 +20,7 @@ session = InteractiveSession(config=config)
 from DeepUnet import *
 from functions import *
 
-train = True
+train = False
 which_path = 2 # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 100
@@ -278,6 +278,9 @@ elif not train:
     deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
 
 #evaluate model
+
+results = deep_unet.predict(imgs_test, batch_size=1)
+
 '''
 print('\n# Evaluate on test data')
 start_time = time.time()
@@ -295,7 +298,7 @@ results = deep_unet.evaluate(imgs_test, lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f%%" % (deep_unet.metrics_names[1], results[1] * 100))
-'''
+
 
 print('\n# Evaluate on test data')
 start_time = time.time()
@@ -313,3 +316,4 @@ results = deep_unet.evaluate(imgs_test, lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f%%" % (deep_unet.metrics_names[1], results[1] * 100))
+'''
