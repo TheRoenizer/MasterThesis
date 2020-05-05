@@ -2,7 +2,7 @@ from keras import backend as K
 import tensorflow as tf
 import numpy as np
 import os
-import cv2 as cv
+import cv2 as cv2
 
 def load_data(data_path, dtype=np.float32):
     N = 99            # Number of images
@@ -16,26 +16,26 @@ def load_data(data_path, dtype=np.float32):
 
     for i in range(N):
         image_path = os.path.join(data_path, 'Images/Suturing ({}).png'.format(i + 1))
-        images[i] = cv.imread(image_path).astype(dtype)
-        images[i] = cv.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
+        images[i] = cv2.imread(image_path).astype(dtype)
+        images[i] = cv2.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv2.NORM_MINMAX)
 
         for j in range(0,M-1):
             label_path = os.path.join(data_path, 'Annotated/Suturing ({})/data/00{}.png'.format(i + 1, j))
-            labels[i,...,j+1] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
+            labels[i,...,j+1] = cv2.imread(label_path, cv2.IMREAD_GRAYSCALE).astype(dtype)
             #labels_display[i, ..., 0] += labels[i, ..., j]
-            labels[i,...,j+1] = cv.threshold(labels[i,...,j+1], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY)[1]
+            labels[i,...,j+1] = cv2.threshold(labels[i, ..., j + 1], dst=None, thresh=1, maxval=255, type=cv2.THRESH_BINARY)[1]
             temp[i, ..., 0] += labels[i, ..., j+1]
-            labels[i,...,j+1] = cv.normalize(labels[i,...,j+1], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
+            labels[i,...,j+1] = cv2.normalize(labels[i, ..., j + 1], dst=None, alpha=0.0, beta=1.0, norm_type=cv2.NORM_MINMAX)
 
         for j in range(M-1):
             label_path = os.path.join(data_path, 'Annotated/Suturing ({})/data/00{}.png'.format(i + 1, j))
-            im = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
-            mask = cv.threshold(im, dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY)[1]
+            im = cv2.imread(label_path, cv2.IMREAD_GRAYSCALE).astype(dtype)
+            mask = cv2.threshold(im, dst=None, thresh=1, maxval=255, type=cv2.THRESH_BINARY)[1]
             k = np.where(mask == 255)
             labels_display[i][k] = (j + 1) * 30  # set pixel value here
 
-        temp[i,...,0] = cv.threshold(temp[i,...,0], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY_INV)[1]
-        temp[i,...,0] = cv.normalize(temp[i,...,0], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
+        temp[i,...,0] = cv2.threshold(temp[i, ..., 0], dst=None, thresh=1, maxval=255, type=cv2.THRESH_BINARY_INV)[1]
+        temp[i,...,0] = cv2.normalize(temp[i, ..., 0], dst=None, alpha=0.0, beta=1.0, norm_type=cv2.NORM_MINMAX)
         labels[i,...,0] = temp[i,...,0]
         images = images[..., ::-1] # flip from BGR to RGB (for display purposes)
     return images, labels, labels_display

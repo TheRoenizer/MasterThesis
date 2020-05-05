@@ -292,7 +292,7 @@ for i in range(10):
         k = np.where(mask == 255)
         predicted_labels[i][k] = (j + 1) * 50  # set pixel value here
 
-color_img = cv.cvtColor(predicted_labels[0], cv.cv.CV_GRAY2RGB)
+color_img = cv.cvtColor(predicted_labels[0], cv2.cv.CV_GRAY2RGB)
 cv.imwrite("Pictures_DeepUnet/results/predicted.png", color_img)
 cv.imwrite("Pictures_DeepUnet/results/result0_0.png", results[0,...,0])
 cv.imwrite("Pictures_DeepUnet/results/result0_1.png", results[0,...,1])
