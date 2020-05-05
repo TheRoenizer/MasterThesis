@@ -46,7 +46,7 @@ def load_data_EndoVis(data_path, dtype=np.float32):
     DIM = (480, 640)  # Image dimensions
 
     images = np.empty((N, *DIM, 3), dtype=dtype)
-    labels = np.empty((N, *DIM, M), dtype=dtype)
+    #labels = np.empty((N, *DIM, M), dtype=dtype)
     labels_display = np.empty((N, *DIM, 1), dtype=dtype)
     temp = np.empty((N, *DIM, 1), dtype=dtype)
     labels_temp = np.empty((N, *DIM), dtype=dtype)
