@@ -58,7 +58,7 @@ def load_data_EndoVis(data_path, dtype=np.float32):
             images[i] = cv.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
             for j in range(0,M):
-                label_path = os.path.join(data_path, 'Segmentation_Rigid_Training/OP{}/Masks/img_{}_class.png'.format(l, str(i + 1).zfill(2)))
+                label_path = os.path.join(data_path, 'Segmentation_Rigid_Training/Training/OP{}/Masks/img_{}_class.png'.format(l, str(i + 1).zfill(2)))
                 print(label_path)
                 labels_temp[i] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
                 '''
