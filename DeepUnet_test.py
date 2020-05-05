@@ -285,13 +285,13 @@ stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print(results.shape)
 
-predicted_labels = np.empty((10, 480, 640, 1), dtype=np.float32)
+#predicted_labels = np.empty((10, 480, 640, 1), dtype=np.float32)
 for i in range(10):
     for j in range(5):
-        mask = cv.threshold(results[i,...,j], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY)[1]
-        k = np.where(mask == 255)
-        predicted_labels[i][k] = (j + 1) * 30  # set pixel value here
-cv.imwrite("Pictures_DeepUnet/results/predicted.png", predicted_labels[0])
+        results[i,...,j] = cv.threshold(results[i,...,j], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY)[1]
+        #k = np.where(mask == 255)
+        #predicted_labels[i][k] = (j + 1) * 30  # set pixel value here
+#cv.imwrite("Pictures_DeepUnet/results/predicted.png", predicted_labels[0])
 
 
 cv.imwrite("Pictures_DeepUnet/results/result0_0.png", results[0,...,0])
