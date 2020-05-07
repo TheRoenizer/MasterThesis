@@ -82,7 +82,7 @@ def load_data_EndoVis(data_path, dtype=np.float32):
         #temp[i,...,0] = cv.normalize(temp[i, ..., 0], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
         #labels[i,...,0] = temp[i,...,0]
         #images = images[..., ::-1] # flip from BGR to RGB (for display purposes)
-
+    labels_display = labels_temp
     labels = tf.keras.utils.to_categorical(labels_temp, num_classes=3, dtype='float32')
     print("labels: " + str(labels.shape))
     return images, labels, labels_display

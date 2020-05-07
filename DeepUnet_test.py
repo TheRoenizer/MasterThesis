@@ -45,7 +45,7 @@ def display(display_list, epoch_display):
         plt.title(title[i])
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
         plt.axis('off')
-    plt.savefig("Pictures_DeepUnet/afterEpoch{}.png".format(epoch_display + 1))
+    plt.savefig("pictures_deepunet/afterEpoch{}.png".format(epoch_display + 1))
     # plt.show()
     plt.close(fig)
 
@@ -69,8 +69,8 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 if which_data == 1:
     images, labels, labels_display = load_data(PATH)
     '''
-    cv.imwrite("labels_display0.png", labels_display[0])
-    cv.imwrite("label0.png", labels[0,...,0])
+    cv.imwrite("pictures_deepunet/labels_display0.png", labels_display[0])
+    cv.imwrite("pictures_deepunet/label0.png", labels[0,...,0])
     cv.imwrite("label1.png", labels[0,...,1])
     cv.imwrite("label2.png", labels[0,...,2])
     cv.imwrite("label3.png", labels[0,...,3])
@@ -91,6 +91,11 @@ if which_data == 1:
 
 if which_data == 2:
     images, labels, labels_display = load_data_EndoVis(PATH)
+    cv.imwrite("pictures_deepunet/labels_display0.png", labels_display[0])
+    cv.imwrite("pictures_deepunet/label0.png", labels[0, ..., 0])
+    cv.imwrite("pictures_deepunet/label1.png", labels[0, ..., 1])
+    cv.imwrite("pictures_deepunet/label2.png", labels[0, ..., 2])
+    print("images saved")
 '''
 imgs_train = np.zeros((79, 480, 640, 3))
 print('Loading images...')
