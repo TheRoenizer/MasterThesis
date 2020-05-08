@@ -20,13 +20,17 @@ session = InteractiveSession(config=config)
 from DeepUnet import *
 from functions import *
 
-train = False
+train = True
 which_data = 2 # 1 = jigsaw, 2 = EndoVis
-which_path = 2 # 1 = local, 2 = remote
+which_path = 1 # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 100
 #num_pixels = 480 * 640
-weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
+
+if which_data == 1:
+    weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
+if which_data == 2:
+    weights = [.5, 1.5, 1] # [background, gripper, shaft]
 
 if which_path == 1:
     # Christoffer:
@@ -68,15 +72,15 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 # Load images and labels
 if which_data == 1:
     images, labels, labels_display = load_data(PATH)
-    '''
-    cv.imwrite("pictures_deepunet/labels_display0.png", labels_display[0])
-    cv.imwrite("pictures_deepunet/label0.png", labels[0,...,0])
-    cv.imwrite("label1.png", labels[0,...,1])
-    cv.imwrite("label2.png", labels[0,...,2])
-    cv.imwrite("label3.png", labels[0,...,3])
-    cv.imwrite("label4.png", labels[0,...,4])
+
+    cv.imwrite("pictures_deepunet_j/labels_display0.png", labels_display[0])
+    cv.imwrite("pictures_deepunet_j/label0.png", labels[0,...,0])
+    cv.imwrite("pictures_deepunet_j/label1.png", labels[0,...,1])
+    cv.imwrite("pictures_deepunet_j/label2.png", labels[0,...,2])
+    cv.imwrite("pictures_deepunet_j/label3.png", labels[0,...,3])
+    cv.imwrite("pictures_deepunet_j/label4.png", labels[0,...,4])
     print("images saved")
-    '''
+
     imgs_train = images[0:79]
     imgs_val = images[79:89]
     imgs_test = images[89:99]
@@ -91,11 +95,23 @@ if which_data == 1:
 
 if which_data == 2:
     images, labels, labels_display = load_data_EndoVis(PATH)
-    cv.imwrite("pictures_deepunet/labels_display0.png", labels_display[0])
-    cv.imwrite("pictures_deepunet/label0.png", labels[0, ..., 0])
-    cv.imwrite("pictures_deepunet/label1.png", labels[0, ..., 1])
-    cv.imwrite("pictures_deepunet/label2.png", labels[0, ..., 2])
+    cv.imwrite("pictures_deepunet/labels_display0.png", labels_display[50])
+    cv.imwrite("pictures_deepunet/label0.png", labels[50, ..., 0])
+    cv.imwrite("pictures_deepunet/label1.png", labels[50, ..., 1])
+    cv.imwrite("pictures_deepunet/label2.png", labels[50, ..., 2])
     print("images saved")
+
+    imgs_train = np.concatenate((images[0:35], images[40:75], images[80:115]))
+    imgs_val = np.concatenate((images[35:40], images[75:80], images[115:120]))
+    print("imgs_train: " + str(imgs_train.shape))
+    print("imgs_val: " + str(imgs_val.shape))
+
+    lbls_train = np.concatenate((labels[0:35], labels[40:75], labels[80:115]))
+    lbls_val = np.concatenate((labels[35:40], labels[75:80], labels[115:120]))
+
+    lbls_display_train = np.concatenate((labels_display[0:35], labels_display[40:75], labels_display[80:115]))
+    lbls_display_val = np.concatenate((labels_display[35:40], labels_display[75:80], labels_display[115:120]))
+
 '''
 imgs_train = np.zeros((79, 480, 640, 3))
 print('Loading images...')
@@ -225,7 +241,11 @@ print('Images and labels loaded!')
 
 if train:
     imgs_train2 = np.zeros((480, 640, 3))
-    (deep_unet, name) = deep_unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
+
+    if which_data == 1:
+        (deep_unet, name) = deep_unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
+    elif which_data == 2:
+        (deep_unet, name) = deep_unet(imgs_train2.shape, num_classes=3, droprate=0.0, linear=False)
 
     deep_unet.summary()
 
@@ -236,7 +256,7 @@ if train:
     model_history = deep_unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
                       batch_size=batch_size,
                       epochs=num_epochs,
-                      verbose=2,
+                      verbose=1,
                       shuffle=True,
                       callbacks=[DisplayCallback()])
 
@@ -250,7 +270,7 @@ if train:
     val_dice_coef = model_history.history['val_dice_coef']
 
     # Save metric data to file
-    f = open("Pictures_DeepUnet/Metrics.txt", "w+")
+    f = open("pictures_deepunet/Metrics.txt", "w+")
     f.write("loss" + str(loss))
     f.write("\nval_loss: " + str(val_loss))
     f.write("\naccuracy: " + str(accuracy))
@@ -272,7 +292,7 @@ if train:
     plt.xlabel('Epoch')
     plt.ylabel('Loss Value')
     plt.legend()
-    plt.savefig('Pictures_DeepUnet/Training and Validation Loss')
+    plt.savefig('pictures_deepunet/Training and Validation Loss')
     plt.show()
     plt.close(graph)
 
@@ -285,7 +305,7 @@ elif not train:
 
     #compile saved model
     deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
-
+'''
 #evaluate model
 print('\n# Predict on test data 1')
 start_time = time.time()
@@ -334,6 +354,7 @@ stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 fps = 1 / ((stop_time - start_time) / 10)
 print("fps: %s" % fps)
+'''
 '''
 print('\n# Evaluate on test data')
 start_time = time.time()

@@ -53,24 +53,45 @@ def load_data_EndoVis(data_path, dtype=np.float32):
     for l in range(1,4):
         for i in range(int(N/3)):
             image_path = os.path.join(data_path, 'Segmentation_Rigid_Training/Training/OP{}/Raw/img_{}_raw.png'.format(l, str(i + 1).zfill(2)))
-            print(image_path)
-            images[i] = cv.imread(image_path).astype(dtype)
-            images[i] = cv.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
+            label_path = os.path.join(data_path, 'Segmentation_Rigid_Training/Training/OP{}/Masks/img_{}_class.png'.format(l, str(i + 1).zfill(2)))
+            #print(image_path)
+            #print(label_path)
 
+            if l == 1:
+                images[i] = cv.imread(image_path).astype(dtype)
+                images[i] = cv.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
+                labels_temp[i] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
+                labels_display[i,...,0] = labels_temp[i]
+                labels_temp[i] = labels_temp[i] / 70
+
+            elif l == 2:
+                images[i+40] = cv.imread(image_path).astype(dtype)
+                images[i+40] = cv.normalize(images[i+40], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
+                labels_temp[i+40] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
+                labels_display[i+40,...,0] = labels_temp[i+40]
+                labels_temp[i+40] = labels_temp[i+40] / 70
+
+            elif l == 3:
+                images[i+80] = cv.imread(image_path).astype(dtype)
+                images[i+80] = cv.normalize(images[i+80], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
+                labels_temp[i+80] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
+                labels_display[i+80,...,0] = labels_temp[i+80]
+                labels_temp[i+80] = labels_temp[i+80] / 70
+            '''
             for j in range(0,M):
                 label_path = os.path.join(data_path, 'Segmentation_Rigid_Training/Training/OP{}/Masks/img_{}_class.png'.format(l, str(i + 1).zfill(2)))
                 print(label_path)
                 labels_temp[i] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
                 labels_temp[i] = labels_temp[i] / 70
-                '''
+                
                 #k = np.where(label == 0)
                 #labels[i,...,j][k] = 
                 #labels_display[i, ..., 0] += labels[i, ..., j]
                 labels[i,...,j+1] = cv.threshold(labels[i, ..., j + 1], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY)[1]
                 temp[i, ..., 0] += labels[i, ..., j+1]
                 labels[i,...,j+1] = cv.normalize(labels[i, ..., j + 1], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
-                '''
-            '''    
+                
+                
             for j in range(M-1):
                 label_path = os.path.join(data_path, 'Annotated/Suturing ({})/data/00{}.png'.format(i + 1, j))
                 im = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
@@ -82,7 +103,8 @@ def load_data_EndoVis(data_path, dtype=np.float32):
         #temp[i,...,0] = cv.normalize(temp[i, ..., 0], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
         #labels[i,...,0] = temp[i,...,0]
         #images = images[..., ::-1] # flip from BGR to RGB (for display purposes)
-    labels_display = labels_temp
+    #labels_display = labels_temp
+    #labels_display = labels_display.reshape((120, 480, 640, -1))
     labels = tf.keras.utils.to_categorical(labels_temp, num_classes=3, dtype='float32')
     print("labels: " + str(labels.shape))
     return images, labels, labels_display
