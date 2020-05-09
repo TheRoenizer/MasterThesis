@@ -107,6 +107,7 @@ def load_data_EndoVis(data_path, dtype=np.float32):
     #labels_display = labels_display.reshape((120, 480, 640, -1))
     labels = tf.keras.utils.to_categorical(labels_temp, num_classes=3, dtype='float32')
     print("labels: " + str(labels.shape))
+    images = images[..., ::-1]  # flip from BGR to RGB (for display purposes)
     return images, labels, labels_display
 
 def categorical_focal_loss(gamma=2., alpha=.25):
