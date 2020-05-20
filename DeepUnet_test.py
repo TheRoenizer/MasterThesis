@@ -22,7 +22,7 @@ from functions import *
 
 train = True
 which_data = 2 # 1 = jigsaw, 2 = EndoVis
-which_path = 2 # 1 = local, 2 = remote
+which_path = 1 # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 20
 #num_pixels = 480 * 640
@@ -94,7 +94,18 @@ if which_data == 1:
     lbls_display_test = labels_display[89:99]
 
 if which_data == 2:
-    images, labels, labels_display = load_data_EndoVis(PATH)
+    images, labels, labels_display = load_data_EndoVis17(PATH)
+    #cv.imwrite("pictures_deepunet/labels_temp_new_50.png", labels_temp[50])
+    #cv.imwrite("pictures_deepunet/labels_temp_left50.png", labels_left_temp[50])
+    #cv.imwrite("pictures_deepunet/labels_temp_right50.png", labels_right_temp[50])
+    cv.imwrite("pictures_deepunet/labels_display50.png", labels_display[50])
+    cv.imwrite("pictures_deepunet/label0.png", labels[50, ..., 0])
+    cv.imwrite("pictures_deepunet/label1.png", labels[50, ..., 1])
+    cv.imwrite("pictures_deepunet/label2.png", labels[50, ..., 2])
+    cv.imwrite("pictures_deepunet/label3.png", labels[50, ..., 3])
+    print("images saved")
+
+    '''
     cv.imwrite("pictures_deepunet/labels_display0.png", labels_display[50])
     cv.imwrite("pictures_deepunet/label0.png", labels[50, ..., 0])
     cv.imwrite("pictures_deepunet/label1.png", labels[50, ..., 1])
@@ -111,7 +122,7 @@ if which_data == 2:
 
     lbls_display_train = np.concatenate((labels_display[0:35], labels_display[40:75], labels_display[80:115]))
     lbls_display_val = np.concatenate((labels_display[35:40], labels_display[75:80], labels_display[115:120]))
-
+    '''
 '''
 imgs_train = np.zeros((79, 480, 640, 3))
 print('Loading images...')

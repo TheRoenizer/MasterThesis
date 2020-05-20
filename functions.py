@@ -40,7 +40,7 @@ def load_data(data_path, dtype=np.float32):
         images = images[..., ::-1] # flip from BGR to RGB (for display purposes)
     return images, labels, labels_display
 
-def load_data_EndoVis(data_path, dtype=np.float32):
+def load_data_EndoVis15(data_path, dtype=np.float32):
     N = 120            # Number of images
     M = 3             # Number of labels
     DIM = (480, 640)  # Image dimensions
@@ -108,6 +108,35 @@ def load_data_EndoVis(data_path, dtype=np.float32):
     labels = tf.keras.utils.to_categorical(labels_temp, num_classes=3, dtype='float32')
     print("labels: " + str(labels.shape))
     images = images[..., ::-1]  # flip from BGR to RGB (for display purposes)
+    return images, labels, labels_display
+
+
+def load_data_EndoVis17(data_path, dtype=np.float32):
+    N = 225  # Number of images
+    M = 4  # Number of labels
+    DIM = (1080, 1920)  # Image dimensions
+
+    images = np.empty((N, *DIM, 3), dtype=dtype)
+    labels = np.empty((N, *DIM, M), dtype=dtype)
+    labels_display = np.empty((N, *DIM, 1), dtype=dtype)
+    temp = np.empty((N, *DIM, 1), dtype=dtype)
+    labels_temp = np.empty((N, *DIM), dtype=dtype)
+    for i in range(N):
+        print (str(i) + 'of 255')
+        image_path = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/left_frames/frame{}.png'.format(str(i).zfill(3)))
+        images[i] = cv.imread(image_path).astype(dtype)
+        images[i] = cv.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
+
+        label_path_left = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/ground_truth/Left_Large_Needle_Driver_labels/frame{}.png'.format(str(i).zfill(3)))
+        label_path_right = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/ground_truth/Right_Large_Needle_Driver_labels/frame{}.png'.format(str(i).zfill(3)))
+        labels_temp[i] = cv.imread(label_path_left, cv.IMREAD_GRAYSCALE).astype(dtype) + cv.imread(label_path_right, cv.IMREAD_GRAYSCALE).astype(dtype)
+        labels_display[i,...,0] = labels_temp[i]
+        labels_temp[i] = labels_temp[i] / 10
+
+    labels = tf.keras.utils.to_categorical(labels_temp, num_classes=4, dtype='float32')
+    print("labels: " + str(labels.shape))
+    images = images[..., ::-1]  # flip from BGR to RGB (for display purposes)
+
     return images, labels, labels_display
 
 def categorical_focal_loss(gamma=2., alpha=.25):
