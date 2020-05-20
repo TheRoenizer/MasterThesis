@@ -105,6 +105,19 @@ if which_data == 2:
     cv.imwrite("pictures_deepunet/label3.png", labels[50, ..., 3])
     print("images saved")
 
+    imgs_train = images[0:200]
+    imgs_val = images[200:225]
+    print("imgs_train: " + str(imgs_train.shape))
+    print("imgs_val: " + str(imgs_val.shape))
+
+    lbls_train = labels[0:200]
+    lbls_val = labels[200:225]
+
+
+    lbls_display_train = labels_display[0:200]
+    lbls_display_val = labels_display[200:225]
+
+
     '''
     cv.imwrite("pictures_deepunet/labels_display0.png", labels_display[50])
     cv.imwrite("pictures_deepunet/label0.png", labels[50, ..., 0])
