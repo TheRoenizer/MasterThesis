@@ -131,8 +131,10 @@ def load_data_EndoVis17(data_path, dtype=np.float32):
         label_path_left = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/ground_truth/Left_Large_Needle_Driver_labels/frame{}.png'.format(str(i).zfill(3)))
         label_path_right = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/ground_truth/Right_Large_Needle_Driver_labels/frame{}.png'.format(str(i).zfill(3)))
         labels_temp[i] = cv.imread(label_path_left, cv.IMREAD_GRAYSCALE).astype(dtype) + cv.imread(label_path_right, cv.IMREAD_GRAYSCALE).astype(dtype)
-        k = np.where(labels_temp[i][:, :] == 60)
-        labels_temp[i][k] = 30
+        k1 = np.where(labels_temp[i][:, :] == 60)
+        k2 = np.where(labels_temp[i][:, :] == 50)
+        labels_temp[i][k1] = 30
+        labels_temp[i][k2] = 30
         labels_display[i,...,0] = labels_temp[i]
         labels_temp[i] = labels_temp[i] / 10
 
