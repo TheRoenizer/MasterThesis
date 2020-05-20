@@ -14,12 +14,12 @@ except:
     from tensorflow.keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
     from tensorflow.keras.models import Model
 
-def deep_unet(input_shape, num_classes=5, droprate=None, linear=False):
+def deep_unet(input_shape, num_classes=5, padding=0, droprate=None, linear=False):
     model_name = 'deep_unet'
     inputs = Input(shape=input_shape)
 
     # add zero padding such to the height so it is divisible by 128 (2*7)
-    x = ZeroPadding2D((16, 0))(inputs)
+    x = ZeroPadding2D((padding, 0))(inputs)
     #print("inputs: " + str(inputs.shape))
     #print("x: "+str(x.shape))
 
@@ -117,7 +117,7 @@ def deep_unet(input_shape, num_classes=5, droprate=None, linear=False):
     up7 = UpSampling2D(size=(2, 2))(y14)
 
     conv_final = Conv2D(num_classes, 1, activation='softmax')(up7)
-    x = Cropping2D((16, 0))(conv_final)
+    x = Cropping2D((padding, 0))(conv_final)
 
     model = Model(inputs=inputs, outputs=x)
     return model, model_name

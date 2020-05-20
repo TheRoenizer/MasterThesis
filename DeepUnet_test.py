@@ -268,9 +268,9 @@ if train:
     imgs_train3 = np.zeros((1080, 1920, 3))
 
     if which_data == 1:
-        (deep_unet, name) = deep_unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
+        (deep_unet, name) = deep_unet(imgs_train2.shape, num_classes=5, paddding=16, droprate=0.0, linear=False)
     elif which_data == 2:
-        (deep_unet, name) = deep_unet(imgs_train3.shape, num_classes=4, droprate=0.0, linear=False)
+        (deep_unet, name) = deep_unet(imgs_train3.shape, num_classes=4, padding=32, droprate=0.0, linear=False)
 
     deep_unet.summary()
 
