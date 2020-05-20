@@ -30,7 +30,7 @@ num_epochs = 20
 if which_data == 1:
     weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
 if which_data == 2:
-    weights = [.5, 1.5, 1] # [background, gripper, shaft]
+    weights = [.5, 1, 1, 1] # [background, shaft, wrist, fingers]
 
 if which_path == 1:
     # Christoffer:
