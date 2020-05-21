@@ -280,7 +280,11 @@ if train:
 
     deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
 
-    tf.keras.utils.plot_model(deep_unet, to_file='model_image.png', show_shapes=True, rankdir='RL')
+    tf.keras.utils.plot_model(deep_unet,
+                              to_file='DeepUnetModelPlot.png',
+                              show_shapes=False,
+                              show_layer_names=False,
+                              rankdir='TB')
 
     show_predictions(-1)
 
