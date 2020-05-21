@@ -8,7 +8,9 @@ import cv2 as cv
 import os
 import matplotlib.pyplot as plt
 from IPython.display import clear_output
+from contextlib import redirect_stdout
 import time
+
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 
@@ -32,11 +34,11 @@ print('Tensorflow version: '+tf.__version__)
 print('Numpy version: '+np.__version__)
 print('Keras version: '+tf.keras.__version__)
 
-which_path = 3 # 1 = local c, 2 = local j, 3 = remote
+which_path = 3  # 1 = local c, 2 = local j, 3 = remote
 train = True
 epoch = 100
 num_pixels = 480 * 640
-weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
+weights = [.5, 1.5, 1.5, 1, 1]  # [background, gripper, gripper, shaft, shaft]
 # sample_weight = np.zeros((79, num_pixels))
 
 Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss, 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
@@ -47,13 +49,14 @@ TL_beta = 3         # Tversky loss beta
 
 if which_path == 1:
     # Christoffer:
-    PATH = 'C:/Users/chris/Google Drive/Jigsaw annotations'
-elif which_path ==2:
+    PATH = 'C:/Users/chris/Google Drive/'
+elif which_path == 2:
     # Jonathan
-    PATH = '/Users/jonathansteen/Google Drive/Jigsaw annotations'
+    PATH = '/Users/jonathansteen/Google Drive/'
 elif which_path == 3:
     # Linux:
-    PATH = '/home/jsteeen/Jigsaw annotations'
+    PATH = '/home/jsteeen/'
+
 
 # Functions used to display images after each epoch
 def display(display_list, epoch_display):
@@ -254,6 +257,10 @@ if train:
 
     unet.summary()
 
+    with open('UnetModelSummary.txt', 'w') as f:
+        with redirect_stdout(f):
+            unet.summary()
+
     if Loss_function == 1:
         print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
         unet.compile(optimizer='adam',
@@ -287,6 +294,11 @@ if train:
     else:
         print('No loss function')
 
+    tf.keras.utils.plot_model(unet,
+                              to_file='UnetModelPlot.png',
+                              show_shapes=True,
+                              rankdir='TB')
+
     # tf.keras.metrics.MeanIoU(num_classes=2)
 
     #train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train))
@@ -310,7 +322,7 @@ if train:
     #print("lbls_display: " + str(lbls_val.shape))
 
     model_history = unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
-                             batch_size = 1,
+                             batch_size=1,
                              epochs=epoch,
                              verbose=2,
                              shuffle=True,

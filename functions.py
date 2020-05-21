@@ -124,7 +124,7 @@ def load_data_EndoVis17(data_path, dtype=np.float32):
     labels_temp = np.empty((N, *DIM), dtype=dtype)
     #labels_temp_temp = np.empty(DIM, dtype=dtype)
     for i in range(N):
-        print (str(i) + 'of 255')
+        print(str(i+1) + ' of 225')
         image_path = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/left_frames/frame{}.png'.format(str(i).zfill(3)))
         images_temp[i] = cv.imread(image_path).astype(dtype)
         images[i] = images_temp[i][28:1053, 320:1601] #crop the black parts
