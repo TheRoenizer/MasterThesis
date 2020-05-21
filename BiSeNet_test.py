@@ -11,6 +11,7 @@ import cv2 as cv
 import time
 import matplotlib.pyplot as plt
 from IPython.display import clear_output
+from contextlib import redirect_stdout
 
 try:
     from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
@@ -34,9 +35,13 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 from BiSeNet import bise_net
 from functions import *
 
-net = bise_net((480,640,3), 5)
+net = bise_net((480, 640, 3), 5)
 
-print(net.summary())
+net.summary()
+
+with open('BiSeNetModelSummary.txt', 'w') as f:
+    with redirect_stdout(f):
+        net.summary()
 
 """
 net.compile(optimizer = opt,loss = loss, metrics = metrics)
@@ -46,10 +51,10 @@ history = net.fit([imgs_train,imgs_train],lbls_train,validation_data=[[imgs_val,
 """
 
 train = True
-which_path = 2 # 1 = local, 2 = remote
+which_path = 2  # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 100
-weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
+weights = [.5, 1.5, 1.5, 1, 1]  # [background, gripper, gripper, shaft, shaft]
 
 if which_path == 1:
     # Christoffer:

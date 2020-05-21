@@ -1,6 +1,7 @@
 import os
 from tensorflow.compat.v1 import ConfigProto
 from tensorflow.compat.v1 import InteractiveSession
+from contextlib import redirect_stdout
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 
@@ -277,6 +278,10 @@ if train:
         (deep_unet, name) = deep_unet(imgs_train3.shape, num_classes=4, padding=36, droprate=0.0, linear=False)
 
     deep_unet.summary()
+
+    with open('DeepUnetModelSummary.txt', 'w') as f:
+        with redirect_stdout(f):
+            deep_unet.summary()
 
     deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
 

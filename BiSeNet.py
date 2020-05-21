@@ -18,7 +18,6 @@ def ConvAndBatch(x, n_filters=64, kernel=(2, 2), strides=(1, 1), padding='valid'
 
     activation = Activation(activation)
 
-
     x = conv_(x)
     x = batch_norm(x)
     x = activation(x)
@@ -116,4 +115,3 @@ def bise_net(input_shape, num_classes=1):
     else:
         output = Conv2D(num_classes, (1, 1), strides=(1, 1), padding='same', name='context', activation='softmax')(ans)
     return Model(inputs=[inputs, xception_inputs], outputs=output)
-
