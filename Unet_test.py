@@ -257,7 +257,7 @@ if train:
 
     unet.summary()
 
-    with open('modelsummary.txt', 'w') as f:
+    with open('UnetModelSummary.txt', 'w') as f:
         with redirect_stdout(f):
             unet.summary()
 
