@@ -256,6 +256,14 @@ if train:
 
     unet.summary()
 
+
+    def myprint(s):
+        with open('modelsummary.txt', 'w+') as file:
+            print(s, file=file)
+
+
+    unet.summary(print_fn=myprint)
+
     if Loss_function == 1:
         print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
         unet.compile(optimizer='adam',
