@@ -5,6 +5,7 @@ import numpy as np
 from PIL import Image
 import cv2 as cv
 import os
+from contextlib import redirect_stdout
 
 try:
     from keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, Conv1D, BatchNormalization, MaxPooling2D, Dropout
@@ -427,7 +428,16 @@ output = Reshape((4, 4))(output)
 model = Model(inputs=[inputs1, inputs2], outputs=output)
 model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
 
+tf.keras.utils.plot_model(model,
+                          to_file='PoseEstimationPlot.png',
+                          show_shapes=True,
+                          rankdir='TB')
+
 model.summary()
+
+with open('PoseEstimationSummary.txt', 'w') as f:
+    with redirect_stdout(f):
+        model.summary()
 
 # Train model
 history = model.fit([imgs_train_left, imgs_train_right], poses_train,
