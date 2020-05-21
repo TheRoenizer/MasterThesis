@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from IPython.display import clear_output
 import time
 
+
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 
 # Hvis du vil bruge "kort 1":
@@ -32,11 +33,11 @@ print('Tensorflow version: '+tf.__version__)
 print('Numpy version: '+np.__version__)
 print('Keras version: '+tf.keras.__version__)
 
-which_path = 3 # 1 = local c, 2 = local j, 3 = remote
+which_path = 3  # 1 = local c, 2 = local j, 3 = remote
 train = True
 epoch = 100
 num_pixels = 480 * 640
-weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
+weights = [.5, 1.5, 1.5, 1, 1]  # [background, gripper, gripper, shaft, shaft]
 # sample_weight = np.zeros((79, num_pixels))
 
 Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss, 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
@@ -286,6 +287,8 @@ if train:
                      metrics=['accuracy', iou_coef, dice_coef])
     else:
         print('No loss function')
+
+    tf.keras.utils.plot_model(unet, show_shapes=True)
 
     # tf.keras.metrics.MeanIoU(num_classes=2)
 
