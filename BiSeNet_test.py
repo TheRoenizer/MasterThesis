@@ -53,10 +53,10 @@ weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
 
 if which_path == 1:
     # Christoffer:
-    PATH = 'C:/Users/chris/Google Drive/Jigsaw annotations'
+    PATH = 'C:/Users/chris/Google Drive/'
 elif which_path == 2:
     # Linux:
-    PATH = '/home/jsteeen/Jigsaw annotations'
+    PATH = '/home/jsteeen/'
 
 # Load images and labels
 images, labels, labels_display = load_data(PATH)
