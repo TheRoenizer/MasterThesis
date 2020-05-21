@@ -122,6 +122,7 @@ def load_data_EndoVis17(data_path, dtype=np.float32):
     labels_display = np.empty((N, *DIM, 1), dtype=dtype)
     temp = np.empty((N, *DIM, 1), dtype=dtype)
     labels_temp = np.empty((1080,1920), dtype=dtype)
+    labels_crop = np.empty((N, *DIM), dtype=dtype)
     #labels_temp_temp = np.empty(DIM, dtype=dtype)
     for i in range(N):
         print(str(i+1) + ' of 225')
@@ -137,11 +138,11 @@ def load_data_EndoVis17(data_path, dtype=np.float32):
         k2 = np.where(labels_temp[:, :] == 50)
         labels_temp[k1] = 30
         labels_temp[k2] = 30
-        labels_temp[i] = labels_temp[28:1052, 320:1600]
-        labels_display[i,...,0] = labels_temp[i][28:1052, 320:1600]
-        labels_temp[i] = labels_temp[i] / 10
+        labels_crop[i] = labels_temp[28:1052, 320:1600]
+        labels_display[i,...,0] = labels_crop[i]
+        labels_crop[i] = labels_crop[i] / 10
 
-    labels = tf.keras.utils.to_categorical(labels_temp, num_classes=4, dtype='float32')
+    labels = tf.keras.utils.to_categorical(labels_crop, num_classes=4, dtype='float32')
     print("labels: " + str(labels.shape))
     images = images[..., ::-1]  # flip from BGR to RGB (for display purposes)
 
