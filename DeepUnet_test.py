@@ -28,9 +28,9 @@ num_epochs = 20
 #num_pixels = 480 * 640
 
 if which_data == 1:
-    weights = [.5, 1.5, 1.5, 1, 1] # [background, gripper, gripper, shaft, shaft]
+    weights = [.5, 1.5, 1.5, 1, 1]  # [background, gripper, gripper, shaft, shaft]
 if which_data == 2:
-    weights = [.5, 2, 2, 2] # [background, shaft, wrist, fingers]
+    weights = [.5, 2, 2, 2]  # [background, shaft, wrist, fingers]
 
 if which_path == 1:
     # Christoffer:
@@ -38,6 +38,7 @@ if which_path == 1:
 elif which_path == 2:
     # Linux:
     PATH = '/home/jsteeen/'
+
 
 # functions used to display images after each epoch
 def display(display_list, epoch_display):
@@ -53,14 +54,17 @@ def display(display_list, epoch_display):
     # plt.show()
     plt.close(fig)
 
+
 def create_mask(pred_mask):
     pred_mask = tf.argmax(pred_mask, axis=-1)
     pred_mask = pred_mask[..., tf.newaxis]
     return pred_mask[0]
 
+
 def show_predictions(epoch_show_predictions, image_num=1):
     pred_mask = deep_unet.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
     display([imgs_val[image_num], lbls_display_val[image_num], create_mask(pred_mask)], epoch_show_predictions)
+
 
 class DisplayCallback(tf.keras.callbacks.Callback):
     # @staticmethod
@@ -68,6 +72,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         clear_output(wait=True)
         show_predictions(epoch_callback)
         print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
+
 
 # Load images and labels
 if which_data == 1:
@@ -112,7 +117,6 @@ if which_data == 2:
 
     lbls_train = labels[0:200]
     lbls_val = labels[200:225]
-
 
     lbls_display_train = labels_display[0:200]
     lbls_display_val = labels_display[200:225]
@@ -276,14 +280,16 @@ if train:
 
     deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
 
+    tf.keras.utils.plot_model(deep_unet, show_shapes=True)
+
     show_predictions(-1)
 
     model_history = deep_unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
-                      batch_size=batch_size,
-                      epochs=num_epochs,
-                      verbose=1,
-                      shuffle=True,
-                      callbacks=[DisplayCallback()])
+                                  batch_size=batch_size,
+                                  epochs=num_epochs,
+                                  verbose=1,
+                                  shuffle=True,
+                                  callbacks=[DisplayCallback()])
 
     loss = model_history.history['loss']
     val_loss = model_history.history['val_loss']
