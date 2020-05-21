@@ -48,13 +48,14 @@ TL_beta = 3         # Tversky loss beta
 
 if which_path == 1:
     # Christoffer:
-    PATH = 'C:/Users/chris/Google Drive/Jigsaw annotations'
-elif which_path ==2:
+    PATH = 'C:/Users/chris/Google Drive/'
+elif which_path == 2:
     # Jonathan
-    PATH = '/Users/jonathansteen/Google Drive/Jigsaw annotations'
+    PATH = '/Users/jonathansteen/Google Drive/'
 elif which_path == 3:
     # Linux:
-    PATH = '/home/jsteeen/Jigsaw annotations'
+    PATH = '/home/jsteeen/'
+
 
 # Functions used to display images after each epoch
 def display(display_list, epoch_display):
@@ -288,7 +289,10 @@ if train:
     else:
         print('No loss function')
 
-    tf.keras.utils.plot_model(unet, show_shapes=True)
+    tf.keras.utils.plot_model(unet,
+                              to_file='UnetModelPlot.png',
+                              show_shapes=True,
+                              rankdir='TB')
 
     # tf.keras.metrics.MeanIoU(num_classes=2)
 
@@ -313,7 +317,7 @@ if train:
     #print("lbls_display: " + str(lbls_val.shape))
 
     model_history = unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
-                             batch_size = 1,
+                             batch_size=1,
                              epochs=epoch,
                              verbose=2,
                              shuffle=True,
