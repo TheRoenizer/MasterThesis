@@ -8,7 +8,7 @@ import os
 from contextlib import redirect_stdout
 
 try:
-    from keras.layers import Input, Flatten, Dense, add, Conv2D, Conv1D, BatchNormalization, MaxPooling2D, Dropout, Concatenate
+    from keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, Conv1D, BatchNormalization, MaxPooling2D, Dropout, Concatenate
     from keras.models import Model, Sequential, load_model
 except:
     from tensorflow.keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, BatchNormalization, MaxPooling2D
