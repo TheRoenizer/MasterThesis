@@ -104,11 +104,11 @@ if which_data == 2:
     #cv.imwrite("pictures_deepunet/labels_temp_new_50.png", labels_temp[50])
     #cv.imwrite("pictures_deepunet/labels_temp_left50.png", labels_left_temp[50])
     #cv.imwrite("pictures_deepunet/labels_temp_right50.png", labels_right_temp[50])
-    cv.imwrite("pictures_deepunet/labels_display50.png", labels_display[50])
-    cv.imwrite("pictures_deepunet/label0.png", labels[50, ..., 0])
-    cv.imwrite("pictures_deepunet/label1.png", labels[50, ..., 1])
-    cv.imwrite("pictures_deepunet/label2.png", labels[50, ..., 2])
-    cv.imwrite("pictures_deepunet/label3.png", labels[50, ..., 3])
+    #cv.imwrite("pictures_deepunet/labels_display50.png", labels_display[50])
+    #cv.imwrite("pictures_deepunet/label0.png", labels[50, ..., 0])
+    #cv.imwrite("pictures_deepunet/label1.png", labels[50, ..., 1])
+    #cv.imwrite("pictures_deepunet/label2.png", labels[50, ..., 2])
+    cv.imwrite("pictures_deepunet/Fuckingvigtig.png", images[10])
     print("images saved")
 
     imgs_train = images[0:200]
