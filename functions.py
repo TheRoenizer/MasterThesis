@@ -114,9 +114,10 @@ def load_data_EndoVis15(data_path, dtype=np.float32):
 def load_data_EndoVis17(data_path, dtype=np.float32):
     N = 225  # Number of images
     M = 4  # Number of labels
-    DIM = (1080, 1920)  # Image dimensions
+    DIM = (1024, 1280)  # Image dimensions
 
     images = np.empty((N, *DIM, 3), dtype=dtype)
+    images_temp = np.empty((N, 1080,1920, 3), dtype=dtype)
     labels = np.empty((N, *DIM, M), dtype=dtype)
     labels_display = np.empty((N, *DIM, 1), dtype=dtype)
     temp = np.empty((N, *DIM, 1), dtype=dtype)
@@ -125,7 +126,8 @@ def load_data_EndoVis17(data_path, dtype=np.float32):
     for i in range(N):
         print (str(i) + 'of 255')
         image_path = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/left_frames/frame{}.png'.format(str(i).zfill(3)))
-        images[i] = cv.imread(image_path).astype(dtype)
+        images_temp[i] = cv.imread(image_path).astype(dtype)
+        images[i] = images_temp[i][28:1053, 320:1601] #crop the black parts
         images[i] = cv.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
         label_path_left = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/ground_truth/Left_Large_Needle_Driver_labels/frame{}.png'.format(str(i).zfill(3)))
