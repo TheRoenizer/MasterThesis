@@ -8,7 +8,7 @@ import os
 from contextlib import redirect_stdout
 
 try:
-    from keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, Conv1D, BatchNormalization, MaxPooling2D, Dropout
+    from keras.layers import Input, Flatten, Dense, add, Conv2D, Conv1D, BatchNormalization, MaxPooling2D, Dropout, Concatenate
     from keras.models import Model, Sequential, load_model
 except:
     from tensorflow.keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, BatchNormalization, MaxPooling2D
@@ -395,9 +395,10 @@ print("Poses loaded!")
 
 inputs1 = Input(shape=(800, 1280, 3))
 inputs2 = Input(shape=(800, 1280, 3))
-add = add([inputs1, inputs2])
+# add = add([inputs1, inputs2])
+concat = Concatenate(axis=-1)([inputs1, inputs2])
 
-conv1 = Conv2D(16, 3, activation='relu', padding='same')(add)
+conv1 = Conv2D(16, 3, activation='relu', padding='same')(concat)
 conv1 = BatchNormalization(axis=-1)(conv1)
 pool1 = MaxPooling2D(pool_size=2)(conv1)
 pool1 = Dropout(droprate)(pool1)
