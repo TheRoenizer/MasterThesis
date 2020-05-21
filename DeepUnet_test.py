@@ -282,7 +282,7 @@ if train:
 
     tf.keras.utils.plot_model(deep_unet,
                               to_file='DeepUnetModelPlot.png',
-                              show_shapes=False,
+                              show_shapes=True,
                               show_layer_names=False,
                               rankdir='TB')
 

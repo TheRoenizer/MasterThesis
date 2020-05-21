@@ -203,6 +203,7 @@ lbls_val_onehot = tf.keras.utils.to_categorical(lbls_val, num_classes=5, dtype='
 lbls_val = lbls_val.reshape((10, 480, 640, -1))
 '''
 
+
 def display(display_list, epoch_display):
     fig = plt.figure(figsize=(15, 15))
 
@@ -237,6 +238,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         show_predictions(epoch_callback)
         print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
 
+
 if train:
 # use tf.data to improve performance
 
@@ -245,14 +247,20 @@ if train:
 
     net.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
 
+    tf.keras.utils.plot_model(net,
+                              to_file='BiSeNetModelPlot.png',
+                              show_shapes=True,
+                              rankdir='TB')
+
     show_predictions(-1)
 
-    model_history = net.fit([imgs_train, imgs_train], lbls_train, validation_data=[[imgs_val, imgs_val], lbls_val],
-                      batch_size=batch_size,
-                      epochs=num_epochs,
-                      verbose=1,
-                      shuffle=True,
-                      callbacks=[DisplayCallback()])
+    model_history = net.fit([imgs_train, imgs_train], lbls_train,
+                            validation_data=[[imgs_val, imgs_val], lbls_val],
+                            batch_size=batch_size,
+                            epochs=num_epochs,
+                            verbose=1,
+                            shuffle=True,
+                            callbacks=[DisplayCallback()])
 
     loss = model_history.history['loss']
     val_loss = model_history.history['val_loss']
@@ -298,8 +306,9 @@ elif not train:
     net = load_model('net_model.h5', compile=False)
 
     # compile saved model
-    net.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights),
-                      metrics=['accuracy', iou_coef, dice_coef])
+    net.compile(optimizer='adam',
+                loss=weighted_categorical_crossentropy(weights),
+                metrics=['accuracy', iou_coef, dice_coef])
 
 # Evaluate model
 print('\n# Evaluate on test data 1')
