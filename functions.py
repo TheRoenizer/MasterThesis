@@ -4,6 +4,7 @@ import numpy as np
 import os
 import cv2 as cv
 
+
 def load_data(data_path, dtype=np.float32):
     N = 99            # Number of images
     M = 5             # Number of labels

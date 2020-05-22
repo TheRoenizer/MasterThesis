@@ -66,12 +66,9 @@ def display(display_list, epoch_display):
         plt.subplot(1, len(display_list), i + 1)
         plt.title(title[i])
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
-        # img = tf.keras.preprocessing.image.array_to_img(display_list[i])
-        # img.save("afterEpoch{}.png".format(epoch))
         plt.axis('off')
 
     plt.savefig("Pictures/afterEpoch{}.png".format(epoch_display + 1))
-    # plt.show()
     plt.close(fig)
 
 
@@ -110,146 +107,6 @@ lbls_display_val = labels_display[79:89]
 lbls_display_test = labels_display[89:99]
 
 print('Images and labels loaded!')
-
-'''
-imgs_train = np.zeros((79, 480, 640, 3))
-print('Loading images...')
-for i in range(1, 80):
-    # print('Progress: ' + str(i) + ' of 79')
-    path = PATH + '/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
-    img = np.array(Image.open(path))[np.newaxis]
-    img = img / 255
-    imgs_train[i-1] = img
-
-imgs_val = np.zeros((10, 480, 640, 3))
-for i in range(80, 90):
-    # print('Progress: ' + str(i) + ' of 89')
-    path = PATH + '/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
-    img = np.array(Image.open(path))[np.newaxis]
-    img = img / 255
-    imgs_val[i-80] = img
-
-imgs_test = np.zeros((10, 480, 640, 3))
-for i in range(90, 100):
-    # print('Progress: ' + str(i) + ' of 89')
-    path = PATH + '/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
-    img = np.array(Image.open(path))[np.newaxis]
-    img = img / 255
-    imgs_test[i-90] = img
-
-
-print('Images loaded!')
-print('Loading labels...')
-
-
-# Load labels
-lbls_train = np.zeros((79, 480, 640))
-sample_weight = np.zeros((79, 480, 640))
-for i in range(1, 80):
-    # print('Progress: ' + str(i) + ' of 79')
-    path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/000.png'
-    path2 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/002.png'
-    path3 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
-    path4 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/001.png'
-    img1 = cv.imread(path1, 2)
-    img2 = cv.imread(path2, 2)
-    img3 = cv.imread(path3, 2)
-    img4 = cv.imread(path4, 2)
-    change1_to = np.where(img1[:, :] != 0)
-    change2_to = np.where(img2[:, :] != 0)
-    change3_to = np.where(img3[:, :] != 0)
-    change4_to = np.where(img4[:, :] != 0)
-    img1[change1_to] = 1
-    img2[change2_to] = 2
-    img3[change3_to] = 3
-    img4[change4_to] = 4
-    weight1 = np.zeros((480, 640))
-    weight2 = np.zeros((480, 640))
-    weight3 = np.zeros((480, 640))
-    weight4 = np.zeros((480, 640))
-    weight1[change1_to] = 10
-    weight2[change2_to] = 1
-    weight3[change3_to] = 10
-    weight4[change4_to] = 1
-    img = img1 + img2 + img3 + img4
-    weight = weight1 + weight2 + weight3 + weight4
-    change_5 = np.where(img[:, :] == 5)
-    img[change_5] = 0
-    change_overlap = np.where(weight[:, :] == 11)
-    weight[change_overlap] = 0
-    lbls_train[i-1] = img
-    sample_weight[i-1] = weight
-
-lbls_train_onehot = tf.keras.utils.to_categorical(lbls_train, num_classes=5, dtype='float32')
-print("lbls_train_onehot: " + str(lbls_train_onehot.shape))
-print("lbls_train: " + str(lbls_train.shape))
-lbls_train = lbls_train.reshape((79, 480, 640, -1))
-print("lbls_train: " + str(lbls_train.shape))
-
-lbls_val = np.zeros((10, 480, 640))
-for i in range(80, 90):
-    # print('Progress: ' + str(i) + ' of 89')
-    path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/000.png'
-    path2 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/002.png'
-    path3 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
-    path4 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/001.png'
-    img1 = cv.imread(path1, 2)
-    img2 = cv.imread(path2, 2)
-    img3 = cv.imread(path3, 2)
-    img4 = cv.imread(path4, 2)
-    change1_to = np.where(img1[:, :] != 0)
-    change2_to = np.where(img2[:, :] != 0)
-    change3_to = np.where(img3[:, :] != 0)
-    change4_to = np.where(img4[:, :] != 0)
-    img1[change1_to] = 1
-    img2[change2_to] = 2
-    img3[change3_to] = 3
-    img4[change4_to] = 4
-    img = img1 + img2 + img3 + img4
-    change_5 = np.where(img[:, :] == 5)
-    img[change_5] = 0
-    lbls_val[i-80] = img
-
-lbls_val_onehot = tf.keras.utils.to_categorical(lbls_val, num_classes=5, dtype='float32')
-lbls_val = lbls_val.reshape((10, 480, 640, -1))
-
-# print(imgs_train.shape)
-# print(imgs_val.shape)
-# print(lbls_train.shape)
-# print(lbls_val.shape)
-
-#imgs_train2 = np.zeros((480, 640, 3))
-#(unet, name) = unet(imgs_train2.shape, num_classes=1, droprate=0.0, linear=False)
-
-#unet.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-
-lbls_test = np.zeros((10, 480, 640))
-for i in range(90, 100):
-    # print('Progress: ' + str(i) + ' of 89')
-    path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/000.png'
-    path2 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/002.png'
-    path3 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
-    path4 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/001.png'
-    img1 = cv.imread(path1, 2)
-    img2 = cv.imread(path2, 2)
-    img3 = cv.imread(path3, 2)
-    img4 = cv.imread(path4, 2)
-    change1_to = np.where(img1[:, :] != 0)
-    change2_to = np.where(img2[:, :] != 0)
-    change3_to = np.where(img3[:, :] != 0)
-    change4_to = np.where(img4[:, :] != 0)
-    img1[change1_to] = 1
-    img2[change2_to] = 2
-    img3[change3_to] = 3
-    img4[change4_to] = 4
-    img = img1 + img2 + img3 + img4
-    change_5 = np.where(img[:, :] == 5)
-    img[change_5] = 0
-    lbls_test[i - 90] = img
-
-lbls_test_onehot = tf.keras.utils.to_categorical(lbls_test, num_classes=5, dtype='float32')
-lbls_test = lbls_test.reshape((10, 480, 640, -1))
-'''
 
 if train:
     imgs_train2 = np.zeros((480, 640, 3))
@@ -296,39 +153,16 @@ if train:
 
     tf.keras.utils.plot_model(unet,
                               to_file='UnetModelPlot.png',
-                              show_shapes=False,
-                              show_layer_names=False,
-                              rankdir='LR')
-
-    # tf.keras.metrics.MeanIoU(num_classes=2)
-
-    #train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train))
-    #val_dataset = tf.data.Dataset.from_tensor_slices((imgs_val, lbls_val))
-
-    # Slice the dataset
-    #train_dataset = train_dataset.shuffle(100).batch(1)
-    #val_dataset = val_dataset.batch(1)
-
-    show_predictions(-1)
-    # imgs_train = imgs_train.reshape((79, num_pixels, 3))
-    # imgs_val = imgs_val.reshape((10, num_pixels, 3))
-    # print(sample_weight.shape)
-    # print(lbls_train_onehot.shape)
-    # print(imgs_train.shape)
-    # print(lbls_val_onehot.shape)
-    # print(imgs_val.shape)
-    #model_history = unet.fit(train_dataset, epochs=epoch)
-
-    #print("imgs_val: " + str(imgs_val.shape))
-    #print("lbls_display: " + str(lbls_val.shape))
+                              show_shapes=True,
+                              show_layer_names=True,
+                              rankdir='TB')
 
     model_history = unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
                              batch_size=1,
                              epochs=epoch,
-                             verbose=2,
+                             verbose=1,
                              shuffle=True,
                              callbacks=[DisplayCallback()])
-                             #sample_weight=sample_weight)
 
     show_predictions(101, 2)
     show_predictions(102, 3)
