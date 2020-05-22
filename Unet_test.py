@@ -296,8 +296,9 @@ if train:
 
     tf.keras.utils.plot_model(unet,
                               to_file='UnetModelPlot.png',
-                              show_shapes=True,
-                              rankdir='TB')
+                              show_shapes=False,
+                              show_layer_names=False,
+                              rankdir='LR')
 
     # tf.keras.metrics.MeanIoU(num_classes=2)
 
