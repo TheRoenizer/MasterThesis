@@ -15,10 +15,10 @@ import time
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 
 # Hvis du vil bruge "kort 1":
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+#os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 # ellers:
-#os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 # hvis du træne på CPU'en:
 #os.environ["CUDA_VISIBLE_DEVICES"] = ""
@@ -296,8 +296,9 @@ if train:
 
     tf.keras.utils.plot_model(unet,
                               to_file='UnetModelPlot.png',
-                              show_shapes=True,
-                              rankdir='TB')
+                              show_shapes=False,
+                              show_layer_names=False,
+                              rankdir='LR')
 
     # tf.keras.metrics.MeanIoU(num_classes=2)
 
