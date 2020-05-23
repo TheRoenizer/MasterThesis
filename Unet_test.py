@@ -68,7 +68,7 @@ def display(display_list, epoch_display):
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
         plt.axis('off')
 
-    plt.savefig("pictures_unet  /afterEpoch{}.png".format(epoch_display + 1))
+    plt.savefig("pictures_unet/afterEpoch{}.png".format(epoch_display + 1))
     plt.close(fig)
 
 
