@@ -53,7 +53,7 @@ if which_path == 1:
 elif which_path == 2:
     # Jonathan
     PATH = '/Users/jonathansteen/Google Drive/'
-elif which_path == 3:
+else:
     # Linux:
     PATH = '/home/jsteeen/'
 
@@ -109,8 +109,8 @@ lbls_display_test = labels_display[89:99]
 print('Images and labels loaded!')
 
 if train:
-    imgs_train2 = np.zeros((480, 640, 3))
-    (unet, name) = unet(imgs_train2.shape, num_classes=5, droprate=0.0, linear=False)
+    input_shape = np.empty((480, 640, 3))
+    (unet, name) = unet(input_shape.shape, num_classes=5, droprate=0.0, linear=False)
 
     unet.summary()
 
@@ -218,7 +218,7 @@ if train:
     unet.save('Unet_model.h5')
     print("Saved model to disk")
 
-elif not train:
+else:
     # Load model from file
     unet = load_model('Unet_model.h5', compile=False)
 

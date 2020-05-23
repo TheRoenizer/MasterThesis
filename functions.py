@@ -41,6 +41,7 @@ def load_data(data_path, dtype=np.float32):
         images = images[..., ::-1] # flip from BGR to RGB (for display purposes)
     return images, labels, labels_display
 
+
 def load_data_EndoVis15(data_path, dtype=np.float32):
     N = 120            # Number of images
     M = 3             # Number of labels
@@ -149,6 +150,7 @@ def load_data_EndoVis17(data_path, dtype=np.float32):
     images = images[..., ::-1]  # flip from BGR to RGB (for display purposes)
 
     return images, labels, labels_display
+
 
 def categorical_focal_loss(gamma=2., alpha=.25):
     """
