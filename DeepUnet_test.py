@@ -123,7 +123,7 @@ if train:
     imgs_train3 = np.zeros((1024, 1280, 3))
 
     if which_data == 1:
-        (deep_unet, name) = deep_unet(imgs_train2.shape, num_classes=5, paddding=16)
+        (deep_unet, name) = deep_unet(imgs_train2.shape, num_classes=5, padding=16)
     elif which_data == 2:
         (deep_unet, name) = deep_unet(imgs_train3.shape, num_classes=4)
 
