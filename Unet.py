@@ -79,7 +79,6 @@ def unet(input_shape, num_classes=5, droprate=None, linear=False):
     add9 = concatenate([conv1, up9], axis=-1)
     conv9 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(add9)
     conv9 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
-    #conv9 = Conv2D(2, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
 
     if num_classes == 1:
         if linear:
