@@ -6,7 +6,7 @@ from keras.applications.xception import preprocess_input
 from keras.models import Model
 
 
-def ConvAndBatch(x, n_filters=64, kernel=(3, 3), strides=(1, 1), padding='valid', activation='relu'):
+def ConvAndBatch(x, n_filters=64, kernel=(2, 2), strides=(1, 1), padding='valid', activation='relu'):
     filters = n_filters
 
     conv_ = Conv2D(filters=filters,
