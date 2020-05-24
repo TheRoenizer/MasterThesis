@@ -6,7 +6,7 @@ from keras.applications.xception import preprocess_input
 from keras.models import Model
 
 
-def ConvAndBatch(x, n_filters=64, kernel=(2, 2), strides=(1, 1), padding='valid', activation='relu'):
+def ConvAndBatch(x, n_filters=64, kernel=(3, 3), strides=(1, 1), padding='valid', activation='relu'):
     filters = n_filters
 
     conv_ = Conv2D(filters=filters,
@@ -82,9 +82,9 @@ def ContextPath(layer_13, layer_14):
 
 
 def FinalModel(x, tail_prev, tail):
-    x = ConvAndBatch(x, 32, strides=2)
     x = ConvAndBatch(x, 64, strides=2)
-    x = ConvAndBatch(x, 156, strides=2)
+    x = ConvAndBatch(x, 128, strides=2)
+    x = ConvAndBatch(x, 256, strides=2)
 
     # context path
     cp = ContextPath(tail_prev, tail)
