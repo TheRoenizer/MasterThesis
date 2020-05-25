@@ -39,6 +39,7 @@ print("Loading images...")
 # Train images
 imgs_train_left = np.zeros((64, 800, 1280, 3))
 imgs_train_right = np.zeros((64, 800, 1280, 3))
+imgs_train = np.empty((64, 1600, 1280, 3))
 for i in range(0, 40):
     path_left = PATH + 'rosbag_annotations/img'+str(i)+'_left/data/002.png'
     path_right = PATH + 'rosbag_annotations/img'+str(i)+'_right/data/002.png'
@@ -52,6 +53,9 @@ for i in range(0, 40):
 
     imgs_train_left[i] = img_left
     imgs_train_right[i] = img_right
+    imgs_train[i] = np.concatenate((img_left, img_right), axis=1)
+
+print(imgs_train.shape)
 for i in range(50, 74):
     path_left = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/002.png'
     path_right = PATH + 'rosbag_annotations/img' + str(i) + '_right/data/002.png'
