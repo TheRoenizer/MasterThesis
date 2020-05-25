@@ -419,7 +419,7 @@ inputs2 = Input(shape=(800, 1280, 3))
 # add = add([inputs1, inputs2])
 concat = Concatenate(axis=-1)([inputs1, inputs2])
 '''
-input3 = Input(shape=(1600, 1280))
+input3 = Input(shape=(1600, 1280, 1))
 
 conv1 = Conv2D(16, 3, activation='relu', padding='same')(input3)
 conv1 = BatchNormalization(axis=-1)(conv1)
@@ -470,8 +470,8 @@ history = model.fit(lbls_train, poses_train,
                     verbose=1,
                     validation_data=(lbls_val, poses_val))
 
-predicted_poses = model.predict(imgs_test)
-score = model.evaluate(imgs_test, poses_test)
+predicted_poses = model.predict(lbls_test)
+score = model.evaluate(lbls_test, poses_test)
 print(poses_test[0, :, :].T)
 print(predicted_poses[0, :, :].T)
 print("DONE!")
