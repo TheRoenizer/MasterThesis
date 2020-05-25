@@ -44,8 +44,8 @@ for i in range(0, 40):
     path_left = PATH + 'rosbag_annotations/img'+str(i)+'_left/data/002.png'
     path_right = PATH + 'rosbag_annotations/img'+str(i)+'_right/data/002.png'
 
-    img_left = np.array(Image.open(path_left))[np.newaxis]
-    img_right = np.array(Image.open(path_right))[np.newaxis]
+    img_left = np.array(Image.open(path_left))#[np.newaxis]
+    img_right = np.array(Image.open(path_right))#[np.newaxis]
 
     # Normalize data
     img_left = img_left / 255
