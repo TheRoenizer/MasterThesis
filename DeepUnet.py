@@ -14,7 +14,7 @@ except:
     from tensorflow.keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
     from tensorflow.keras.models import Model
 
-def deep_unet(input_shape, num_classes=5, padding=0, droprate=None, linear=False):
+def deep_unet(input_shape, num_classes=5, padding=0):
     model_name = 'deep_unet'
     inputs = Input(shape=input_shape)
 

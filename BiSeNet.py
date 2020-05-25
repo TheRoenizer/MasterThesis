@@ -82,9 +82,9 @@ def ContextPath(layer_13, layer_14):
 
 
 def FinalModel(x, tail_prev, tail):
-    x = ConvAndBatch(x, 32, strides=2)
     x = ConvAndBatch(x, 64, strides=2)
-    x = ConvAndBatch(x, 156, strides=2)
+    x = ConvAndBatch(x, 128, strides=2)
+    x = ConvAndBatch(x, 256, strides=2)
 
     # context path
     cp = ContextPath(tail_prev, tail)
