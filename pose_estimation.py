@@ -54,8 +54,6 @@ for i in range(0, 40):
     imgs_train_left[i] = img_left
     imgs_train_right[i] = img_right
     imgs_train[i] = np.concatenate((img_left, img_right), axis=1)
-
-print(imgs_train.shape)
 for i in range(50, 74):
     path_left = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/002.png'
     path_right = PATH + 'rosbag_annotations/img' + str(i) + '_right/data/002.png'
@@ -69,10 +67,12 @@ for i in range(50, 74):
 
     imgs_train_left[i-10] = img_left
     imgs_train_right[i-10] = img_right
+    imgs_train[i-10] = np.concatenate((img_left, img_right), axis=1)
 
 # Validation images
 imgs_val_left = np.zeros((8, 800, 1280, 3))
 imgs_val_right = np.zeros((8, 800, 1280, 3))
+imgs_val = np.empty((8, 1600, 1280, 3))
 for i in range(40, 45):
     path_left = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/002.png'
     path_right = PATH + 'rosbag_annotations/img' + str(i) + '_right/data/002.png'
@@ -86,6 +86,7 @@ for i in range(40, 45):
 
     imgs_val_left[i-40] = img_left
     imgs_val_right[i-40] = img_right
+    imgs_val[i-40] = np.concatenate((img_left, img_right), axis=1)
 for i in range(74, 77):
     path_left = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/002.png'
     path_right = PATH + 'rosbag_annotations/img' + str(i) + '_right/data/002.png'
@@ -99,10 +100,12 @@ for i in range(74, 77):
 
     imgs_val_left[i-69] = img_left
     imgs_val_right[i-69] = img_right
+    imgs_val[i-69] = np.concatenate((img_left, img_right), axis=1)
 
 # Test images
 imgs_test_left = np.zeros((8, 800, 1280, 3))
 imgs_test_right = np.zeros((8, 800, 1280, 3))
+imgs_test = np.empty((8, 1600, 1280, 3))
 for i in range(45, 50):
     path_left = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/002.png'
     path_right = PATH + 'rosbag_annotations/img' + str(i) + '_right/data/002.png'
@@ -116,6 +119,7 @@ for i in range(45, 50):
 
     imgs_test_left[i-45] = img_left
     imgs_test_right[i-45] = img_right
+    imgs_test[i-45] = np.concatenate((img_left, img_right), axis=1)
 for i in range(77, 80):
     path_left = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/002.png'
     path_right = PATH + 'rosbag_annotations/img' + str(i) + '_right/data/002.png'
@@ -129,6 +133,7 @@ for i in range(77, 80):
 
     imgs_test_left[i-72] = img_left
     imgs_test_right[i-72] = img_right
+    imgs_test[i-72] = np.concatenate((img_left, img_right), axis=1)
 
 print("Images loaded!")
 
@@ -137,6 +142,7 @@ print("Loading labels...")
 # Train labels
 lbls_train_left = np.zeros((64, 800, 1280))
 lbls_train_right = np.zeros((64, 800, 1280))
+lbls_train = np.empty((64, 1600, 1280))
 for i in range(0, 40):
     # Left
     path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
@@ -175,6 +181,7 @@ for i in range(0, 40):
     change_right_overlap = np.where(lbl_right[:, :] == 3)
     lbl_right[change_right_overlap] = 0
     lbls_train_right[i] = lbl_right
+    lbls_train[i] = np.concatenate((lbl_left, lbl_right), axis=1)
 for i in range(50, 74):
     # Left
     path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
@@ -213,10 +220,13 @@ for i in range(50, 74):
     change_right_overlap = np.where(lbl_right[:, :] == 3)
     lbl_right[change_right_overlap] = 0
     lbls_train_right[i-10] = lbl_right
+    lbls_train[i-10] = np.concatenate((lbl_left, lbl_right), axis=1)
+
 
 # Validation labels
 lbls_val_left = np.zeros((8, 800, 1280))
 lbls_val_right = np.zeros((8, 800, 1280))
+lbls_val = np.empty((8, 1600, 1280))
 for i in range(40, 45):
     # Left
     path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
@@ -255,6 +265,7 @@ for i in range(40, 45):
     change_right_overlap = np.where(lbl_right[:, :] == 3)
     lbl_right[change_right_overlap] = 0
     lbls_val_right[i-40] = lbl_right
+    lbls_val[i-40] = np.concatenate((lbl_left, lbl_right), axis=1)
 for i in range(74, 77):
     # Left
     path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
@@ -293,10 +304,13 @@ for i in range(74, 77):
     change_right_overlap = np.where(lbl_right[:, :] == 3)
     lbl_right[change_right_overlap] = 0
     lbls_val_right[i-69] = lbl_right
+    lbls_val[i-69] = np.concatenate((lbl_left, lbl_right), axis=1)
+
 
 # Test labels
 lbls_test_left = np.zeros((8, 800, 1280))
 lbls_test_right = np.zeros((8, 800, 1280))
+lbls_test = np.empty((8, 1600, 1280))
 for i in range(45, 50):
     # Left
     path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
@@ -335,6 +349,7 @@ for i in range(45, 50):
     change_right_overlap = np.where(lbl_right[:, :] == 3)
     lbl_right[change_right_overlap] = 0
     lbls_test_right[i-45] = lbl_right
+    lbls_test[i-45] = np.concatenate((lbl_left, lbl_right), axis=1)
 for i in range(77, 80):
     # Left
     path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
@@ -373,6 +388,8 @@ for i in range(77, 80):
     change_right_overlap = np.where(lbl_right[:, :] == 3)
     lbl_right[change_right_overlap] = 0
     lbls_test_right[i-72] = lbl_right
+    lbls_test[i-72] = np.concatenate((lbl_left, lbl_right), axis=1)
+
 
 print("Labels loaded!")
 
@@ -396,13 +413,15 @@ print(poses_test[0, :, :].T)
 print("Poses loaded!")
 
 # Build model
-
+'''
 inputs1 = Input(shape=(800, 1280, 3))
 inputs2 = Input(shape=(800, 1280, 3))
 # add = add([inputs1, inputs2])
 concat = Concatenate(axis=-1)([inputs1, inputs2])
+'''
+input3 = Input(shape=(1600, 1280))
 
-conv1 = Conv2D(16, 3, activation='relu', padding='same')(concat)
+conv1 = Conv2D(16, 3, activation='relu', padding='same')(input3)
 conv1 = BatchNormalization(axis=-1)(conv1)
 pool1 = MaxPooling2D(pool_size=2)(conv1)
 pool1 = Dropout(droprate)(pool1)
@@ -430,7 +449,7 @@ fc1 = Dropout(0.5)(fc1)
 output = Dense(16)(fc1)
 output = Reshape((4, 4))(output)
 
-model = Model(inputs=[inputs1, inputs2], outputs=output)
+model = Model(inputs=input3, outputs=output)
 model.compile(optimizer='sgd', loss='mse', metrics=['accuracy'])
 
 tf.keras.utils.plot_model(model,
@@ -445,14 +464,14 @@ with open('PoseEstimationSummary.txt', 'w') as f:
         model.summary()
 
 # Train model
-history = model.fit([imgs_train_left, imgs_train_right], poses_train,
+history = model.fit(lbls_train, poses_train,
                     batch_size=1,
                     epochs=epochs,
                     verbose=1,
-                    validation_data=([imgs_val_left, imgs_val_right], poses_val))
+                    validation_data=(lbls_val, poses_val))
 
-predicted_poses = model.predict([imgs_test_left, imgs_test_right])
-score = model.evaluate([imgs_test_left, imgs_test_right], poses_test)
+predicted_poses = model.predict(imgs_test)
+score = model.evaluate(imgs_test, poses_test)
 print(poses_test[0, :, :].T)
 print(predicted_poses[0, :, :].T)
 print("DONE!")
