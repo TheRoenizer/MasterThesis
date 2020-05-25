@@ -142,7 +142,7 @@ print("Loading labels...")
 # Train labels
 lbls_train_left = np.zeros((64, 800, 1280))
 lbls_train_right = np.zeros((64, 800, 1280))
-lbls_train = np.empty((64, 1600, 1280))
+lbls_train = np.empty((64, 1600, 1280, 1))
 for i in range(0, 40):
     # Left
     path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
@@ -226,7 +226,7 @@ for i in range(50, 74):
 # Validation labels
 lbls_val_left = np.zeros((8, 800, 1280))
 lbls_val_right = np.zeros((8, 800, 1280))
-lbls_val = np.empty((8, 1600, 1280))
+lbls_val = np.empty((8, 1600, 1280, 1))
 for i in range(40, 45):
     # Left
     path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
@@ -310,7 +310,7 @@ for i in range(74, 77):
 # Test labels
 lbls_test_left = np.zeros((8, 800, 1280))
 lbls_test_right = np.zeros((8, 800, 1280))
-lbls_test = np.empty((8, 1600, 1280))
+lbls_test = np.empty((8, 1600, 1280, 1))
 for i in range(45, 50):
     # Left
     path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
