@@ -181,7 +181,9 @@ for i in range(0, 40):
     change_right_overlap = np.where(lbl_right[:, :] == 3)
     lbl_right[change_right_overlap] = 0
     lbls_train_right[i] = lbl_right
-    lbls_train[i] = np.concatenate((lbl_left[:, np.newaxis], lbl_right[:, np.newaxis]), axis=1)
+    lbls_train[i] = np.concatenate((lbl_left[:, :, :, np.newaxis], lbl_right[:, :, :, np.newaxis]), axis=0)
+    print("lbl_left: " + str(lbl_left.shape) + "lbl_right: " + str(lbl_right.shape))
+print("lbl_train: " + str(lbls_train.shape))
 for i in range(50, 74):
     # Left
     path_left1 = PATH + 'rosbag_annotations/img' + str(i) + '_left/data/000.png'
@@ -220,7 +222,7 @@ for i in range(50, 74):
     change_right_overlap = np.where(lbl_right[:, :] == 3)
     lbl_right[change_right_overlap] = 0
     lbls_train_right[i-10] = lbl_right
-    lbls_train[i-10] = np.concatenate((lbl_left[:, np.newaxis], lbl_right[:, np.newaxis]), axis=1)
+    lbls_train[i-10] = np.concatenate((lbl_left[:, :, :, np.newaxis], lbl_right[:, :, :, np.newaxis]), axis=0)
 
 
 # Validation labels
