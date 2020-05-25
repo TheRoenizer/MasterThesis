@@ -25,15 +25,15 @@ which_path = 0
 epochs = 100
 droprate = 0.5
 
-# Linux:
-PATH = '/home/jsteeen/'
 if which_path == 1:
     # Christoffer:
     PATH = 'C:/Users/chris/Google Drive/Master Thesis/'
 elif which_path == 2:
     # Jonathan:
     PATH = '/Users/jonathansteen/Google Drive/Master Thesis/'
-
+else:
+    # Linux:
+    PATH = '/home/jsteeen/'
 # Load images
 print("Loading images...")
 # Train images
