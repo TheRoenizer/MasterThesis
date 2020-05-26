@@ -184,7 +184,7 @@ with rosbag.Bag(path) as bag:
     # Read all PSM1 pose messages (instrument TCP wrt. base frame)
     psm1_msgs = [msg for topic, msg, stamp in bag.read_messages(topics=['/dvrk/PSM1/position_cartesian_current'])]
 
-# Find PSM1 pose message correponding (nearest time stamp) to the camera frames
+# Find PSM1 pose message corresponding (nearest time stamp) to the camera frames
 psm1_msg = find_nearest_by_stamp(psm1_msgs, img_msg[0].header.stamp)[1]
 
 # Set up stereo camera model from the image_geometry distributed with ROS
