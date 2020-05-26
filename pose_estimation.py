@@ -447,7 +447,7 @@ fc1 = Dense(32, activation='relu')(flat)
 fc1 = BatchNormalization(axis=-1)(fc1)
 fc1 = Dropout(0.5)(fc1)
 
-output = Dense(16)(fc1)
+output = Dense(16, activation='linear')(fc1)
 output = Reshape((4, 4))(output)
 
 model = Model(inputs=input3, outputs=output)
