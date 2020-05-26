@@ -142,7 +142,7 @@ if train:
         print('Weighted categorical crossentropy with weights = ' + str(weights))
         unet.compile(optimizer='adam',
                      loss=weighted_categorical_crossentropy(weights),
-                     metrics=['accuracy', iou_coef, tf.keras.metrics.MeanIoU(num_classes=5), dice_coef])
+                     metrics=['accuracy', iou_coef, dice_coef])
     elif Loss_function == 6:
         print('Categorical crossentropy')
         unet.compile(optimizer='adam',
@@ -247,7 +247,7 @@ else:
         print('Weighted categorical crossentropy with weights = ' + str(weights))
         unet.compile(optimizer='adam',
                      loss=weighted_categorical_crossentropy(weights),
-                     metrics=['accuracy', iou_coef, tf.keras.metrics.MeanIoU(num_classes=5),  dice_coef])
+                     metrics=['accuracy', iou_coef, dice_coef])
     elif Loss_function == 6:
         print('Categorical crossentropy')
         unet.compile(optimizer='adam',
