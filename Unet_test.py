@@ -148,21 +148,22 @@ if train:
                              shuffle=True,
                              callbacks=[DisplayCallback()])
 
+    '''
     show_predictions(101, 2)
     show_predictions(102, 3)
     show_predictions(103, 4)
     show_predictions(104, 5)
     show_predictions(105, 6)
-
+    '''
     loss = model_history.history['loss']
     val_loss = model_history.history['val_loss']
     accuracy = model_history.history['accuracy']
     val_accuracy = model_history.history['val_accuracy']
-    iou_metric = model_history.history['iou_coef']
-    val_iou_metric = model_history.history['val_iou_coef']
-    dice_metric = model_history.history['dice_coef']
-    val_dice_coef = model_history.history['val_dice_coef']
-
+    #iou_metric = model_history.history['iou_coef']
+    #val_iou_metric = model_history.history['val_iou_coef']
+    #dice_metric = model_history.history['dice_coef']
+    #val_dice_coef = model_history.history['val_dice_coef']
+    '''
     # Save metric data to file
     f = open("pictures_unet/Metrics.txt", "w+")
     f.write("loss" + str(loss))
@@ -175,7 +176,7 @@ if train:
     f.write("\nval_dice_coef: " + str(val_dice_coef))
     f.write("\nweights: " + str(weights))
     f.close()
-
+    '''
     epochs = range(epoch)
 
     # Plot statistics
