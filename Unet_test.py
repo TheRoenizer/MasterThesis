@@ -198,7 +198,7 @@ print("%s: %.2f" % (unet.metrics_names[3], results[3]))
 # Save metric data to file
 f = open("pictures_unet/test_metrics.txt", "w+")
 f.write("%s: %.2f" % (unet.metrics_names[0], results[0]))
-for i in range(1,results.length):
+for i in range(1,len(results)):
     f.write("\n%s: %.2f" % (unet.metrics_names[i], results[i]))
 f.close()
 
