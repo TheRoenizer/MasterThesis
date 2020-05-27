@@ -151,7 +151,7 @@ def load_data_EndoVis17(data_path, dtype=np.float32):
 
     return images, labels, labels_display
 
-#categorical focal loss fromTh
+#categorical focal loss from
 def categorical_focal_loss(gamma=2., alpha=.25):
     """
     Softmax version of focal loss.
@@ -254,21 +254,13 @@ def weighted_categorical_crossentropy(weights=[1]):
 
     return loss
 
-def jaccard(y_true, y_pred):
-    intersection = K.sum(y_true * y_pred, axis=[0, 1, 2, 3])
-    union = K.sum(y_true, axis=[0, 1, 2, 3]) + K.sum(y_pred, axis=[0, 1, 2, 3]) - intersection
-    return (intersection + 1e-15) / (union + 1e-15)
 
-
-def dice(y_true, y_pred):
-    return (2 * (y_true * y_pred).sum() + 1e-15) / (y_true.sum() + y_pred.sum() + 1e-15)
-
-# https://towardsdatascience.com/metrics-to-evaluate-your-semantic-segmentation-model-6bcb99639aa2
 def iou_coef_mean(y_true, y_pred):
     intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
     union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2]) - intersection
-    iou_mean = K.mean((intersection + 1e-15) / (union + 1e-15), axis = 0)
+    iou_mean = K.mean((intersection + 1e-15) / (union + 1e-15), axis=0)
     return iou_mean
+
 
 def iou_coef0(y_true, y_pred):
     intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
@@ -276,11 +268,13 @@ def iou_coef0(y_true, y_pred):
     iou = (intersection + 1e-15) / (union + 1e-15)
     return iou[0]
 
+
 def iou_coef1(y_true, y_pred):
     intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
     union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2]) - intersection
     iou = (intersection + 1e-15) / (union + 1e-15)
     return iou[1]
+
 
 def iou_coef2(y_true, y_pred):
     intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
@@ -288,11 +282,13 @@ def iou_coef2(y_true, y_pred):
     iou = (intersection + 1e-15) / (union + 1e-15)
     return iou[2]
 
+
 def iou_coef3(y_true, y_pred):
     intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
     union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2]) - intersection
     iou = (intersection + 1e-15) / (union + 1e-15)
     return iou[3]
+
 
 def iou_coef4(y_true, y_pred):
     intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
@@ -307,6 +303,7 @@ def dice_coef(y_true, y_pred, smooth=1):
     union = K.sum(y_true, axis=[1, 2, 3]) + K.sum(y_pred, axis=[1, 2, 3])
     dice = K.mean((2. * intersection + smooth)/(union + smooth), axis=0)
     return dice
+
 
 def dice(y_true, y_pred):
     return (2 * K.sum(y_true * y_pred) + 1e-15) / (K.sum(y_true) + K.sum(y_pred) + 1e-15)
