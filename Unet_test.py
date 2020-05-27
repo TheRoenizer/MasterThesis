@@ -73,14 +73,14 @@ else:
 # Functions used to display images after each epoch
 def display(display_list, epoch_display):
     fig = plt.figure(figsize=(15, 15))
-    title = ['Input Image', 'True Mask', 'Predicted Mask after epoch {}'.format(epoch_display + 1)]
+    title = ['Input Image', 'True Mask', 'Predicted Mask after epoch {}'.format(epoch_display)]
     for i in range(len(display_list)):
         plt.subplot(1, len(display_list), i + 1)
         plt.title(title[i])
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
         plt.axis('off')
 
-    plt.savefig("pictures_unet/afterEpoch{}.png".format(epoch_display + 1))
+    plt.savefig("pictures_unet/afterEpoch{}.png".format(epoch_display))
     plt.close(fig)
 
 
@@ -93,6 +93,7 @@ def create_mask(pred_mask):
 def show_predictions(epoch_show_predictions, image_num=1):
     pred_mask = unet.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
     display([imgs_val[image_num], lbls_display_val[image_num], create_mask(pred_mask)], epoch_show_predictions)
+
 
 class DisplayCallback(tf.keras.callbacks.Callback):
     # @staticmethod
@@ -152,63 +153,16 @@ if train:
                              shuffle=True,
                              callbacks=[DisplayCallback(), es, mc, csv])
 
-    '''
-    show_predictions(101, 2)
-    show_predictions(102, 3)
-    show_predictions(103, 4)
-    show_predictions(104, 5)
-    show_predictions(105, 6)
-    '''
-    loss = model_history.history['loss']
-    val_loss = model_history.history['val_loss']
-    accuracy = model_history.history['accuracy']
-    val_accuracy = model_history.history['val_accuracy']
-    #iou_metric = model_history.history['iou_coef']
-    #val_iou_metric = model_history.history['val_iou_coef']
-    #dice_metric = model_history.history['dice_coef']
-    #val_dice_coef = model_history.history['val_dice_coef']
-
-    # Save metric data to file
-    f = open("pictures_unet/Metrics.csv", "w+")
-    f.write(loss)
-    f.write(val_loss)
-    f.write(accuracy)
-    f.write(val_accuracy)
-    #f.write("\niou_coef: " + str(iou_metric))
-    #f.write("\nval_iou_coef: " + str(val_iou_metric))
-    #f.write("\ndice_coef: " + str(dice_metric))
-    #f.write("\nval_dice_coef: " + str(val_dice_coef))
-    #f.write("\nweights: " + str(weights))
-    f.close()
-
-    epochs = range(epoch)
-
-    # Plot statistics
-    graph = plt.figure()
-    plt.plot(epochs, loss, 'r', label='Training loss')
-    plt.plot(epochs, val_loss, 'bo', label='Validation loss')
-    plt.title('Training and Validation Loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss Value')
-    plt.legend()
-    plt.savefig('pictures_unet/Training and Validation Loss')
-    plt.show()
-    plt.close(graph)
-
-    # Save model to file
-    unet.save('Unet_model.h5')
-    print("Saved model to disk")
-
 else:
     # Load model from file
-    unet = load_model('Unet_model.h5', compile=False)
+    unet = load_model('best_model_unet.hdf5', compile=False)
 
     # Compile loaded model
     unet.compile(optimizer='adam', loss=loss_function, metrics=metrics)
 
 
 # Evaluate model
-#display test images
+# display test images
 def display_test(display_list, image_num):
     fig = plt.figure(figsize=(15, 15))
     title = ['Input Image', 'True Mask', 'Predicted Mask']
@@ -220,6 +174,7 @@ def display_test(display_list, image_num):
 
     plt.savefig("pictures_unet/test_image{}.png".format(image_num + 1))
     plt.close(fig)
+
 
 def show_predictions_test(image_num=1):
     pred_mask = unet.predict(imgs_test[image_num][tf.newaxis, ...]) * 255
@@ -239,7 +194,6 @@ print("%s: %.2f" % (unet.metrics_names[0], results[0]))
 print("%s: %.2f" % (unet.metrics_names[1], results[1]))
 print("%s: %.2f" % (unet.metrics_names[2], results[2]))
 print("%s: %.2f" % (unet.metrics_names[3], results[3]))
-
 
 
 print('\n# predict on test data 2')
