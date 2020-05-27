@@ -254,7 +254,7 @@ def weighted_categorical_crossentropy(weights=[1]):
 
     return loss
 
-
+#Intersection-over-Union metric
 def iou_coef_mean(y_true, y_pred):
     intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
     union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2]) - intersection
@@ -304,6 +304,44 @@ def dice_coef(y_true, y_pred, smooth=1):
     dice = K.mean((2. * intersection + smooth)/(union + smooth), axis=0)
     return dice
 
-
+#dice metric
 def dice(y_true, y_pred):
     return (2 * K.sum(y_true * y_pred) + 1e-15) / (K.sum(y_true) + K.sum(y_pred) + 1e-15)
+
+def dice_coef_mean(y_true, y_pred):
+    intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
+    union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2])
+    dice_mean = K.mean((2 * intersection + 1e-15) / (union + 1e-15), axis=0)
+    return dice_mean
+
+def dice_coef0(y_true, y_pred):
+    intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
+    union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2])
+    dice = (2 * intersection + 1e-15) / (union + 1e-15)
+    return dice[0]
+
+def dice_coef1(y_true, y_pred):
+    intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
+    union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2])
+    dice = (2 * intersection + 1e-15) / (union + 1e-15)
+    return dice[1]
+
+def dice_coef2(y_true, y_pred):
+    intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
+    union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2])
+    dice = (2 * intersection + 1e-15) / (union + 1e-15)
+    return dice[2]
+
+def dice_coef3(y_true, y_pred):
+    intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
+    union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2])
+    dice = (2 * intersection + 1e-15) / (union + 1e-15)
+    return dice[3]
+
+def dice_coef4(y_true, y_pred):
+    intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
+    union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2])
+    dice = (2 * intersection + 1e-15) / (union + 1e-15)
+    return dice[4]
+
+
