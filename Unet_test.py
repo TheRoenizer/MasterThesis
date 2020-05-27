@@ -94,15 +94,16 @@ def show_predictions(epoch_show_predictions, image_num=1):
     pred_mask = unet.predict(imgs_val[image_num][tf.newaxis, ...]) * 255
     display([imgs_val[image_num], lbls_display_val[image_num], create_mask(pred_mask)], epoch_show_predictions)
 
-
-
-
 class DisplayCallback(tf.keras.callbacks.Callback):
     # @staticmethod
     def on_epoch_end(self, epoch_callback, logs=None):
         clear_output(wait=True)
         show_predictions(epoch_callback)
         print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
+
+
+es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=5)
+mc = tf.keras.callbacks.ModelCheckpoint('best_model_unet.h5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
 
 
 # Load images and labels
@@ -146,7 +147,7 @@ if train:
                              epochs=epoch,
                              verbose=1,
                              shuffle=True,
-                             callbacks=[DisplayCallback()])
+                             callbacks=[DisplayCallback(), es, mc])
 
     '''
     show_predictions(101, 2)
@@ -163,20 +164,20 @@ if train:
     #val_iou_metric = model_history.history['val_iou_coef']
     #dice_metric = model_history.history['dice_coef']
     #val_dice_coef = model_history.history['val_dice_coef']
-    '''
+
     # Save metric data to file
-    f = open("pictures_unet/Metrics.txt", "w+")
+    f = open("pictures_unet/Metrics.csv", "w+")
     f.write("loss" + str(loss))
     f.write("\nval_loss: " + str(val_loss))
     f.write("\naccuracy: " + str(accuracy))
     f.write("\nval_accuracy: " + str(val_accuracy))
-    f.write("\niou_coef: " + str(iou_metric))
-    f.write("\nval_iou_coef: " + str(val_iou_metric))
-    f.write("\ndice_coef: " + str(dice_metric))
-    f.write("\nval_dice_coef: " + str(val_dice_coef))
-    f.write("\nweights: " + str(weights))
+    #f.write("\niou_coef: " + str(iou_metric))
+    #f.write("\nval_iou_coef: " + str(val_iou_metric))
+    #f.write("\ndice_coef: " + str(dice_metric))
+    #f.write("\nval_dice_coef: " + str(val_dice_coef))
+    #f.write("\nweights: " + str(weights))
     f.close()
-    '''
+
     epochs = range(epoch)
 
     # Plot statistics
