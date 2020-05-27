@@ -274,31 +274,31 @@ def iou_coef_mean(y_true, y_pred, smooth=0.00001):
 def iou_coef0(y_true, y_pred):
     intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
     union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2]) - intersection
-    return (intersection + 1e-15) / (union + 1e-15)
-    return iou[5]
+    iou = (intersection + 1e-15) / (union + 1e-15)
+    return iou[0]
 
 def iou_coef1(y_true, y_pred):
     intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
     union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2]) - intersection
-    return (intersection + 1e-15) / (union + 1e-15)
+    iou = (intersection + 1e-15) / (union + 1e-15)
     return iou[1]
 
 def iou_coef2(y_true, y_pred):
     intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
     union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2]) - intersection
-    return (intersection + 1e-15) / (union + 1e-15)
+    iou = (intersection + 1e-15) / (union + 1e-15)
     return iou[2]
 
 def iou_coef3(y_true, y_pred):
     intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
     union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2]) - intersection
-    return (intersection + 1e-15) / (union + 1e-15)
+    iou = (intersection + 1e-15) / (union + 1e-15)
     return iou[3]
 
 def iou_coef4(y_true, y_pred):
     intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
     union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2]) - intersection
-    return (intersection + 1e-15) / (union + 1e-15)
+    iou = (intersection + 1e-15) / (union + 1e-15)
     return iou[4]
 
 
