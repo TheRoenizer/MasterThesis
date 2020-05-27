@@ -283,6 +283,18 @@ def iou_coef2(y_true, y_pred, smooth=0.00001):
     iou = (intersection + smooth) / (union + smooth)
     return iou[2]
 
+def iou_coef3(y_true, y_pred, smooth=0.00001):
+    intersection = K.sum(K.abs(y_true * y_pred), axis=[0, 1, 2])
+    union = K.sum(y_true, [0, 1, 2])+K.sum(y_pred, [0, 1, 2])-intersection
+    iou = (intersection + smooth) / (union + smooth)
+    return iou[3]
+
+def iou_coef5(y_true, y_pred, smooth=0.00001):
+    intersection = K.sum(K.abs(y_true * y_pred), axis=[0, 1, 2])
+    union = K.sum(y_true, [0, 1, 2])+K.sum(y_pred, [0, 1, 2])-intersection
+    iou = (intersection + smooth) / (union + smooth)
+    return iou[5]
+
 
 # https://towardsdatascience.com/metrics-to-evaluate-your-semantic-segmentation-model-6bcb99639aa2
 def dice_coef(y_true, y_pred, smooth=1):
