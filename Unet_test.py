@@ -207,8 +207,8 @@ print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
 print(str(len(imgs_test)))
 
 times = 10
-total_time = 0
-average = 0
+total_time = 0.0
+average = 0.0
 for i in range(times):
     print('\n# predict on test data ')
     start_time = time.time()
@@ -220,7 +220,7 @@ for i in range(times):
 
 average = total_time / times
 
-f.write("\nSeconds per image: %s" % (average))
+f.write("\nAverage: %s" % average)
 f.close()
 
 print('DONE!')
