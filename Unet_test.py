@@ -92,6 +92,8 @@ def show_predictions(epoch_show_predictions, image_num=1):
     display([imgs_val[image_num], lbls_display_val[image_num], create_mask(pred_mask)], epoch_show_predictions)
 
 
+
+
 class DisplayCallback(tf.keras.callbacks.Callback):
     # @staticmethod
     def on_epoch_end(self, epoch_callback, logs=None):
@@ -198,6 +200,28 @@ else:
 
 
 # Evaluate model
+#display test images
+def display_test(display_list, image_num):
+    fig = plt.figure(figsize=(15, 15))
+    title = ['Input Image', 'True Mask', 'Predicted Mask']
+    for i in range(len(display_list)):
+        plt.subplot(1, len(display_list), i + 1)
+        plt.title(title[i])
+        plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
+        plt.axis('off')
+
+    plt.savefig("pictures_unet/test_image{}.png".format(image_num + 1))
+    plt.close(fig)
+
+def show_predictions_test(image_num=1):
+    pred_mask = unet.predict(imgs_test[image_num][tf.newaxis, ...]) * 255
+    display_test([imgs_test[image_num], lbls_display_test[image_num], create_mask(pred_mask)], image_num)
+
+
+for i in range(10):
+    show_predictions_test(i)
+
+
 print('\n# Evaluate on test data')
 start_time = time.time()
 results = unet.evaluate(imgs_test, lbls_test, batch_size=1)
@@ -208,12 +232,17 @@ print("%s: %.2f" % (unet.metrics_names[1], results[1]))
 print("%s: %.2f" % (unet.metrics_names[2], results[2]))
 print("%s: %.2f" % (unet.metrics_names[3], results[3]))
 
-print('\n# Evaluate on test data 2')
+
+
+print('\n# predict on test data 2')
 start_time = time.time()
-results = unet.evaluate(imgs_test, lbls_test, batch_size=1)
+results = unet.predict(imgs_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
+
+for i in range(10):
+    cv.imwrite('pictures_unet/test_image_{}'.format(i), results[i])
 
 print('\n# Evaluate on test data 3')
 start_time = time.time()
