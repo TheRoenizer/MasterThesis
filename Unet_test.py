@@ -35,7 +35,6 @@ train = True
 epoch = 100
 num_pixels = 480 * 640
 weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
-# sample_weight = np.zeros((79, num_pixels))
 
 if which_path == 1:
     # Christoffer:
@@ -55,17 +54,17 @@ FL_gamma = 2.       # Focal loss gamma
 TL_beta = 3         # Tversky loss beta
 
 if Loss_function == 1:
-    loss = categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)
+    loss_function = categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)
 elif Loss_function == 2:
-    loss = dice_loss()
+    loss_function = dice_loss()
 elif Loss_function == 3:
-    loss = jaccard_loss()
+    loss_function = jaccard_loss()
 elif Loss_function == 4:
-    loss = tversky_loss(beta=TL_beta)
+    loss_function = tversky_loss(beta=TL_beta)
 elif Loss_function == 5:
-    loss = weighted_categorical_crossentropy(weights)
+    loss_function = weighted_categorical_crossentropy(weights)
 else:
-    loss = 'categorical_crossentropy'
+    loss_function = 'categorical_crossentropy'
 
 
 # Functions used to display images after each epoch
@@ -102,6 +101,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 
 # Load images and labels
+print('Loading images and labels...')
 images, labels, labels_display = load_data(PATH)
 
 imgs_train = images[0:79]
@@ -128,7 +128,7 @@ if train:
         with redirect_stdout(f):
             unet.summary()
 
-    unet.compile(optimizer='adam', loss=loss, metrics=metrics)
+    unet.compile(optimizer='adam', loss=loss_function, metrics=metrics)
 
     tf.keras.utils.plot_model(unet,
                               to_file='UnetModelPlot.png',
@@ -194,7 +194,7 @@ else:
     unet = load_model('Unet_model.h5', compile=False)
 
     # Compile loaded model
-    unet.compile(optimizer='adam', loss=loss, metrics=metrics)
+    unet.compile(optimizer='adam', loss=loss_function, metrics=metrics)
 
 
 # Evaluate model
