@@ -26,7 +26,7 @@ config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
 
-print('Tensorflow version: '+tf.__version__)
+print('TensorFlow version: '+tf.__version__)
 print('Numpy version: '+np.__version__)
 print('Keras version: '+tf.keras.__version__)
 
@@ -37,13 +37,6 @@ num_pixels = 480 * 640
 weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
 # sample_weight = np.zeros((79, num_pixels))
 
-metric_array = ['accuracy', iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4, dice_coef]
-Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss, 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
-
-FL_alpha = .25      # Focal loss alpha
-FL_gamma = 2.       # Focal loss gamma
-TL_beta = 3         # Tversky loss beta
-
 if which_path == 1:
     # Christoffer:
     PATH = 'C:/Users/chris/Google Drive/'
@@ -53,6 +46,26 @@ elif which_path == 2:
 else:
     # Linux:
     PATH = '/home/jsteeen/'
+
+metrics = ['accuracy', iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4, dice_coef]
+Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss, 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
+
+FL_alpha = .25      # Focal loss alpha
+FL_gamma = 2.       # Focal loss gamma
+TL_beta = 3         # Tversky loss beta
+
+if Loss_function == 1:
+    loss = categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)
+elif Loss_function == 2:
+    loss = dice_loss()
+elif Loss_function == 3:
+    loss = jaccard_loss()
+elif Loss_function == 4:
+    loss = tversky_loss(beta=TL_beta)
+elif Loss_function == 5:
+    loss = weighted_categorical_crossentropy(weights)
+else:
+    loss = 'categorical_crossentropy'
 
 
 # Functions used to display images after each epoch
@@ -115,38 +128,7 @@ if train:
         with redirect_stdout(f):
             unet.summary()
 
-    if Loss_function == 1:
-        print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
-        unet.compile(optimizer='adam',
-                     loss=categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha),
-                     metrics=metric_array)
-    elif Loss_function == 2:
-        print('Dice Loss')
-        unet.compile(optimizer='adam',
-                     loss=dice_loss(),
-                     metrics=metric_array)
-    elif Loss_function == 3:
-        print('Jaccard Loss')
-        unet.compile(optimizer='adam',
-                     loss=jaccard_loss(),
-                     metrics=metric_array)
-    elif Loss_function == 4:
-        print('Tversky Loss with beta = ' + str(TL_beta))
-        unet.compile(optimizer='adam',
-                     loss=tversky_loss(beta=TL_beta),
-                     metrics=metric_array)
-    elif Loss_function == 5:
-        print('Weighted categorical crossentropy with weights = ' + str(weights))
-        unet.compile(optimizer='adam',
-                     loss=weighted_categorical_crossentropy(weights),
-                     metrics=metric_array)
-    elif Loss_function == 6:
-        print('Categorical crossentropy')
-        unet.compile(optimizer='adam',
-                     loss='categorical_crossentropy',
-                     metrics=metric_array)
-    else:
-        print('No loss function')
+    unet.compile(optimizer='adam', loss=loss, metrics=metrics)
 
     tf.keras.utils.plot_model(unet,
                               to_file='UnetModelPlot.png',
@@ -212,38 +194,7 @@ else:
     unet = load_model('Unet_model.h5', compile=False)
 
     # Compile loaded model
-    if Loss_function == 1:
-        print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
-        unet.compile(optimizer='adam',
-                     loss=categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha),
-                     metrics=metric_array)
-    elif Loss_function == 2:
-        print('Dice Loss')
-        unet.compile(optimizer='adam',
-                     loss=dice_loss(),
-                     metrics=metric_array)
-    elif Loss_function == 3:
-        print('Jaccard Loss')
-        unet.compile(optimizer='adam',
-                     loss=jaccard_loss(),
-                     metrics=metric_array)
-    elif Loss_function == 4:
-        print('Tversky Loss with beta = ' + str(TL_beta))
-        unet.compile(optimizer='adam',
-                     loss=tversky_loss(beta=TL_beta),
-                     metrics=metric_array)
-    elif Loss_function == 5:
-        print('Weighted categorical crossentropy with weights = ' + str(weights))
-        unet.compile(optimizer='adam',
-                     loss=weighted_categorical_crossentropy(weights),
-                     metrics=metric_array)
-    elif Loss_function == 6:
-        print('Categorical crossentropy')
-        unet.compile(optimizer='adam',
-                     loss='categorical_crossentropy',
-                     metrics=metric_array)
-    else:
-        print('No loss function')
+    unet.compile(optimizer='adam', loss=loss, metrics=metrics)
 
 
 # Evaluate model
