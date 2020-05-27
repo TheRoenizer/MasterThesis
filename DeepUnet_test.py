@@ -5,14 +5,7 @@ from contextlib import redirect_stdout
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 
-# Hvis du vil bruge "kort 1":
-#os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-
-# ellers:
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
-# hvis du træne på CPU'en:
-#os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 config = ConfigProto()
 config.gpu_options.allow_growth = True
@@ -29,7 +22,7 @@ num_epochs = 5
 #num_pixels = 480 * 640
 
 if which_data == 1:
-    weights = [.5, 1.5, 1.5, 1, 1]  # [background, gripper, gripper, shaft, shaft]
+    weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
 if which_data == 2:
     weights = [.5, 2, 2, 2]  # [background, shaft, wrist, fingers]
 
@@ -44,7 +37,6 @@ elif which_path == 2:
 # functions used to display images after each epoch
 def display(display_list, epoch_display):
     fig = plt.figure(figsize=(15, 15))
-
     title = ['Input Image', 'True Mask', 'Predicted Mask after epoch {}'.format(epoch_display + 1)]
     for i in range(len(display_list)):
         plt.subplot(1, len(display_list), i + 1)
@@ -52,7 +44,6 @@ def display(display_list, epoch_display):
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
         plt.axis('off')
     plt.savefig("pictures_deepunet/afterEpoch{}.png".format(epoch_display + 1))
-    # plt.show()
     plt.close(fig)
 
 
@@ -79,14 +70,6 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 if which_data == 1:
     images, labels, labels_display = load_data(PATH)
 
-    cv.imwrite("pictures_deepunet_j/labels_display0.png", labels_display[0])
-    cv.imwrite("pictures_deepunet_j/label0.png", labels[0,...,0])
-    cv.imwrite("pictures_deepunet_j/label1.png", labels[0,...,1])
-    cv.imwrite("pictures_deepunet_j/label2.png", labels[0,...,2])
-    cv.imwrite("pictures_deepunet_j/label3.png", labels[0,...,3])
-    cv.imwrite("pictures_deepunet_j/label4.png", labels[0,...,4])
-    print("images saved")
-
     imgs_train = images[0:79]
     imgs_val = images[79:89]
     imgs_test = images[89:99]
@@ -105,8 +88,6 @@ if which_data == 2:
     imgs_train = images[0:175]
     imgs_val = images[175:200]
     imgs_test = images[200:225]
-    print("imgs_train: " + str(imgs_train.shape))
-    print("imgs_val: " + str(imgs_val.shape))
 
     lbls_train = labels[0:175]
     lbls_val = labels[175:200]
