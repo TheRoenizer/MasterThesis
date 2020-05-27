@@ -104,6 +104,9 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
 mc = tf.keras.callbacks.ModelCheckpoint('best_model_unet.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
+csv = tf.keras.callbacks.CSVLogger(
+    'metrics.csv', separator=',', append=False
+)
 
 
 # Load images and labels
@@ -147,7 +150,7 @@ if train:
                              epochs=epoch,
                              verbose=2,
                              shuffle=True,
-                             callbacks=[DisplayCallback(), es, mc])
+                             callbacks=[DisplayCallback(), es, mc, csv])
 
     '''
     show_predictions(101, 2)
