@@ -122,7 +122,7 @@ if train:
         print('Categorical Focal Loss with gamma = ' + str(FL_gamma) + ' and alpha = ' + str(FL_alpha))
         unet.compile(optimizer='adam',
                      loss=categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha),
-                     metrics=['accuracy', iou_coef, dice_coef])
+                     metrics=['accuracy', iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4, dice_coef])
     elif Loss_function == 2:
         print('Dice Loss')
         unet.compile(optimizer='adam',
