@@ -105,7 +105,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
 mc = tf.keras.callbacks.ModelCheckpoint('best_model_unet.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
 csv = tf.keras.callbacks.CSVLogger(
-    '/pictures_unet/metrics.csv', separator=',', append=False
+    'pictures_unet/metrics.csv', separator=',', append=False
 )
 
 
