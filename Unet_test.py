@@ -103,7 +103,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 
 es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=5)
-mc = tf.keras.callbacks.ModelCheckpoint('best_model_unet.h5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
+mc = tf.keras.callbacks.ModelCheckpoint('best_model_unet.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
 
 
 # Load images and labels
@@ -145,7 +145,7 @@ if train:
     model_history = unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
                              batch_size=1,
                              epochs=epoch,
-                             verbose=1,
+                             verbose=2,
                              shuffle=True,
                              callbacks=[DisplayCallback(), es, mc])
 
