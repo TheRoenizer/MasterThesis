@@ -141,7 +141,7 @@ if train:
                               show_layer_names=True,
                               rankdir='TB')
 
-    show_predictions(-1)
+    #show_predictions(-1)
 
     model_history = deep_unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
                                   batch_size=batch_size,
