@@ -275,7 +275,7 @@ def iou_coef0(y_true, y_pred):
     intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
     union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2]) - intersection
     return (intersection + 1e-15) / (union + 1e-15)
-    return iou[0][0][0][0]
+    return iou[5]
 
 def iou_coef1(y_true, y_pred):
     intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
