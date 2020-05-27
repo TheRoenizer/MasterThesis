@@ -208,7 +208,8 @@ print(str(len(imgs_test)))
 
 times = 10
 total_time = 0.0
-average = 0.0
+#average = 0.0
+#fps = 0.0
 for i in range(times):
     print('\n# predict on test data ')
     start_time = time.time()
@@ -219,8 +220,10 @@ for i in range(times):
     print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
 
 average = total_time / times
+fps = 1.0 / average
 
 f.write("\nAverage: %s" % average)
+f.write("\nFPS: %s" % fps)
 f.close()
 
 print('DONE!')
