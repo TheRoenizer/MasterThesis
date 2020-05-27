@@ -310,4 +310,4 @@ def dice_coef(y_true, y_pred, smooth=1):
     return dice
 
 def dice(y_true, y_pred):
-    return (2 * K.sum(y_true * y_pred) + 1e-15) / K.sum(y_true) + K.sum(y_pred) + 1e-15
+    return (2 * K.sum(y_true * y_pred) + 1e-15) / (K.sum(y_true) + K.sum(y_pred) + 1e-15)
