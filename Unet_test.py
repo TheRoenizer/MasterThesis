@@ -102,7 +102,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
 
 
-es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=5)
+es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
 mc = tf.keras.callbacks.ModelCheckpoint('best_model_unet.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
 
 
@@ -167,10 +167,10 @@ if train:
 
     # Save metric data to file
     f = open("pictures_unet/Metrics.csv", "w+")
-    f.write("loss" + str(loss))
-    f.write("\nval_loss: " + str(val_loss))
-    f.write("\naccuracy: " + str(accuracy))
-    f.write("\nval_accuracy: " + str(val_accuracy))
+    f.write(loss)
+    f.write(val_loss)
+    f.write(accuracy)
+    f.write(val_accuracy)
     #f.write("\niou_coef: " + str(iou_metric))
     #f.write("\nval_iou_coef: " + str(val_iou_metric))
     #f.write("\ndice_coef: " + str(dice_metric))
