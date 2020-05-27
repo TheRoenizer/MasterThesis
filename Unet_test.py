@@ -31,7 +31,7 @@ print('Numpy version: '+np.__version__)
 print('Keras version: '+tf.keras.__version__)
 
 which_path = 3  # 1 = local c, 2 = local j, 3 = remote
-train = True
+train = False
 epoch = 100
 num_pixels = 480 * 640
 weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
@@ -195,16 +195,40 @@ print("%s: %.2f" % (unet.metrics_names[1], results[1]))
 print("%s: %.2f" % (unet.metrics_names[2], results[2]))
 print("%s: %.2f" % (unet.metrics_names[3], results[3]))
 
+# Save metric data to file
+f = open("pictures_unet/test_metrics.txt", "w+")
+f.write("%s: %.2f" % (unet.metrics_names[0], results[0]))
+for i in range(1,results.length):
+    f.write("\n%s: %.2f" % (unet.metrics_names[i], results[i]))
+f.close()
 
-print('\n# predict on test data 2')
+print('\n# Evaluate on test data 3')
+start_time = time.time()
+results = unet.evaluate(imgs_test, lbls_test, batch_size=1)
+stop_time = time.time()
+print("--- %s seconds ---" % (stop_time - start_time))
+print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
+
+print('\n# Evaluate on test data 4')
+start_time = time.time()
+results = unet.evaluate(imgs_test, lbls_test, batch_size=1)
+stop_time = time.time()
+print("--- %s seconds ---" % (stop_time - start_time))
+print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
+
+print('\n# predict on test data ')
 start_time = time.time()
 results = unet.predict(imgs_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % (stop_time - start_time))
 print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
 
-for i in range(10):
-    cv.imwrite('pictures_unet/test_image_{}'.format(i), results[i])
+print('\n# predict on test data ')
+start_time = time.time()
+results = unet.predict(imgs_test, batch_size=1)
+stop_time = time.time()
+print("--- %s seconds ---" % (stop_time - start_time))
+print("%s: %.2f%%" % (unet.metrics_names[1], results[1] * 100))
 
 print('\n# Evaluate on test data 3')
 start_time = time.time()
