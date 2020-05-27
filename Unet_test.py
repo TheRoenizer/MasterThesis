@@ -193,7 +193,7 @@ print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
 
 # Save metric data to file
 f = open("pictures_unet/test_metrics.txt", "w+")
-f.write("%s: %.2f" % (unet.metrics_names[0], results[0]))
+f.write("%s: %.4f" % (unet.metrics_names[0], results[0]))
 for i in range(1, len(results)):
     f.write("\n%s: %.4f" % (unet.metrics_names[i], results[i]))
 
