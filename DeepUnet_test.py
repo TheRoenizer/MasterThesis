@@ -133,7 +133,7 @@ if train:
         with redirect_stdout(f):
             deep_unet.summary()
 
-    deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', jaccard, iou_coef_mean, iou_coef, dice_coef])
+    deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', jaccard, iou_coef_mean, iou_coef1, iou_coef2, dice_coef])
 
     tf.keras.utils.plot_model(deep_unet,
                               to_file='DeepUnetModelPlot.png',
@@ -194,7 +194,7 @@ elif not train:
     deep_unet = load_model('deep_unet_model.h5', compile=False)
 
     #compile saved model
-    deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef_mean, iou_coef, dice_coef])
+    deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef_mean, iou_coef1, iou_coef2, dice_coef])
 '''
 #evaluate model
 print('\n# Predict on test data 1')

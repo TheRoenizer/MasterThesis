@@ -271,11 +271,17 @@ def iou_coef_mean(y_true, y_pred, smooth=0.00001):
     print("kigher: " + str(iou_mean.shape))
     return iou_mean
 
-def iou_coef(y_true, y_pred, smooth=0.00001):
+def iou_coef1(y_true, y_pred, smooth=0.00001):
     intersection = K.sum(K.abs(y_true * y_pred), axis=[0, 1, 2])
     union = K.sum(y_true, [0, 1, 2])+K.sum(y_pred, [0, 1, 2])-intersection
     iou = (intersection + smooth) / (union + smooth)
     return iou[1]
+
+def iou_coef2(y_true, y_pred, smooth=0.00001):
+    intersection = K.sum(K.abs(y_true * y_pred), axis=[0, 1, 2])
+    union = K.sum(y_true, [0, 1, 2])+K.sum(y_pred, [0, 1, 2])-intersection
+    iou = (intersection + smooth) / (union + smooth)
+    return iou[2]
 
 
 # https://towardsdatascience.com/metrics-to-evaluate-your-semantic-segmentation-model-6bcb99639aa2
