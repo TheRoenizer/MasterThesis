@@ -1,12 +1,12 @@
 try:
-    from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape, concatenate
+    from keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, UpSampling2D, Dropout, concatenate
     from keras.models import Model, load_model
 except:
-    from tensorflow.keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, add, UpSampling2D, Dropout, Reshape
+    from tensorflow.keras.layers import Input, Conv2D, BatchNormalization, MaxPooling2D, UpSampling2D, Dropout
     from tensorflow.keras.models import Model
 
-"""Unet model for segmentation of color/greyscale images https://github.com/zhixuhao/unet"""
 
+# Unet model for segmentation of color/greyscale images https://github.com/zhixuhao/unet
 def unet(input_shape, num_classes=5, droprate=None, linear=False):
     model_name = 'unet'
 
