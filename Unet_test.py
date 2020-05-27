@@ -206,14 +206,21 @@ print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
 
 print(str(len(imgs_test)))
 
-for i in range(10):
+times = 10
+total_time = 0
+average = 0
+for i in range(times):
     print('\n# predict on test data ')
     start_time = time.time()
     unet.predict(imgs_test, batch_size=1)
     stop_time = time.time()
+    total_time += ((stop_time - start_time) / len(imgs_test))
     f.write("\nSeconds per image: %s" % ((stop_time - start_time)/len(imgs_test)))
     print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
 
+average = total_time / times
+
+f.write("\nSeconds per image: %s" % (average))
 f.close()
 
 print('DONE!')
