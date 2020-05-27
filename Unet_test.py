@@ -46,7 +46,10 @@ else:
     # Linux:
     PATH = '/home/jsteeen/'
 
-metrics = ['accuracy', iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4, dice_coef_mean, dice_coef0, dice_coef1, dice_coef2, dice_coef3, dice_coef4]
+metrics = ['accuracy',
+           iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4,
+           dice_coef_mean, dice_coef0, dice_coef1, dice_coef2, dice_coef3, dice_coef4]
+
 Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss, 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
