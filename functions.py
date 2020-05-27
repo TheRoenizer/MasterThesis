@@ -254,17 +254,26 @@ def weighted_categorical_crossentropy(weights=[1]):
 
     return loss
 
+def jaccard(y_true, y_pred):
+    intersection = K.sum(y_true * y_pred)
+    union = K.sum(y_true) + K.sum(y_pred) - intersection
+    return (intersection + 1e-15) / (union + 1e-15)
+
+
+def dice(y_true, y_pred):
+    return (2 * (y_true * y_pred).sum() + 1e-15) / (y_true.sum() + y_pred.sum() + 1e-15)
 
 # https://towardsdatascience.com/metrics-to-evaluate-your-semantic-segmentation-model-6bcb99639aa2
-def iou_coef_mean(y_true, y_pred, smooth=1):
+def iou_coef_mean(y_true, y_pred, smooth=0.00001):
     intersection = K.sum(K.abs(y_true * y_pred), axis=[1, 2, 3])
-    union = K.sum(y_true, [1, 2, 3])+K.sum(y_pred, [1, 2, 3])-intersection
+    union = K.sum(y_true, [1, 2, 3])+K.sum(y_pred, [1, 2, 3]) - intersection
     iou_mean = K.mean((intersection + smooth) / (union + smooth), axis=0)
+    print("kigher: " + str(iou_mean.shape))
     return iou_mean
 
-def iou_coef(y_true, y_pred, smooth=1):
-    intersection = K.sum(K.abs(y_true * y_pred), axis=[1, 2])
-    union = K.sum(y_true, [1, 2])+K.sum(y_pred, [1, 2])-intersection
+def iou_coef(y_true, y_pred, smooth=0.00001):
+    intersection = K.sum(K.abs(y_true * y_pred), axis=[0, 1, 2])
+    union = K.sum(y_true, [0, 1, 2])+K.sum(y_pred, [0, 1, 2])-intersection
     iou = (intersection + smooth) / (union + smooth)
     return iou
 

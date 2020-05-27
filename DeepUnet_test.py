@@ -23,7 +23,7 @@ from functions import *
 
 train = True
 which_data = 1 # 1 = jigsaw, 2 = EndoVis
-which_path = 2 # 1 = local, 2 = remote
+which_path = 1 # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 20
 #num_pixels = 480 * 640
@@ -133,7 +133,7 @@ if train:
         with redirect_stdout(f):
             deep_unet.summary()
 
-    deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef_mean, iou_coef, dice_coef])
+    deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', jaccard, iou_coef_mean, iou_coef, dice_coef])
 
     tf.keras.utils.plot_model(deep_unet,
                               to_file='DeepUnetModelPlot.png',
@@ -194,7 +194,7 @@ elif not train:
     deep_unet = load_model('deep_unet_model.h5', compile=False)
 
     #compile saved model
-    deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
+    deep_unet.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef_mean, iou_coef, dice_coef])
 '''
 #evaluate model
 print('\n# Predict on test data 1')
