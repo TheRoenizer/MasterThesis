@@ -267,7 +267,7 @@ def dice(y_true, y_pred):
 def iou_coef_mean(y_true, y_pred, smooth=0.00001):
     intersection = K.sum(K.abs(y_true * y_pred), axis=[0, 1, 2])
     union = K.sum(y_true, [0, 1, 2])+K.sum(y_pred, [0, 1, 2]) - intersection
-    iou_mean = K.mean((intersection + smooth) / (union + smooth), axis=3)
+    iou_mean = K.mean((intersection + smooth) / (union + smooth), axis=0)
     #print("kigher: " + str(iou_mean.shape))
     return iou_mean
 
