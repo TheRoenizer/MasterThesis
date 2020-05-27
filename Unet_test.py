@@ -38,7 +38,7 @@ which_path = 3  # 1 = local c, 2 = local j, 3 = remote
 train = True
 epoch = 100
 num_pixels = 480 * 640
-weights = [.5, 1.5, 1.5, 1, 1]  # [background, gripper, gripper, shaft, shaft]
+weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
 # sample_weight = np.zeros((79, num_pixels))
 
 Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss, 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
