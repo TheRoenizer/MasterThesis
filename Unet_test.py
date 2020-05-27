@@ -204,16 +204,13 @@ unet.evaluate(imgs_test, lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
 
-print('\n# predict on test data ')
-start_time = time.time()
-unet.predict(imgs_test, batch_size=1)
-stop_time = time.time()
-print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
+print(str(len(imgs_test)))
 
-print('\n# predict on test data ')
-start_time = time.time()
-unet.predict(imgs_test, batch_size=1)
-stop_time = time.time()
-print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
+for i in range(5):
+    print('\n# predict on test data ')
+    start_time = time.time()
+    unet.predict(imgs_test, batch_size=1)
+    stop_time = time.time()
+    print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
 
 print('DONE!')
