@@ -196,7 +196,7 @@ f = open("pictures_unet/test_metrics.txt", "w+")
 f.write("%s: %.2f" % (unet.metrics_names[0], results[0]))
 for i in range(1, len(results)):
     f.write("\n%s: %.4f" % (unet.metrics_names[i], results[i]))
-f.close()
+
 
 print('\n# Evaluate on test data')
 start_time = time.time()
@@ -206,11 +206,14 @@ print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
 
 print(str(len(imgs_test)))
 
-for i in range(5):
+for i in range(10):
     print('\n# predict on test data ')
     start_time = time.time()
     unet.predict(imgs_test, batch_size=1)
     stop_time = time.time()
+    f.write("\nSeconds per image: %s" % ((stop_time - start_time)/len(imgs_test)))
     print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
+
+f.close()
 
 print('DONE!')
