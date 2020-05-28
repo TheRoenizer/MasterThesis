@@ -3,11 +3,6 @@ from tensorflow.compat.v1 import InteractiveSession
 config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
-import tensorflow as tf
-from keras import backend as K
-import numpy as np
-from PIL import Image
-import cv2 as cv
 import time
 import matplotlib.pyplot as plt
 from IPython.display import clear_output
@@ -23,25 +18,10 @@ import os
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 
-# Hvis du vil bruge "kort 1":
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-
-# ellers:
-#os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
-# hvis du træne på CPU'en:
-#os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 from BiSeNet import bise_net
 from functions import *
-
-net = bise_net((480, 640, 3), 5)
-
-net.summary()
-
-with open('BiSeNetModelSummary.txt', 'w') as f:
-    with redirect_stdout(f):
-        net.summary()
 
 """
 net.compile(optimizer = opt,loss = loss, metrics = metrics)
@@ -52,9 +32,14 @@ history = net.fit([imgs_train,imgs_train],lbls_train,validation_data=[[imgs_val,
 
 train = True
 which_path = 2  # 1 = local, 2 = remote
+which_data = 1 # 1 = JIGSAWS, 2 = EndoVis2017
 batch_size = 1
 num_epochs = 100
-weights = [.5, 1.5, 1.5, 1, 1]  # [background, gripper, gripper, shaft, shaft]
+
+if which_data == 1:
+    weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
+if which_data == 2:
+    weights = [.5, 2, 2, 2]  # [background, shaft, wrist, fingers]
 
 if which_path == 1:
     # Christoffer:
@@ -63,162 +48,69 @@ elif which_path == 2:
     # Linux:
     PATH = '/home/jsteeen/'
 
+metrics = ['accuracy',
+           iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4,
+           dice_coef_mean, dice_coef0, dice_coef1, dice_coef2, dice_coef3, dice_coef4]
+
+Loss_function = 3   # 1=focal_loss, 2=dice_loss, 3=weighted_categorical_crossentropy 4=categorical_cross_entropy
+
+FL_alpha = .25      # Focal loss alpha
+FL_gamma = 2.       # Focal loss gamma
+
+if Loss_function == 1:
+    loss_function = categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)
+elif Loss_function == 2:
+    loss_function = dice_loss()
+elif Loss_function == 3:
+    loss_function = weighted_categorical_crossentropy(weights)
+else:
+    loss_function = 'categorical_crossentropy'
+
 # Load images and labels
-images, labels, labels_display = load_data(PATH)
+if which_data == 1:
+    print('Loading images and labels...')
+    images, labels, labels_display = load_data(PATH)
 
-imgs_train = images[0:79]
-imgs_val = images[79:89]
-imgs_test = images[89:99]
+    imgs_train = images[0:79]
+    imgs_val = images[79:89]
+    imgs_test = images[89:99]
 
-lbls_train = labels[0:79]
-lbls_val = labels[79:89]
-lbls_test = labels[89:99]
+    lbls_train = labels[0:79]
+    lbls_val = labels[79:89]
+    lbls_test = labels[89:99]
 
-lbls_display_train = labels_display[0:79]
-lbls_display_val = labels_display[79:89]
-lbls_display_test = labels_display[89:99]
+    lbls_display_train = labels_display[0:79]
+    lbls_display_val = labels_display[79:89]
+    lbls_display_test = labels_display[89:99]
+
+if which_data == 2:
+    print('Loading images and labels...')
+    images, labels, labels_display = load_data_EndoVis17(PATH)
+
+    imgs_train = images[0:175]
+    imgs_val = images[175:200]
+    imgs_test = images[200:225]
+
+    lbls_train = labels[0:175]
+    lbls_val = labels[175:200]
+    lbls_test = labels[200:225]
+
+    lbls_display_train = labels_display[0:175]
+    lbls_display_val = labels_display[175:200]
+    lbls_display_test = labels_display[200:225]
 
 print('Images and labels loaded!')
-
-'''
-imgs_train = np.zeros((79, 480, 640, 3))
-print('Loading images...')
-for i in range(1, 80):
-    # print('Progress: ' + str(i) + ' of 79')
-    path = PATH + '/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
-    img = np.array(Image.open(path))[np.newaxis]
-    img = img / 255
-    imgs_train[i-1] = img
-
-imgs_val = np.zeros((10, 480, 640, 3))
-for i in range(80, 90):
-    # print('Progress: ' + str(i) + ' of 89')
-    path = PATH + '/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
-    img = np.array(Image.open(path))[np.newaxis]
-    img = img / 255
-    imgs_val[i-80] = img
-
-imgs_test = np.zeros((10, 480, 640, 3))
-for i in range(90, 100):
-    # print('Progress: ' + str(i) + ' of 89')
-    path = PATH + '/Jigsaw annotations/Images/Suturing (' + str(i) + ').png'
-    img = np.array(Image.open(path))[np.newaxis]
-    img = img / 255
-    imgs_test[i-90] = img
-
-print('Images loaded!')
-print('Loading labels...')
-# Labels
-lbls_train = np.zeros((79, 480, 640))
-sample_weight = np.zeros((79, 480, 640))
-for i in range(1, 80):
-    # print('Progress: ' + str(i) + ' of 79')
-    path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/000.png'
-    path2 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/002.png'
-    path3 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
-    path4 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/001.png'
-    img1 = cv.imread(path1, 2)
-    img2 = cv.imread(path2, 2)
-    img3 = cv.imread(path3, 2)
-    img4 = cv.imread(path4, 2)
-    change1_to = np.where(img1[:, :] != 0)
-    change2_to = np.where(img2[:, :] != 0)
-    change3_to = np.where(img3[:, :] != 0)
-    change4_to = np.where(img4[:, :] != 0)
-    img1[change1_to] = 1
-    img2[change2_to] = 2
-    img3[change3_to] = 3
-    img4[change4_to] = 4
-    weight1 = np.zeros((480, 640))
-    weight2 = np.zeros((480, 640))
-    weight3 = np.zeros((480, 640))
-    weight4 = np.zeros((480, 640))
-    weight1[change1_to] = 10
-    weight2[change2_to] = 1
-    weight3[change3_to] = 10
-    weight4[change4_to] = 1
-    img = img1 + img2 + img3 + img4
-    weight = weight1 + weight2 + weight3 + weight4
-    change_5 = np.where(img[:, :] == 5)
-    img[change_5] = 0
-    change_overlap = np.where(weight[:, :] == 11)
-    weight[change_overlap] = 0
-    lbls_train[i-1] = img
-    sample_weight[i-1] = weight
-
-lbls_train_onehot = tf.keras.utils.to_categorical(lbls_train, num_classes=5, dtype='float32')
-lbls_train = lbls_train.reshape((79, 480, 640, -1))
-# lbls_train_onehot = lbls_train_onehot.reshape((79, num_pixels, 5))
-# sample_weight = sample_weight.reshape((79, num_pixels))
-
-lbls_val = np.zeros((10, 480, 640))
-for i in range(80, 90):
-    # print('Progress: ' + str(i) + ' of 89')
-    path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/000.png'
-    path2 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/002.png'
-    path3 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
-    path4 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/001.png'
-    img1 = cv.imread(path1, 2)
-    img2 = cv.imread(path2, 2)
-    img3 = cv.imread(path3, 2)
-    img4 = cv.imread(path4, 2)
-    change1_to = np.where(img1[:, :] != 0)
-    change2_to = np.where(img2[:, :] != 0)
-    change3_to = np.where(img3[:, :] != 0)
-    change4_to = np.where(img4[:, :] != 0)
-    img1[change1_to] = 1
-    img2[change2_to] = 2
-    img3[change3_to] = 3
-    img4[change4_to] = 4
-    img = img1 + img2 + img3 + img4
-    change_5 = np.where(img[:, :] == 5)
-    img[change_5] = 0
-    lbls_val[i-80] = img
-
-lbls_test = np.zeros((10, 480, 640))
-for i in range(90, 100):
-    # print('Progress: ' + str(i) + ' of 89')
-    path1 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/000.png'
-    path2 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/002.png'
-    path3 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/003.png'
-    path4 = PATH + '/Jigsaw annotations/Annotated/Suturing (' + str(i) + ')' + '/data/001.png'
-    img1 = cv.imread(path1, 2)
-    img2 = cv.imread(path2, 2)
-    img3 = cv.imread(path3, 2)
-    img4 = cv.imread(path4, 2)
-    change1_to = np.where(img1[:, :] != 0)
-    change2_to = np.where(img2[:, :] != 0)
-    change3_to = np.where(img3[:, :] != 0)
-    change4_to = np.where(img4[:, :] != 0)
-    img1[change1_to] = 1
-    img2[change2_to] = 2
-    img3[change3_to] = 3
-    img4[change4_to] = 4
-    img = img1 + img2 + img3 + img4
-    change_5 = np.where(img[:, :] == 5)
-    img[change_5] = 0
-    lbls_test[i - 90] = img
-
-lbls_test_onehot = tf.keras.utils.to_categorical(lbls_test, num_classes=5, dtype='float32')
-lbls_test = lbls_test.reshape((10, 480, 640, -1))
-
-print('Labels loaded!')
-
-lbls_val_onehot = tf.keras.utils.to_categorical(lbls_val, num_classes=5, dtype='float32')
-lbls_val = lbls_val.reshape((10, 480, 640, -1))
-'''
-
 
 def display(display_list, epoch_display):
     fig = plt.figure(figsize=(15, 15))
 
-    title = ['Input Image', 'True Mask', 'Predicted Mask after epoch {}'.format(epoch_display + 1)]
+    title = ['Input Image', 'True Mask', 'Predicted Mask after epoch {}'.format(epoch_display)]
     for i in range(len(display_list)):
         plt.subplot(1, len(display_list), i + 1)
         plt.title(title[i])
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
         plt.axis('off')
-    plt.savefig("Pictures_bisenet/afterEpoch{}.png".format(epoch_display + 1))
+    plt.savefig("pictures_bisenet/afterEpoch{}.png".format(epoch_display))
     # plt.show()
     plt.close(fig)
 
@@ -244,20 +136,36 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
 
 
+# Callback functions
+es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
+mc = tf.keras.callbacks.ModelCheckpoint('best_model_bisenet.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
+csv = tf.keras.callbacks.CSVLogger('pictures_bisenet/metrics.csv', separator=',', append=False)
+
 if train:
 # use tf.data to improve performance
 
     #train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train_onehot))
     #val_dataset = tf.data.Dataset.from_tensor_slices((imgs_test, lbls_val_onehot))
 
-    net.compile(optimizer='adam', loss=weighted_categorical_crossentropy(weights), metrics=['accuracy', iou_coef, dice_coef])
+    if which_data == 1:
+        net = bise_net((480, 640, 3), 5)
+    if which_data == 2:
+        net = bise_net((1024, 1280, 3), 4)
+
+    net.summary()
+
+    with open('BiSeNetModelSummary.txt', 'w') as f:
+        with redirect_stdout(f):
+            net.summary()
+
+    net.compile(optimizer='adam', loss=loss_function, metrics=metrics)
 
     tf.keras.utils.plot_model(net,
                               to_file='BiSeNetModelPlot.png',
                               show_shapes=True,
                               rankdir='TB')
 
-    show_predictions(-1)
+    #show_predictions(-1)
 
     model_history = net.fit([imgs_train, imgs_train], lbls_train,
                             validation_data=[[imgs_val, imgs_val], lbls_val],
@@ -267,86 +175,77 @@ if train:
                             shuffle=True,
                             callbacks=[DisplayCallback()])
 
-    loss = model_history.history['loss']
-    val_loss = model_history.history['val_loss']
-    accuracy = model_history.history['accuracy']
-    val_accuracy = model_history.history['val_accuracy']
-    iou_metric = model_history.history['iou_coef']
-    val_iou_metric = model_history.history['val_iou_coef']
-    dice_metric = model_history.history['dice_coef']
-    val_dice_coef = model_history.history['val_dice_coef']
-
-    # Save metric data to file
-    f = open("Pictures_bisenet/Metrics.txt", "w+")
-    f.write("loss" + str(loss))
-    f.write("\nval_loss: " + str(val_loss))
-    f.write("\naccuracy: " + str(accuracy))
-    f.write("\nval_accuracy: " + str(val_accuracy))
-    f.write("\niou_coef: " + str(iou_metric))
-    f.write("\nval_iou_coef: " + str(val_iou_metric))
-    f.write("\ndice_coef: " + str(dice_metric))
-    f.write("\nval_dice_coef: " + str(val_dice_coef))
-    f.write("\nweights: " + str(weights))
-    f.close()
-
-    epochs = range(num_epochs)
-
-    # Plot statistics
-    graph = plt.figure()
-    plt.plot(epochs, loss, 'r', label='Training loss')
-    plt.plot(epochs, val_loss, 'bo', label='Validation loss')
-    plt.title('Training and Validation Loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss Value')
-    plt.legend()
-    plt.savefig('Pictures_bisenet/Training and Validation Loss')
-    plt.show()
-    plt.close(graph)
-
-    net.save('net_model.h5')
-    print("Saved model to disk")
-
 elif not train:
     # Load model from file
-    net = load_model('net_model.h5', compile=False)
+    net = load_model('best_model_bisenet.hdf5', compile=False)
 
     # compile saved model
     net.compile(optimizer='adam',
-                loss=weighted_categorical_crossentropy(weights),
-                metrics=['accuracy', iou_coef, dice_coef])
+                loss=loss_function,
+                metrics=metrics)
 
 # Evaluate model
-print('\n# Evaluate on test data 1')
-start_time = time.time()
-results = net.evaluate([imgs_test, imgs_test], lbls_test, batch_size=1)
-stop_time = time.time()
-print("--- %s seconds ---" % (stop_time - start_time))
-print("%s: %.2f" % (net.metrics_names[0], results[0]))
+# display test images
+def display_test(display_list, image_num):
+    fig = plt.figure(figsize=(15, 15))
+    title = ['Input Image', 'True Mask', 'Predicted Mask']
+    for i in range(len(display_list)):
+        plt.subplot(1, len(display_list), i + 1)
+        plt.title(title[i])
+        plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
+        plt.axis('off')
 
-print('\n# Evaluate on test data 2')
-start_time = time.time()
-results = net.evaluate([imgs_test, imgs_test], lbls_test, batch_size=1)
-stop_time = time.time()
-print("--- %s seconds ---" % (stop_time - start_time))
-print("%s: %.2f" % (net.metrics_names[0], results[0]))
+    plt.savefig("pictures_bisenet/test_image{}.png".format(image_num + 1))
+    plt.close(fig)
 
-print('\n# Evaluate on test data 3')
-start_time = time.time()
-results = net.evaluate([imgs_test, imgs_test], lbls_test, batch_size=1)
-stop_time = time.time()
-print("--- %s seconds ---" % (stop_time - start_time))
-print("%s: %.2f" % (net.metrics_names[0], results[0]))
 
-print('\n# Evaluate on test data 4')
-start_time = time.time()
-results = net.evaluate([imgs_test, imgs_test], lbls_test, batch_size=1)
-stop_time = time.time()
-print("--- %s seconds ---" % (stop_time - start_time))
-print("%s: %.2f" % (net.metrics_names[0], results[0]))
+def show_predictions_test(image_num=1):
+    x = imgs_test[image_num][tf.newaxis, ...]
+    pred_mask = net.predict([x, x]) * 255
+    display_test([imgs_test[image_num], lbls_display_test[image_num], create_mask(pred_mask)], image_num)
 
-print('\n# Evaluate on test data 5')
+for i in range(10):
+    show_predictions_test(i)
+
+
+print('\n# Evaluate on test data')
 start_time = time.time()
-results = net.evaluate([imgs_test, imgs_test], lbls_test, batch_size=1)
+results = net.evaluate(imgs_test, lbls_test, batch_size=1)
 stop_time = time.time()
-print("--- %s seconds ---" % (stop_time - start_time))
-print("%s: %.2f" % (net.metrics_names[0], results[0]))
+print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
+
+# Save metric data to file
+f = open("pictures_bisenet/test_metrics.txt", "w+")
+f.write("%s: %.4f" % (net.metrics_names[0], results[0]))
+for i in range(1, len(results)):
+    f.write("\n%s: %.4f" % (net.metrics_names[i], results[i]))
+
+
+print('\n# Evaluate on test data')
+start_time = time.time()
+net.evaluate(imgs_test, lbls_test, batch_size=1)
+stop_time = time.time()
+print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
+
+print(str(len(imgs_test)))
+
+# Evaluate time and save to file
+times = 10
+total_time = 0.0
+for i in range(times):
+    print('\n# predict on test data ')
+    start_time = time.time()
+    net.predict(imgs_test, batch_size=1)
+    stop_time = time.time()
+    total_time += ((stop_time - start_time) / len(imgs_test))
+    f.write("\nSeconds per image: %.4f" % ((stop_time - start_time)/len(imgs_test)))
+    print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
+
+average = total_time / times
+fps = 1.0 / average
+
+f.write("\nAverage: %.4f" % average)
+f.write("\nFPS: %.2f" % fps)
+f.close()
+
+print('DONE!')
