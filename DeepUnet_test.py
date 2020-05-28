@@ -18,7 +18,7 @@ train = True
 which_data = 1 # 1 = jigsaw, 2 = EndoVis
 which_path = 2 # 1 = local, 2 = remote
 batch_size = 1
-num_epochs = 5
+num_epochs = 100
 
 if which_data == 1:
     weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
