@@ -103,11 +103,10 @@ class DisplayCallback(tf.keras.callbacks.Callback):
         print('\nSample Prediction after epoch {}\n'.format(epoch_callback + 1))
 
 
+# Callback functions
 es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
-mc = tf.keras.callbacks.ModelCheckpoint('best_model_unet.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
-csv = tf.keras.callbacks.CSVLogger(
-    'pictures_unet/metrics.csv', separator=',', append=False
-)
+mc = tf.keras.callbacks.ModelCheckpoint('best_model_unet_.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
+csv = tf.keras.callbacks.CSVLogger('pictures_unet/metrics.csv', separator=',', append=False)
 
 
 # Load images and labels
@@ -129,6 +128,7 @@ lbls_display_test = labels_display[89:99]
 print('Images and labels loaded!')
 
 if train:
+    # Build model
     input_shape = np.empty((480, 640, 3))
     (unet, name) = unet(input_shape.shape, num_classes=5, droprate=0.0, linear=False)
 
@@ -138,6 +138,7 @@ if train:
         with redirect_stdout(f):
             unet.summary()
 
+    # Compile model
     unet.compile(optimizer='adam', loss=loss_function, metrics=metrics)
 
     tf.keras.utils.plot_model(unet,
@@ -146,6 +147,7 @@ if train:
                               show_layer_names=True,
                               rankdir='TB')
 
+    # Train model
     model_history = unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
                              batch_size=1,
                              epochs=epoch,
@@ -206,10 +208,9 @@ print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
 
 print(str(len(imgs_test)))
 
+# Evaluate time and save to file
 times = 10
 total_time = 0.0
-#average = 0.0
-#fps = 0.0
 for i in range(times):
     print('\n# predict on test data ')
     start_time = time.time()
