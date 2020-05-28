@@ -111,7 +111,7 @@ csv = tf.keras.callbacks.CSVLogger('pictures_unet/metrics.csv', separator=',', a
 
 # Load images and labels
 if which_data == 1:
-    print('Loading images and labels...')
+    print('Loading images and labels from JIGGSAWS...')
     images, labels, labels_display = load_data(PATH)
 
     imgs_train = images[0:79]
@@ -127,7 +127,7 @@ if which_data == 1:
     lbls_display_test = labels_display[89:99]
 
 if which_data == 2:
-    print('Loading images and labels...')
+    print('Loading images and labels from EndoVis17...')
     images, labels, labels_display = load_data_EndoVis17(PATH)
 
     imgs_train = images[0:175]
@@ -136,7 +136,7 @@ if which_data == 2:
 
     lbls_train = labels[0:175]
     lbls_val = labels[175:200]
-    lbsl_test = labels[200:225]
+    lbls_test = labels[200:225]
 
     lbls_display_train = labels_display[0:175]
     lbls_display_val = labels_display[175:200]
