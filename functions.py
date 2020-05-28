@@ -116,20 +116,20 @@ def load_data_EndoVis15(data_path, dtype=np.float32):
 def load_data_EndoVis17(data_path, dtype=np.float32):
     N = 225  # Number of images, max 225
     M = 4  # Number of labels
-    DIM = (768, 960)  # Image dimensions
+    DIM = (512, 640)  # Image dimensions
 
     images = np.empty((N, *DIM, 3), dtype=dtype)
-    images_temp = np.empty((1080,1920, 3), dtype=dtype)
+    images_temp = np.empty((1080, 1920, 3), dtype=dtype)
     labels = np.empty((N, *DIM, M), dtype=dtype)
     labels_display = np.empty((N, *DIM, 1), dtype=dtype)
     temp = np.empty((N, *DIM, 1), dtype=dtype)
-    labels_temp = np.empty((1080,1920), dtype=dtype)
+    labels_temp = np.empty((1080, 1920), dtype=dtype)
     labels_crop = np.empty((N, *DIM), dtype=dtype)
     #labels_temp_temp = np.empty(DIM, dtype=dtype)
     for i in range(N):
         image_path = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/left_frames/frame{}.png'.format(str(i).zfill(3)))
         images_temp = cv.imread(image_path).astype(dtype)
-        images[i] = cv.resize(images_temp[28:1052, 320:1600], (960, 768)) #crop the black parts
+        images[i] = cv.resize(images_temp[28:1052, 320:1600], (640, 512))  # crop the black parts
         images[i] = cv.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
         label_path_left = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/ground_truth/Left_Large_Needle_Driver_labels/frame{}.png'.format(str(i).zfill(3)))
@@ -139,8 +139,44 @@ def load_data_EndoVis17(data_path, dtype=np.float32):
         k2 = np.where(labels_temp[:, :] == 50)
         labels_temp[k1] = 30
         labels_temp[k2] = 30
-        labels_crop[i] = cv.resize(labels_temp[28:1052, 320:1600], (960, 768))
-        labels_display[i,...,0] = labels_crop[i]
+        labels_crop[i] = cv.resize(labels_temp[28:1052, 320:1600], (640, 512))
+        labels_display[i, ..., 0] = labels_crop[i]
+        labels_crop[i] = labels_crop[i] / 10
+
+    labels = tf.keras.utils.to_categorical(labels_crop, num_classes=4, dtype='float32')
+    print("labels: " + str(labels.shape))
+    images = images[..., ::-1]  # flip from BGR to RGB (for display purposes)
+
+    return images, labels, labels_display
+
+def load_data_EndoVis17_full(data_path, dtype=np.float32):
+    N = 225  # Number of images, max 225
+    M = 4  # Number of labels
+    DIM = (1024, 1280)  # Image dimensions
+
+    images = np.empty((N, *DIM, 3), dtype=dtype)
+    images_temp = np.empty((1080, 1920, 3), dtype=dtype)
+    labels = np.empty((N, *DIM, M), dtype=dtype)
+    labels_display = np.empty((N, *DIM, 1), dtype=dtype)
+    temp = np.empty((N, *DIM, 1), dtype=dtype)
+    labels_temp = np.empty((1080, 1920), dtype=dtype)
+    labels_crop = np.empty((N, *DIM), dtype=dtype)
+    #labels_temp_temp = np.empty(DIM, dtype=dtype)
+    for i in range(N):
+        image_path = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/left_frames/frame{}.png'.format(str(i).zfill(3)))
+        images_temp = cv.imread(image_path).astype(dtype)
+        images[i] = images_temp[28:1052, 320:1600]  # crop the black parts
+        images[i] = cv.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
+
+        label_path_left = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/ground_truth/Left_Large_Needle_Driver_labels/frame{}.png'.format(str(i).zfill(3)))
+        label_path_right = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/ground_truth/Right_Large_Needle_Driver_labels/frame{}.png'.format(str(i).zfill(3)))
+        labels_temp = cv.imread(label_path_left, cv.IMREAD_GRAYSCALE).astype(dtype) + cv.imread(label_path_right, cv.IMREAD_GRAYSCALE).astype(dtype)
+        k1 = np.where(labels_temp[:, :] == 60)
+        k2 = np.where(labels_temp[:, :] == 50)
+        labels_temp[k1] = 30
+        labels_temp[k2] = 30
+        labels_crop[i] = labels_temp[28:1052, 320:1600]
+        labels_display[i, ..., 0] = labels_crop[i]
         labels_crop[i] = labels_crop[i] / 10
 
     labels = tf.keras.utils.to_categorical(labels_crop, num_classes=4, dtype='float32')
