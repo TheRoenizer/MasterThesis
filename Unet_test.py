@@ -31,9 +31,9 @@ print('Numpy version: '+np.__version__)
 print('Keras version: '+tf.keras.__version__)
 
 which_path = 3  # 1 = local c, 2 = local j, 3 = remote
+which_data =1 # 1 = JIGSAWS, 2 = EndoVis2017
 train = True
 epoch = 100
-num_pixels = 480 * 640
 weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
 
 if which_path == 1:
@@ -105,32 +105,53 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 # Callback functions
 es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
-mc = tf.keras.callbacks.ModelCheckpoint('best_model_unet_.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
+mc = tf.keras.callbacks.ModelCheckpoint('best_model_unet_dice.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
 csv = tf.keras.callbacks.CSVLogger('pictures_unet/metrics.csv', separator=',', append=False)
 
 
 # Load images and labels
-print('Loading images and labels...')
-images, labels, labels_display = load_data(PATH)
+if which_data == 1:
+    print('Loading images and labels...')
+    images, labels, labels_display = load_data(PATH)
 
-imgs_train = images[0:79]
-imgs_val = images[79:89]
-imgs_test = images[89:99]
+    imgs_train = images[0:79]
+    imgs_val = images[79:89]
+    imgs_test = images[89:99]
 
-lbls_train = labels[0:79]
-lbls_val = labels[79:89]
-lbls_test = labels[89:99]
+    lbls_train = labels[0:79]
+    lbls_val = labels[79:89]
+    lbls_test = labels[89:99]
 
-lbls_display_train = labels_display[0:79]
-lbls_display_val = labels_display[79:89]
-lbls_display_test = labels_display[89:99]
+    lbls_display_train = labels_display[0:79]
+    lbls_display_val = labels_display[79:89]
+    lbls_display_test = labels_display[89:99]
+
+if which_data == 2:
+    print('Loading images and labels...')
+    images, labels, labels_display = load_data_EndoVis17(PATH)
+
+    imgs_train = images[0:175]
+    imgs_val = images[175:200]
+    imgs_test = images[200:225]
+
+    lbls_train = labels[0:175]
+    lbls_val = labels[175:200]
+    lbsl_test = labels[200:225]
+
+    lbls_display_train = labels_display[0:175]
+    lbls_display_val = labels_display[175:200]
+    lbls_display_test = labels_display[200:225]
 
 print('Images and labels loaded!')
 
 if train:
     # Build model
-    input_shape = np.empty((480, 640, 3))
-    (unet, name) = unet(input_shape.shape, num_classes=5, droprate=0.0, linear=False)
+    input_shape_jigsaw = np.empty((480, 640, 3))
+    imgs_shape_endovis = np.zeros((1024, 1280, 3))
+    if which_data == 1:
+        (unet, name) = unet(input_shape_jigsaw.shape, num_classes=5, droprate=0.0, linear=False)
+    if which_data == 2:
+        (unet, name) = unet(input_shape_endovis.shape, num_classes=4, droprate=0.0, linear=False)
 
     unet.summary()
 
@@ -157,7 +178,7 @@ if train:
 
 else:
     # Load model from file
-    unet = load_model('best_model_unet_fl.hdf5', compile=False)
+    unet = load_model('best_model_unet.hdf5', compile=False)
 
     # Compile loaded model
     unet.compile(optimizer='adam', loss=loss_function, metrics=metrics)
