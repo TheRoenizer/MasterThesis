@@ -31,7 +31,7 @@ print('Numpy version: '+np.__version__)
 print('Keras version: '+tf.keras.__version__)
 
 which_path = 3  # 1 = local c, 2 = local j, 3 = remote
-which_data =1 # 1 = JIGSAWS, 2 = EndoVis2017
+which_data = 1  # 1 = JIGSAWS, 2 = EndoVis2017
 train = True
 epoch = 100
 weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
@@ -50,7 +50,7 @@ metrics = ['accuracy',
            iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4,
            dice_coef_mean, dice_coef0, dice_coef1, dice_coef2, dice_coef3, dice_coef4]
 
-Loss_function = 1   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss, 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
+Loss_function = 5   # 1=focal_loss, 2=dice_loss, 3=jaccard_loss, 4=tversky_loss, 5=weighted_categorical_crossentropy 6=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
@@ -105,7 +105,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 # Callback functions
 es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
-mc = tf.keras.callbacks.ModelCheckpoint('best_model_unet_dice.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
+mc = tf.keras.callbacks.ModelCheckpoint('best_model_unet_wcc.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
 csv = tf.keras.callbacks.CSVLogger('pictures_unet/metrics.csv', separator=',', append=False)
 
 
@@ -147,7 +147,7 @@ print('Images and labels loaded!')
 if train:
     # Build model
     input_shape_jigsaw = np.empty((480, 640, 3))
-    imgs_shape_endovis = np.zeros((1024, 1280, 3))
+    input_shape_endovis = np.zeros((1024, 1280, 3))
     if which_data == 1:
         (unet, name) = unet(input_shape_jigsaw.shape, num_classes=5, droprate=0.0, linear=False)
     if which_data == 2:
