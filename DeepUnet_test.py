@@ -109,7 +109,7 @@ if which_data == 1:
 
 if which_data == 2:
     print('Loading images and labels...')
-    images, labels, labels_display = load_data_EndoVis17(PATH)
+    images, labels, labels_display = load_data_EndoVis17_full(PATH)
 
     imgs_train = images[0:175]
     imgs_val = images[175:200]
