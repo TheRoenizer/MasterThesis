@@ -16,7 +16,7 @@ from functions import *
 
 model_name = 'best_model_deepunet_fl_endo_resized.hdf5'
 train = True
-which_data = 1  # 1 = jigsaw, 2 = EndoVis
+which_data = 2  # 1 = jigsaw, 2 = EndoVis
 which_path = 2  # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 100
