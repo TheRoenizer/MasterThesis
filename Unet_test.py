@@ -161,7 +161,7 @@ print('Images and labels loaded!')
 if train:
     # Build model
     input_shape_jigsaw = np.empty((480, 640, 3))
-    input_shape_endovis = np.zeros((1024, 1280, 3))
+    input_shape_endovis = np.zeros((1024/2, 1280/2, 3))
     if which_data == 1:
         (unet, name) = unet(input_shape_jigsaw.shape, num_classes=5, droprate=0.0, linear=False)
     elif which_data == 2:
