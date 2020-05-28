@@ -130,7 +130,7 @@ if which_data == 1:
 elif which_data == 2:
     print('Loading images and labels from EndoVis17...')
     images, labels, labels_display = load_data_EndoVis17(PATH)
-
+    '''
     imgs_train = images[0:80]
     imgs_val = images[80:90]
     imgs_test = images[90:100]
@@ -142,8 +142,8 @@ elif which_data == 2:
     lbls_display_train = labels_display[0:80]
     lbls_display_val = labels_display[80:90]
     lbls_display_test = labels_display[90:100]
-
     '''
+
     imgs_train = images[0:175]
     imgs_val = images[175:200]
     imgs_test = images[200:225]
@@ -155,7 +155,7 @@ elif which_data == 2:
     lbls_display_train = labels_display[0:175]
     lbls_display_val = labels_display[175:200]
     lbls_display_test = labels_display[200:225]
-    '''
+    
 print('Images and labels loaded!')
 
 if train:
