@@ -23,14 +23,14 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 from BiSeNet import bise_net
 from functions import *
 
-model_name = 'best_model_bisenet_fl.hdf5'
+model_name = 'best_model_bisenet_cc.hdf5'
 train = True
 which_path = 2  # 1 = local, 2 = remote
 which_data = 1 # 1 = JIGSAWS, 2 = EndoVis2017
 batch_size = 1
 num_epochs = 100
 
-Loss_function = 1   # 1=focal_loss, 2=weighted_categorical_crossentropy 3=categorical_cross_entropy
+Loss_function = 3   # 1=focal_loss, 2=weighted_categorical_crossentropy 3=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
