@@ -129,7 +129,7 @@ def load_data_EndoVis17(data_path, dtype=np.float32):
     for i in range(N):
         image_path = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/left_frames/frame{}.png'.format(str(i).zfill(3)))
         images_temp = cv.imread(image_path).astype(dtype)
-        images[i] = cv.resize(images_temp[28:1052, 320:1600], (512, 640)) #crop the black parts
+        images[i] = cv.resize(images_temp[28:1052, 320:1600], (640,512)) #crop the black parts
         images[i] = cv.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
 
         label_path_left = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/ground_truth/Left_Large_Needle_Driver_labels/frame{}.png'.format(str(i).zfill(3)))
@@ -139,7 +139,7 @@ def load_data_EndoVis17(data_path, dtype=np.float32):
         k2 = np.where(labels_temp[:, :] == 50)
         labels_temp[k1] = 30
         labels_temp[k2] = 30
-        labels_crop[i] = cv.resize(labels_temp[28:1052, 320:1600], (512, 640))
+        labels_crop[i] = cv.resize(labels_temp[28:1052, 320:1600], (640, 512))
         labels_display[i,...,0] = labels_crop[i]
         labels_crop[i] = labels_crop[i] / 10
 
