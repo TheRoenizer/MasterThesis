@@ -32,7 +32,7 @@ print('Keras version: '+tf.keras.__version__)
 
 which_path = 3  # 1 = local c, 2 = local j, 3 = remote
 which_data = 2  # 1 = JIGSAWS, 2 = EndoVis2017
-model_name = 'best_model_unet_cc_endo.hdf5'
+model_name = 'best_model_unet_wcc_endo.hdf5'
 train = True
 epoch = 100
 
@@ -57,7 +57,7 @@ else:
     # Linux:
     PATH = '/home/jsteeen/'
 
-Loss_function = 3   # 1=focal_loss, 2=weighted_categorical_crossentropy 3=categorical_cross_entropy
+Loss_function = 2   # 1=focal_loss, 2=weighted_categorical_crossentropy 3=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
