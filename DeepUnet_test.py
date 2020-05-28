@@ -15,7 +15,7 @@ from DeepUnet import *
 from functions import *
 
 model_name = 'best_model_deepunet_wcc_endo_resized.hdf5'
-train = True
+train = False
 which_data = 2  # 1 = jigsaw, 2 = EndoVis
 which_path = 2  # 1 = local, 2 = remote
 batch_size = 1
@@ -225,7 +225,7 @@ fps = 1.0 / average
 f.write("\nAverage: %.4f" % average)
 f.write("\nFPS: %.2f" % fps)
 if Loss_function == 2:
-    f.write("\nWeigts: %" % weights)
+    f.write("\nWeigts: %s" % weights)
 f.close()
 
 print('DONE!')
