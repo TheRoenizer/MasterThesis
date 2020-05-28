@@ -37,7 +37,7 @@ train = True
 epoch = 100
 
 if which_data == 1:
-    weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
+    weights = [.5, 2, 1, 2, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
 if which_data == 2:
     weights = [.5, 2, 2, 2]  # [background, shaft, wrist, fingers]
 
