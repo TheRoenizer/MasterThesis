@@ -32,12 +32,12 @@ print('Keras version: '+tf.keras.__version__)
 
 which_path = 3  # 1 = local c, 2 = local j, 3 = remote
 which_data = 1  # 1 = JIGSAWS, 2 = EndoVis2017
-model_name = 'best_model_unet_wcc.hdf5'
+model_name = 'best_model_unet_cc.hdf5'
 train = True
 epoch = 100
 
 if which_data == 1:
-    weights = [.5, 2, 1, 2, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
+    weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
 if which_data == 2:
     weights = [.5, 2, 2, 2]  # [background, shaft, wrist, fingers]
 
@@ -55,7 +55,7 @@ metrics = ['accuracy',
            iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4,
            dice_coef_mean, dice_coef0, dice_coef1, dice_coef2, dice_coef3, dice_coef4]
 
-Loss_function = 2   # 1=focal_loss, 2=weighted_categorical_crossentropy 3=categorical_cross_entropy
+Loss_function = 3   # 1=focal_loss, 2=weighted_categorical_crossentropy 3=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
