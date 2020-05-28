@@ -16,7 +16,7 @@ os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 # ellers:
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 # hvis du træne på CPU'en:
 # os.environ["CUDA_VISIBLE_DEVICES"] = ""
@@ -131,15 +131,15 @@ elif which_data == 2:
     print('Loading images and labels from EndoVis17...')
     images, labels, labels_display = load_data_EndoVis17(PATH)
 
-    imgs_train = images[0:100]
+    imgs_train = images[0:175]
     imgs_val = images[175:200]
     imgs_test = images[200:225]
 
-    lbls_train = labels[0:100]
+    lbls_train = labels[0:175]
     lbls_val = labels[175:200]
     lbls_test = labels[200:225]
 
-    lbls_display_train = labels_display[0:100]
+    lbls_display_train = labels_display[0:175]
     lbls_display_val = labels_display[175:200]
     lbls_display_test = labels_display[200:225]
 
