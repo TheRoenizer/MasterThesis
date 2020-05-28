@@ -28,8 +28,14 @@ FL_gamma = 2.       # Focal loss gamma
 
 if which_data == 1:
     weights = [.5, 3, 2, 3, 2]  # [background, right gripper, right shaft, left gripper, left shaft]
+    metrics = ['accuracy',
+               iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4,
+               dice_coef_mean, dice_coef0, dice_coef1, dice_coef2, dice_coef3, dice_coef4]
 if which_data == 2:
     weights = [.5, 2, 2, 2]  # [background, shaft, wrist, fingers]
+    metrics = ['accuracy',
+               iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3,
+               dice_coef_mean, dice_coef0, dice_coef1, dice_coef2, dice_coef3]
 
 if which_path == 1:
     # Christoffer:
@@ -38,9 +44,7 @@ elif which_path == 2:
     # Linux:
     PATH = '/home/jsteeen/'
 
-metrics = ['accuracy',
-           iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4,
-           dice_coef_mean, dice_coef0, dice_coef1, dice_coef2, dice_coef3, dice_coef4]
+
 
 if Loss_function == 1:
     loss_function = categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)
