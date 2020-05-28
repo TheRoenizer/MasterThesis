@@ -33,7 +33,7 @@ print('Keras version: '+tf.keras.__version__)
 which_path = 3  # 1 = local c, 2 = local j, 3 = remote
 which_data = 1  # 1 = JIGSAWS, 2 = EndoVis2017
 model_name = 'best_model_unet_wcc.hdf5'
-train = False
+train = True
 epoch = 100
 
 if which_data == 1:
