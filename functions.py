@@ -114,7 +114,7 @@ def load_data_EndoVis15(data_path, dtype=np.float32):
 
 
 def load_data_EndoVis17(data_path, dtype=np.float32):
-    N = 225  # Number of images
+    N = 100  # Number of images, max 225
     M = 4  # Number of labels
     DIM = (1024, 1280)  # Image dimensions
 
