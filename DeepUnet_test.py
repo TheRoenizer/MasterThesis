@@ -151,13 +151,12 @@ if train:
                                   shuffle=True,
                                   callbacks=[DisplayCallback(), es, mc, csv])
 
-elif not train:
-    # Load model from file
-    deep_unet = load_model('deep_unet_model.h5', compile=False)
 
-    #compile saved model
-    deep_unet.compile(optimizer='adam', loss=loss_function, metrics=metrics)
+# Load model from file
+deep_unet = load_model('deep_unet_model_wcc.hdf5', compile=False)
 
+#compile saved model
+deep_unet.compile(optimizer='adam', loss=loss_function, metrics=metrics)
 
 # Evaluate model
 # display test images
