@@ -23,13 +23,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 from BiSeNet import bise_net
 from functions import *
 
-"""
-net.compile(optimizer = opt,loss = loss, metrics = metrics)
-
-history = net.fit([imgs_train,imgs_train],lbls_train,validation_data=[[imgs_val,imgs_val],lbls_val], batch_size=batch_size, epochs=num_epochs, verbose=1,shuffle=True,callbacks=callbacks)
-
-"""
-
+model_name = 'best_model_bisenet_wcc.hdf5'
 train = True
 which_path = 2  # 1 = local, 2 = remote
 which_data = 1 # 1 = JIGSAWS, 2 = EndoVis2017
@@ -48,14 +42,14 @@ elif which_path == 2:
     # Linux:
     PATH = '/home/jsteeen/'
 
-metrics = ['accuracy',
-           iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4,
-           dice_coef_mean, dice_coef0, dice_coef1, dice_coef2, dice_coef3, dice_coef4]
-
 Loss_function = 2   # 1=focal_loss, 2=weighted_categorical_crossentropy 3=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
+
+metrics = ['accuracy',
+           iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4,
+           dice_coef_mean, dice_coef0, dice_coef1, dice_coef2, dice_coef3, dice_coef4]
 
 if Loss_function == 1:
     loss_function = categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)
@@ -136,7 +130,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 # Callback functions
 es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
-mc = tf.keras.callbacks.ModelCheckpoint('best_model_bisenet_wcc.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
+mc = tf.keras.callbacks.ModelCheckpoint(model_name, monitor='val_loss', mode='min', verbose=1, save_best_only=True)
 csv = tf.keras.callbacks.CSVLogger('pictures_bisenet/metrics.csv', separator=',', append=False)
 
 if train:
@@ -169,18 +163,17 @@ if train:
                             validation_data=[[imgs_val, imgs_val], lbls_val],
                             batch_size=batch_size,
                             epochs=num_epochs,
-                            verbose=1,
+                            verbose=2,
                             shuffle=True,
                             callbacks=[DisplayCallback(), es, mc, csv])
 
-elif not train:
-    # Load model from file
-    net = load_model('best_model_bisenet.hdf5', compile=False)
+# Load model from file
+net = load_model(model_name, compile=False)
 
-    # compile saved model
-    net.compile(optimizer='adam',
-                loss=loss_function,
-                metrics=metrics)
+# compile saved model
+net.compile(optimizer='adam',
+            loss=loss_function,
+            metrics=metrics)
 
 # Evaluate model
 # display test images

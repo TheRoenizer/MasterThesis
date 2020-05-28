@@ -14,6 +14,7 @@ session = InteractiveSession(config=config)
 from DeepUnet import *
 from functions import *
 
+model_name = 'best_model_deepunet_wcc.hdf5'
 train = True
 which_data = 1 # 1 = jigsaw, 2 = EndoVis
 which_path = 2 # 1 = local, 2 = remote
@@ -81,7 +82,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 # Callback functions
 es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
-mc = tf.keras.callbacks.ModelCheckpoint('best_model_deepunet_wcc.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
+mc = tf.keras.callbacks.ModelCheckpoint(model_name, monitor='val_loss', mode='min', verbose=1, save_best_only=True)
 csv = tf.keras.callbacks.CSVLogger('pictures_deepunet/metrics.csv', separator=',', append=False)
 
 
@@ -147,13 +148,13 @@ if train:
     model_history = deep_unet.fit(imgs_train, lbls_train, validation_data=[imgs_val, lbls_val],
                                   batch_size=batch_size,
                                   epochs=num_epochs,
-                                  verbose=1,
+                                  verbose=2,
                                   shuffle=True,
                                   callbacks=[DisplayCallback(), es, mc, csv])
 
 
 # Load model from file
-deep_unet = load_model('deep_unet_model_wcc.hdf5', compile=False)
+deep_unet = load_model(model_name, compile=False)
 
 #compile saved model
 deep_unet.compile(optimizer='adam', loss=loss_function, metrics=metrics)
