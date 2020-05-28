@@ -5,7 +5,7 @@ from contextlib import redirect_stdout
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 config = ConfigProto()
 config.gpu_options.allow_growth = True
