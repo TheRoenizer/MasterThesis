@@ -216,14 +216,14 @@ for i in range(times):
     unet.predict(imgs_test, batch_size=1)
     stop_time = time.time()
     total_time += ((stop_time - start_time) / len(imgs_test))
-    f.write("\nSeconds per image: %s" % ((stop_time - start_time)/len(imgs_test)))
+    f.write("\nSeconds per image: %.4f" % ((stop_time - start_time)/len(imgs_test)))
     print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
 
 average = total_time / times
 fps = 1.0 / average
 
-f.write("\nAverage: %s" % average)
-f.write("\nFPS: %s" % fps)
+f.write("\nAverage: %.4f" % average)
+f.write("\nFPS: %.2f" % fps)
 f.close()
 
 print('DONE!')
