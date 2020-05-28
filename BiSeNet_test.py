@@ -148,7 +148,7 @@ if train:
     if which_data == 1:
         net = bise_net((480, 640, 3), 5)
     if which_data == 2:
-        net = bise_net((1024, 1280, 3), 4)
+        net = bise_net((512, 640, 3), 4)
 
     net.summary()
 
