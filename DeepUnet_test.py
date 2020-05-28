@@ -15,7 +15,7 @@ from DeepUnet import *
 from functions import *
 
 model_name = 'best_model_deepunet_cc_endo_resized.hdf5'
-train = False
+train = True
 which_data = 2  # 1 = jigsaw, 2 = EndoVis
 which_path = 2  # 1 = local, 2 = remote
 batch_size = 1
