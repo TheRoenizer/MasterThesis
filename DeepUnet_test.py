@@ -16,12 +16,12 @@ from functions import *
 
 model_name = 'best_model_deepunet_fl_endo.hdf5'
 train = True
-which_data = 2 # 1 = jigsaw, 2 = EndoVis
-which_path = 2 # 1 = local, 2 = remote
+which_data = 1  # 1 = jigsaw, 2 = EndoVis
+which_path = 2  # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 100
 
-Loss_function = 1 # 1=focal_loss, 2=weighted_categorical_crossentropy, 3=categorical_cross_entropy
+Loss_function = 1  # 1=focal_loss, 2=weighted_categorical_crossentropy, 3=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
