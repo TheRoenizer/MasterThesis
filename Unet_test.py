@@ -54,17 +54,15 @@ metrics = ['accuracy',
            iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4,
            dice_coef_mean, dice_coef0, dice_coef1, dice_coef2, dice_coef3, dice_coef4]
 
-Loss_function = 2   # 1=focal_loss, 2=dice_loss, 3=weighted_categorical_crossentropy 4=categorical_cross_entropy
+Loss_function = 3   # 1=focal_loss, 3=weighted_categorical_crossentropy 3=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
-TL_beta = 3         # Tversky loss beta
+
 
 if Loss_function == 1:
     loss_function = categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)
 elif Loss_function == 2:
-    loss_function = dice_loss()
-elif Loss_function == 3:
     loss_function = weighted_categorical_crossentropy(weights)
 else:
     loss_function = 'categorical_crossentropy'
@@ -105,7 +103,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 # Callback functions
 es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
-mc = tf.keras.callbacks.ModelCheckpoint('best_model_unet_dice.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
+mc = tf.keras.callbacks.ModelCheckpoint('best_model_unet_cc.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
 csv = tf.keras.callbacks.CSVLogger('pictures_unet/metrics.csv', separator=',', append=False)
 
 

@@ -5,7 +5,7 @@ from contextlib import redirect_stdout
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 config = ConfigProto()
 config.gpu_options.allow_growth = True
@@ -19,7 +19,6 @@ which_data = 1 # 1 = jigsaw, 2 = EndoVis
 which_path = 2 # 1 = local, 2 = remote
 batch_size = 1
 num_epochs = 5
-#num_pixels = 480 * 640
 
 if which_data == 1:
     weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]

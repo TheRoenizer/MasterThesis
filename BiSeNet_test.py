@@ -173,7 +173,7 @@ if train:
                             epochs=num_epochs,
                             verbose=1,
                             shuffle=True,
-                            callbacks=[DisplayCallback()])
+                            callbacks=[DisplayCallback(), es, mc, csv])
 
 elif not train:
     # Load model from file
