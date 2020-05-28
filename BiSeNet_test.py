@@ -23,10 +23,10 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 from BiSeNet import bise_net
 from functions import *
 
-model_name = 'best_model_bisenet_endo_fl.hdf5'
+model_name = 'best_model_bisenet_fl.hdf5'
 train = True
 which_path = 2  # 1 = local, 2 = remote
-which_data = 2 # 1 = JIGSAWS, 2 = EndoVis2017
+which_data = 1 # 1 = JIGSAWS, 2 = EndoVis2017
 batch_size = 1
 num_epochs = 100
 
