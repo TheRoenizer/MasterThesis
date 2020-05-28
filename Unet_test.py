@@ -155,7 +155,7 @@ elif which_data == 2:
     lbls_display_train = labels_display[0:175]
     lbls_display_val = labels_display[175:200]
     lbls_display_test = labels_display[200:225]
-    
+
 print('Images and labels loaded!')
 
 if train:
