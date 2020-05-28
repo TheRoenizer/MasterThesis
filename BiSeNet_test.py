@@ -244,7 +244,7 @@ fps = 1.0 / average
 f.write("\nAverage: %.4f" % average)
 f.write("\nFPS: %.2f" % fps)
 if Loss_function == 2:
-    f.write("\nWeigts: %" % weights)
+    f.write("\nWeigts: %s" % weights)
 f.close()
 
 print('DONE!')
