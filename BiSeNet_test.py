@@ -24,7 +24,7 @@ from BiSeNet import bise_net
 from functions import *
 
 model_name = 'best_model_bisenet_endo_cc.hdf5'
-train = True
+train = False
 which_path = 2  # 1 = local, 2 = remote
 which_data = 2 # 1 = JIGSAWS, 2 = EndoVis2017
 batch_size = 1
@@ -207,7 +207,7 @@ for i in range(10):
 
 print('\n# Evaluate on test data')
 start_time = time.time()
-results = net.evaluate(imgs_test, lbls_test, batch_size=1)
+results = net.evaluate([imgs_test, imgs_test], lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
 
@@ -220,7 +220,7 @@ for i in range(1, len(results)):
 
 print('\n# Evaluate on test data')
 start_time = time.time()
-net.evaluate(imgs_test, lbls_test, batch_size=1)
+net.evaluate([imgs_test, imgs_test], lbls_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
 
@@ -232,7 +232,7 @@ total_time = 0.0
 for i in range(times):
     print('\n# predict on test data ')
     start_time = time.time()
-    net.predict(imgs_test, batch_size=1)
+    net.predict([imgs_test, imgs_test], batch_size=1)
     stop_time = time.time()
     total_time += ((stop_time - start_time) / len(imgs_test))
     f.write("\nSeconds per image: %.4f" % ((stop_time - start_time)/len(imgs_test)))
