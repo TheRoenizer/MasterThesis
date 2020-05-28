@@ -32,7 +32,7 @@ elif which_path == 2:
     # Linux:
     PATH = '/home/jsteeen/'
 
-Loss_function = 3   # 1=focal_loss, 2=dice_loss, 3=weighted_categorical_crossentropy 4=categorical_cross_entropy
+Loss_function = 2   # 1=focal_loss, 2=weighted_categorical_crossentropy, 3=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
@@ -44,8 +44,6 @@ metrics = ['accuracy',
 if Loss_function == 1:
     loss_function = categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)
 elif Loss_function == 2:
-    loss_function = dice_loss()
-elif Loss_function == 3:
     loss_function = weighted_categorical_crossentropy(weights)
 else:
     loss_function = 'categorical_crossentropy'
@@ -83,7 +81,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 # Callback functions
 es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
-mc = tf.keras.callbacks.ModelCheckpoint('best_model_deepunet.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
+mc = tf.keras.callbacks.ModelCheckpoint('best_model_deepunet_wcc.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
 csv = tf.keras.callbacks.CSVLogger('pictures_deepunet/metrics.csv', separator=',', append=False)
 
 
