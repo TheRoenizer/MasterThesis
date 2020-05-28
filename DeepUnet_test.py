@@ -18,7 +18,7 @@ train = True
 which_data = 1 # 1 = jigsaw, 2 = EndoVis
 which_path = 2 # 1 = local, 2 = remote
 batch_size = 1
-num_epochs = 5
+num_epochs = 100
 
 if which_data == 1:
     weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
@@ -32,7 +32,7 @@ elif which_path == 2:
     # Linux:
     PATH = '/home/jsteeen/'
 
-Loss_function = 3   # 1=focal_loss, 2=dice_loss, 3=weighted_categorical_crossentropy 4=categorical_cross_entropy
+Loss_function = 2   # 1=focal_loss, 2=weighted_categorical_crossentropy, 3=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
@@ -44,8 +44,6 @@ metrics = ['accuracy',
 if Loss_function == 1:
     loss_function = categorical_focal_loss(gamma=FL_gamma, alpha=FL_alpha)
 elif Loss_function == 2:
-    loss_function = dice_loss()
-elif Loss_function == 3:
     loss_function = weighted_categorical_crossentropy(weights)
 else:
     loss_function = 'categorical_crossentropy'
@@ -83,7 +81,7 @@ class DisplayCallback(tf.keras.callbacks.Callback):
 
 # Callback functions
 es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
-mc = tf.keras.callbacks.ModelCheckpoint('best_model_deepunet.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
+mc = tf.keras.callbacks.ModelCheckpoint('best_model_deepunet_wcc.hdf5', monitor='val_loss', mode='min', verbose=1, save_best_only=True)
 csv = tf.keras.callbacks.CSVLogger('pictures_deepunet/metrics.csv', separator=',', append=False)
 
 
@@ -153,13 +151,12 @@ if train:
                                   shuffle=True,
                                   callbacks=[DisplayCallback(), es, mc, csv])
 
-elif not train:
-    # Load model from file
-    deep_unet = load_model('deep_unet_model.h5', compile=False)
 
-    #compile saved model
-    deep_unet.compile(optimizer='adam', loss=loss_function, metrics=metrics)
+# Load model from file
+deep_unet = load_model('deep_unet_model_wcc.hdf5', compile=False)
 
+#compile saved model
+deep_unet.compile(optimizer='adam', loss=loss_function, metrics=metrics)
 
 # Evaluate model
 # display test images
