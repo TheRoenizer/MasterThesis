@@ -127,7 +127,7 @@ if which_data == 1:
     lbls_display_val = labels_display[79:89]
     lbls_display_test = labels_display[89:99]
 
-if which_data == 2:
+elif which_data == 2:
     print('Loading images and labels from EndoVis17...')
     images, labels, labels_display = load_data_EndoVis17(PATH)
 
@@ -151,7 +151,7 @@ if train:
     input_shape_endovis = np.zeros((1024, 1280, 3))
     if which_data == 1:
         (unet, name) = unet(input_shape_jigsaw.shape, num_classes=5, droprate=0.0, linear=False)
-    if which_data == 2:
+    elif which_data == 2:
         (unet, name) = unet(input_shape_endovis.shape, num_classes=4, droprate=0.0, linear=False)
 
     unet.summary()
