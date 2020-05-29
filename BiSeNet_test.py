@@ -42,7 +42,7 @@ if which_data == 1:
                iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4,
                dice_coef_mean, dice_coef0, dice_coef1, dice_coef2, dice_coef3, dice_coef4]
 if which_data == 2:
-    weights = [.5, 2, 2, 2]  # [background, shaft, wrist, fingers]
+    weights = [.5, 2, 2, 2]  # [background, shaft, wrist, claspers]
 
     metrics = ['accuracy',
                iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3,

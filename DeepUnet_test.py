@@ -14,7 +14,7 @@ session = InteractiveSession(config=config)
 from DeepUnet import *
 from functions import *
 
-model_name = 'best_model_deepunet_cc_endo_resized.hdf5'
+model_name = 'best_model_deepunet_wcc_endo.hdf5'
 train = True
 which_data = 2  # 1 = jigsaw, 2 = EndoVis
 which_path = 2  # 1 = local, 2 = remote
@@ -109,7 +109,7 @@ if which_data == 1:
 
 if which_data == 2:
     print('Loading images and labels...')
-    images, labels, labels_display = load_data_EndoVis17(PATH)
+    images, labels, labels_display = load_data_EndoVis17_full(PATH)
 
     imgs_train = images[0:175]
     imgs_val = images[175:200]
@@ -127,7 +127,7 @@ print('Images and labels loaded!')
 
 if train:
     input_shape_jigsaws = np.zeros((480, 640, 3))
-    input_shape_endovis = np.zeros((512, 640, 3))
+    input_shape_endovis = np.zeros((1024, 1280, 3))
 
     if which_data == 1:
         (deep_unet, name) = deep_unet(input_shape_jigsaws.shape, num_classes=5, padding=16)
