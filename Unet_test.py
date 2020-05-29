@@ -130,19 +130,6 @@ if which_data == 1:
 elif which_data == 2:
     print('Loading images and labels from EndoVis17...')
     images, labels, labels_display = load_data_EndoVis17(PATH)
-    '''
-    imgs_train = images[0:80]
-    imgs_val = images[80:90]
-    imgs_test = images[90:100]
-
-    lbls_train = labels[0:80]
-    lbls_val = labels[80:90]
-    lbls_test = labels[90:100]
-
-    lbls_display_train = labels_display[0:80]
-    lbls_display_val = labels_display[80:90]
-    lbls_display_test = labels_display[90:100]
-    '''
 
     imgs_train = images[0:175]
     imgs_val = images[175:200]
@@ -260,7 +247,7 @@ fps = 1.0 / average
 f.write("\nAverage: %.4f" % average)
 f.write("\nFPS: %.2f" % fps)
 if Loss_function == 2:
-    f.write("\nWeigts: %s" % weights)
+    f.write("\nWeights: %s" % weights)
 f.close()
 
 print('DONE!')
