@@ -477,7 +477,7 @@ predicted_poses = model.predict(lbls_test)
 f = open("pose_estimation/predicted_poses.txt", "w+")
 # f.write("True: " + poses_test[0, :, :].T)
 # f.write("\nPredicted: " + predicted_poses[0, :, :].T)
-for i in range(8):
+for i in range(9):
     # f.write("True: " + poses_test[i, :, :].T + "\n")
     # f.write("Predicted: " + predicted_poses[i, :, :].T + "\n")
     # f.close()
