@@ -5,7 +5,7 @@ from contextlib import redirect_stdout
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 config = ConfigProto()
 config.gpu_options.allow_growth = True
@@ -19,7 +19,7 @@ train = True
 which_data = 2  # 1 = jigsaw, 2 = EndoVis
 which_path = 2  # 1 = local, 2 = remote
 batch_size = 1
-num_epochs = 200
+num_epochs = 100
 
 Loss_function = 2  # 1=focal_loss, 2=weighted_categorical_crossentropy, 3=categorical_cross_entropy
 
