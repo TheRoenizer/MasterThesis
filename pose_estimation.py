@@ -38,6 +38,7 @@ else:
 
 # Callback functions
 csv = tf.keras.callbacks.CSVLogger('pose_estimation/metrics.csv', separator=',', append=False)
+mc = tf.keras.callbacks.ModelCheckpoint('pose_estimation_model.hdf5', verbose=1, save_best_only=False)
 
 # Load images
 print("Loading images...")
@@ -474,7 +475,7 @@ history = model.fit(lbls_train, poses_train,
                     epochs=epochs,
                     verbose=1,
                     validation_data=(lbls_val, poses_val),
-                    callbacks=csv)
+                    callbacks=[csv, mc])
 
 
 predicted_poses = model.predict(lbls_test)
