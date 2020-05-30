@@ -6,6 +6,7 @@ from PIL import Image
 import cv2 as cv
 import os
 from contextlib import redirect_stdout
+import time
 
 try:
     from keras.layers import Input, Flatten, Dense, add, Reshape, Conv2D, Conv1D, BatchNormalization, MaxPooling2D, Dropout, Concatenate
@@ -475,4 +476,36 @@ predicted_poses = model.predict(lbls_test)
 score = model.evaluate(lbls_test, poses_test)
 print(poses_test[0, :, :].T)
 print(predicted_poses[0, :, :].T)
+
+print('\n# Evaluate on test data')
+start_time = time.time()
+results = model.evaluate(imgs_test, lbls_test, batch_size=1)
+stop_time = time.time()
+print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
+
+f = open("pose_estimation/test_metrics.txt", "w+")
+f.write("%s: %.4f" % (model.metrics_names[0], results[0]))
+for i in range(1, len(results)):
+    f.write("\n%s: %.4f" % (model.metrics_names[i], results[i]))
+
+# Evaluate time and save to file
+times = 10
+total_time = 0.0
+for i in range(times):
+    print('\n# predict on test data ')
+    start_time = time.time()
+    model.predict(imgs_test, batch_size=1)
+    stop_time = time.time()
+    total_time += ((stop_time - start_time) / len(imgs_test))
+    f.write("\nSeconds per image: %.4f" % ((stop_time - start_time)/len(imgs_test)))
+    print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
+
+average = total_time / times
+fps = 1.0 / average
+
+f.write("\nAverage: %.4f" % average)
+f.write("\nFPS: %.2f" % fps)
+f.close()
+
+
 print("DONE!")
