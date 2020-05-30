@@ -472,10 +472,15 @@ history = model.fit(lbls_train, poses_train,
                     verbose=1,
                     validation_data=(lbls_val, poses_val))
 
+
 predicted_poses = model.predict(lbls_test)
-score = model.evaluate(lbls_test, poses_test)
-print(poses_test[0, :, :].T)
-print(predicted_poses[0, :, :].T)
+f = open("pose_estimation/predicted_poses.txt", "w+")
+# f.write("True: " + poses_test[0, :, :].T)
+# f.write("\nPredicted: " + predicted_poses[0, :, :].T)
+for i in range(8):
+    f.write("True: " + poses_test[i, :, :].T + "\n")
+    f.write("Predicted: " + predicted_poses[i, :, :].T + "\n")
+f.close()
 
 print('\n# Evaluate on test data')
 start_time = time.time()
