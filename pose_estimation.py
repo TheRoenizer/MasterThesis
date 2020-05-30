@@ -36,6 +36,9 @@ else:
     # Linux:
     PATH = '/home/jsteeen/'
 
+# Callback functions
+csv = tf.keras.callbacks.CSVLogger('pose_estimation/metrics.csv', separator=',', append=False)
+
 # Load images
 print("Loading images...")
 # Train images
@@ -470,7 +473,8 @@ history = model.fit(lbls_train, poses_train,
                     batch_size=1,
                     epochs=epochs,
                     verbose=1,
-                    validation_data=(lbls_val, poses_val))
+                    validation_data=(lbls_val, poses_val),
+                    callbacks=csv)
 
 
 predicted_poses = model.predict(lbls_test)
