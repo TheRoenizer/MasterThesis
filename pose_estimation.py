@@ -23,7 +23,7 @@ config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
 which_path = 0
-epochs = 100
+epochs = 1000
 droprate = 0.5
 
 if which_path == 1:
@@ -37,8 +37,8 @@ else:
     PATH = '/home/jsteeen/'
 
 # Callback functions
-csv = tf.keras.callbacks.CSVLogger('pose_estimation/metrics.csv', separator=',', append=False)
-mc = tf.keras.callbacks.ModelCheckpoint('pose_estimation_mae_model.hdf5', verbose=1, save_best_only=False)
+csv = tf.keras.callbacks.CSVLogger('pose_estimation/metrics1000.csv', separator=',', append=False)
+mc = tf.keras.callbacks.ModelCheckpoint('pose_estimation_mse_1000.hdf5', verbose=1, save_best_only=False)
 
 # Load images
 print("Loading images...")
