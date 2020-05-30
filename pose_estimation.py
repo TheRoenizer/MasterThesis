@@ -38,7 +38,7 @@ else:
 
 # Callback functions
 csv = tf.keras.callbacks.CSVLogger('pose_estimation/metrics.csv', separator=',', append=False)
-mc = tf.keras.callbacks.ModelCheckpoint('pose_estimation_model.hdf5', verbose=1, save_best_only=False)
+mc = tf.keras.callbacks.ModelCheckpoint('pose_estimation_mae_model.hdf5', verbose=1, save_best_only=False)
 
 # Load images
 print("Loading images...")
@@ -456,7 +456,7 @@ output = Dense(16, activation='linear')(fc1)
 output = Reshape((4, 4))(output)
 
 model = Model(inputs=input3, outputs=output)
-model.compile(optimizer='adam', loss='mse', metrics=['accuracy', 'mse', 'mae'])
+model.compile(optimizer='adam', loss='mae', metrics=['accuracy', 'mse', 'mae'])
 
 tf.keras.utils.plot_model(model,
                           to_file='PoseEstimationPlot.png',
