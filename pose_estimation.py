@@ -480,12 +480,7 @@ history = model.fit(lbls_train, poses_train,
 
 predicted_poses = model.predict(lbls_test)
 f = open("pose_estimation/predicted_poses.txt", "w+")
-# f.write("True: " + poses_test[0, :, :].T)
-# f.write("\nPredicted: " + predicted_poses[0, :, :].T)
 for i in range(8):
-    # f.write("True: " + poses_test[i, :, :].T + "\n")
-    # f.write("Predicted: " + predicted_poses[i, :, :].T + "\n")
-    # f.close()
     np.set_printoptions(threshold=np.inf, linewidth=np.inf)  # turn off summarization, line-wrapping
     f.write("True:\n" + np.array2string(poses_test[i, :, :].T, separator=', ') + "\n")
     f.write("Predicted:\n" + np.array2string(predicted_poses[i, :, :].T, separator=', ') + "\n")
