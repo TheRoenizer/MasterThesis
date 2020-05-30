@@ -23,7 +23,7 @@ config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
 which_path = 0
-epochs = 100
+epochs = 10
 droprate = 0.5
 
 if which_path == 1:
