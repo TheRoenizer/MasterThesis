@@ -479,7 +479,7 @@ print(predicted_poses[0, :, :].T)
 
 print('\n# Evaluate on test data')
 start_time = time.time()
-results = model.evaluate(imgs_test, lbls_test, batch_size=1)
+results = model.evaluate(lbls_test, poses_test, batch_size=1)
 stop_time = time.time()
 print("--- %s seconds ---" % ((stop_time - start_time)/len(imgs_test)))
 
@@ -494,7 +494,7 @@ total_time = 0.0
 for i in range(times):
     print('\n# predict on test data ')
     start_time = time.time()
-    model.predict(imgs_test, batch_size=1)
+    model.predict(lbls_test, batch_size=1)
     stop_time = time.time()
     total_time += ((stop_time - start_time) / len(imgs_test))
     f.write("\nSeconds per image: %.4f" % ((stop_time - start_time)/len(imgs_test)))
