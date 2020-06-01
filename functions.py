@@ -4,7 +4,6 @@ import numpy as np
 import os
 import cv2 as cv
 
-
 def load_data(data_path, dtype=np.float32):
     N = 99            # Number of images
     M = 5             # Number of labels
@@ -40,78 +39,6 @@ def load_data(data_path, dtype=np.float32):
         labels[i,...,0] = temp[i,...,0]
         images = images[..., ::-1] # flip from BGR to RGB (for display purposes)
     return images, labels, labels_display
-
-
-def load_data_EndoVis15(data_path, dtype=np.float32):
-    N = 120            # Number of images
-    M = 3             # Number of labels
-    DIM = (480, 640)  # Image dimensions
-
-    images = np.empty((N, *DIM, 3), dtype=dtype)
-    #labels = np.empty((N, *DIM, M), dtype=dtype)
-    labels_display = np.empty((N, *DIM, 1), dtype=dtype)
-    temp = np.empty((N, *DIM, 1), dtype=dtype)
-    labels_temp = np.empty((N, *DIM), dtype=dtype)
-    for l in range(1,4):
-        for i in range(int(N/3)):
-            image_path = os.path.join(data_path, 'Segmentation_Rigid_Training/Training/OP{}/Raw/img_{}_raw.png'.format(l, str(i + 1).zfill(2)))
-            label_path = os.path.join(data_path, 'Segmentation_Rigid_Training/Training/OP{}/Masks/img_{}_class.png'.format(l, str(i + 1).zfill(2)))
-            #print(image_path)
-            #print(label_path)
-
-            if l == 1:
-                images[i] = cv.imread(image_path).astype(dtype)
-                images[i] = cv.normalize(images[i], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
-                labels_temp[i] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
-                labels_display[i,...,0] = labels_temp[i]
-                labels_temp[i] = labels_temp[i] / 70
-
-            elif l == 2:
-                images[i+40] = cv.imread(image_path).astype(dtype)
-                images[i+40] = cv.normalize(images[i+40], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
-                labels_temp[i+40] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
-                labels_display[i+40,...,0] = labels_temp[i+40]
-                labels_temp[i+40] = labels_temp[i+40] / 70
-
-            elif l == 3:
-                images[i+80] = cv.imread(image_path).astype(dtype)
-                images[i+80] = cv.normalize(images[i+80], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
-                labels_temp[i+80] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
-                labels_display[i+80,...,0] = labels_temp[i+80]
-                labels_temp[i+80] = labels_temp[i+80] / 70
-            '''
-            for j in range(0,M):
-                label_path = os.path.join(data_path, 'Segmentation_Rigid_Training/Training/OP{}/Masks/img_{}_class.png'.format(l, str(i + 1).zfill(2)))
-                print(label_path)
-                labels_temp[i] = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
-                labels_temp[i] = labels_temp[i] / 70
-                
-                #k = np.where(label == 0)
-                #labels[i,...,j][k] = 
-                #labels_display[i, ..., 0] += labels[i, ..., j]
-                labels[i,...,j+1] = cv.threshold(labels[i, ..., j + 1], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY)[1]
-                temp[i, ..., 0] += labels[i, ..., j+1]
-                labels[i,...,j+1] = cv.normalize(labels[i, ..., j + 1], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
-                
-                
-            for j in range(M-1):
-                label_path = os.path.join(data_path, 'Annotated/Suturing ({})/data/00{}.png'.format(i + 1, j))
-                im = cv.imread(label_path, cv.IMREAD_GRAYSCALE).astype(dtype)
-                mask = cv.threshold(im, dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY)[1]
-                k = np.where(mask == 255)
-                labels_display[i][k] = (j + 1) * 30  # set pixel value here
-            '''
-        #temp[i,...,0] = cv.threshold(temp[i, ..., 0], dst=None, thresh=1, maxval=255, type=cv.THRESH_BINARY_INV)[1]
-        #temp[i,...,0] = cv.normalize(temp[i, ..., 0], dst=None, alpha=0.0, beta=1.0, norm_type=cv.NORM_MINMAX)
-        #labels[i,...,0] = temp[i,...,0]
-        #images = images[..., ::-1] # flip from BGR to RGB (for display purposes)
-    #labels_display = labels_temp
-    #labels_display = labels_display.reshape((120, 480, 640, -1))
-    labels = tf.keras.utils.to_categorical(labels_temp, num_classes=3, dtype='float32')
-    print("labels: " + str(labels.shape))
-    images = images[..., ::-1]  # flip from BGR to RGB (for display purposes)
-    return images, labels, labels_display
-
 
 def load_data_EndoVis17(data_path, dtype=np.float32):
     N = 225  # Number of images, max 225
@@ -230,37 +157,6 @@ def categorical_focal_loss(gamma=2., alpha=.25):
 
     return categorical_focal_loss_fixed
 
-
-def dice_loss():
-    def dice_loss_fixed(y_true, y_pred):
-        numerator = 2 * tf.reduce_sum(y_true * y_pred, axis=-1)
-        denominator = tf.reduce_sum(y_true + y_pred, axis=-1)
-
-        return 1 - (numerator+1) / (denominator+1)
-
-    return dice_loss_fixed
-
-
-def jaccard_loss():
-    def jaccard_loss_fixed(y_true, y_pred):
-        numerator = tf.reduce_sum(y_true * y_pred, axis=-1)
-        denominator = tf.reduce_sum(y_true + y_pred - y_true * y_pred, axis=-1)
-
-        return 1 - (numerator + 1) / (denominator + 1)
-
-    return jaccard_loss_fixed
-
-
-def tversky_loss(beta):
-    def tversky_loss_fixed(y_true, y_pred):
-        numerator = tf.reduce_sum(y_true * y_pred, axis=-1)
-        denominator = tf.reduce_sum(y_true * y_pred + beta * (1 - y_true) * y_pred + (1 - beta) * y_true * (1 - y_pred), axis=-1)
-
-        return 1 - (numerator + 1) / (denominator + 1)
-
-    return tversky_loss_fixed
-
-
 def weighted_categorical_crossentropy(weights=[1]):
     """
     A weighted version of keras.objectives.categorical_crossentropy
@@ -329,53 +225,4 @@ def iou_coef4(y_true, y_pred):
     union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2]) - intersection
     iou = (intersection + 1e-15) / (union + 1e-15)
     return iou[4]
-
-
-# https://towardsdatascience.com/metrics-to-evaluate-your-semantic-segmentation-model-6bcb99639aa2
-def dice_coef(y_true, y_pred, smooth=1):
-    intersection = K.sum(y_true * y_pred, axis=[1, 2, 3])
-    union = K.sum(y_true, axis=[1, 2, 3]) + K.sum(y_pred, axis=[1, 2, 3])
-    dice = K.mean((2. * intersection + smooth)/(union + smooth), axis=0)
-    return dice
-
-#dice metric
-def dice(y_true, y_pred):
-    return (2 * K.sum(y_true * y_pred) + 1e-15) / (K.sum(y_true) + K.sum(y_pred) + 1e-15)
-
-def dice_coef_mean(y_true, y_pred):
-    intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
-    union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2])
-    dice_mean = K.mean((2 * intersection + 1e-15) / (union + 1e-15), axis=0)
-    return dice_mean
-
-def dice_coef0(y_true, y_pred):
-    intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
-    union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2])
-    dice = (2 * intersection + 1e-15) / (union + 1e-15)
-    return dice[0]
-
-def dice_coef1(y_true, y_pred):
-    intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
-    union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2])
-    dice = (2 * intersection + 1e-15) / (union + 1e-15)
-    return dice[1]
-
-def dice_coef2(y_true, y_pred):
-    intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
-    union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2])
-    dice = (2 * intersection + 1e-15) / (union + 1e-15)
-    return dice[2]
-
-def dice_coef3(y_true, y_pred):
-    intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
-    union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2])
-    dice = (2 * intersection + 1e-15) / (union + 1e-15)
-    return dice[3]
-
-def dice_coef4(y_true, y_pred):
-    intersection = K.sum(y_true * y_pred, axis=[0, 1, 2])
-    union = K.sum(y_true, axis=[0, 1, 2]) + K.sum(y_pred, axis=[0, 1, 2])
-    dice = (2 * intersection + 1e-15) / (union + 1e-15)
-    return dice[4]
-
 
