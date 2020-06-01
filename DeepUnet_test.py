@@ -14,12 +14,12 @@ session = InteractiveSession(config=config)
 from DeepUnet import *
 from functions import *
 
-model_name = 'best_model_deepunet_ny_wcc_endo.hdf5'
+model_name = 'best_model_deepunet_wcc_endo.hdf5'
 train = True
-which_data = 1  # 1 = jigsaw, 2 = EndoVis
+which_data = 2  # 1 = jigsaw, 2 = EndoVis
 which_path = 2  # 1 = local, 2 = remote
-batch_size = 5
-num_epochs = 1000
+batch_size = 1
+num_epochs = 100
 
 Loss_function = 2  # 1=focal_loss, 2=weighted_categorical_crossentropy, 3=categorical_cross_entropy
 
@@ -27,7 +27,7 @@ FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
 
 if which_data == 1:
-    weights = [.5, 3, 2, 3, 2]  # [background, right gripper, right shaft, left gripper, left shaft]
+    weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
     metrics = ['accuracy',
                iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4]
 if which_data == 2:
@@ -223,7 +223,7 @@ fps = 1.0 / average
 f.write("\nAverage: %.4f" % average)
 f.write("\nFPS: %.2f" % fps)
 if Loss_function == 2:
-    f.write("\nWeigts: %s" % weights)
+    f.write("\nWeights: %s" % weights)
 f.close()
 
 print('DONE!')
