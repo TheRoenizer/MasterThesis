@@ -23,8 +23,12 @@ config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
 which_path = 0
-epochs = 10
+epochs = 1000
 droprate = 0.5
+train = False
+loss_function = 'mse'
+model_name = 'pose_estimation_mse_1000.hdf5'
+metrics = ['accuracy', 'mse', 'mae']
 
 if which_path == 1:
     # Christoffer:
@@ -35,6 +39,10 @@ elif which_path == 2:
 else:
     # Linux:
     PATH = '/home/jsteeen/'
+
+# Callback functions
+csv = tf.keras.callbacks.CSVLogger('pose_estimation/metrics1000.csv', separator=',', append=False)
+mc = tf.keras.callbacks.ModelCheckpoint(model_name, verbose=1, save_best_only=False)
 
 # Load images
 print("Loading images...")
@@ -413,69 +421,80 @@ poses_test = poses_test.T
 print(poses_test[0, :, :].T)
 
 print("Poses loaded!")
+if train:
+    # Build model
+    '''
+    inputs1 = Input(shape=(800, 1280, 3))
+    inputs2 = Input(shape=(800, 1280, 3))
+    # add = add([inputs1, inputs2])
+    concat = Concatenate(axis=-1)([inputs1, inputs2])
+    '''
+    input3 = Input(shape=(1600, 1280, 1))
 
-# Build model
-'''
-inputs1 = Input(shape=(800, 1280, 3))
-inputs2 = Input(shape=(800, 1280, 3))
-# add = add([inputs1, inputs2])
-concat = Concatenate(axis=-1)([inputs1, inputs2])
-'''
-input3 = Input(shape=(1600, 1280, 1))
+    conv1 = Conv2D(16, 3, activation='relu', padding='same')(input3)
+    conv1 = BatchNormalization(axis=-1)(conv1)
+    pool1 = MaxPooling2D(pool_size=2)(conv1)
+    pool1 = Dropout(droprate)(pool1)
 
-conv1 = Conv2D(16, 3, activation='relu', padding='same')(input3)
-conv1 = BatchNormalization(axis=-1)(conv1)
-pool1 = MaxPooling2D(pool_size=2)(conv1)
-pool1 = Dropout(droprate)(pool1)
+    conv2 = Conv2D(32, 3, activation='relu', padding='same')(pool1)
+    conv2 = BatchNormalization(axis=-1)(conv2)
+    pool2 = MaxPooling2D(pool_size=2)(conv2)
+    pool2 = Dropout(droprate)(pool2)
 
-conv2 = Conv2D(32, 3, activation='relu', padding='same')(pool1)
-conv2 = BatchNormalization(axis=-1)(conv2)
-pool2 = MaxPooling2D(pool_size=2)(conv2)
-pool2 = Dropout(droprate)(pool2)
+    conv3 = Conv2D(64, 3, activation='relu', padding='same')(pool2)
+    conv3 = BatchNormalization(axis=-1)(conv3)
+    pool3 = MaxPooling2D(pool_size=2)(conv3)
+    pool3 = Dropout(droprate)(pool3)
 
-conv3 = Conv2D(64, 3, activation='relu', padding='same')(pool2)
-conv3 = BatchNormalization(axis=-1)(conv3)
-pool3 = MaxPooling2D(pool_size=2)(conv3)
-pool3 = Dropout(droprate)(pool3)
+    conv4 = Conv2D(128, 3, activation='relu', padding='same')(pool3)
+    conv4 = BatchNormalization(axis=-1)(conv4)
+    pool4 = MaxPooling2D(pool_size=2)(conv4)
+    pool4 = Dropout(droprate)(pool4)
 
-conv4 = Conv2D(128, 3, activation='relu', padding='same')(pool3)
-conv4 = BatchNormalization(axis=-1)(conv4)
-pool4 = MaxPooling2D(pool_size=2)(conv4)
-pool4 = Dropout(droprate)(pool4)
+    flat = Flatten()(pool4)
+    fc1 = Dense(32, activation='relu')(flat)
+    fc1 = BatchNormalization(axis=-1)(fc1)
+    fc1 = Dropout(0.5)(fc1)
 
-flat = Flatten()(pool4)
-fc1 = Dense(32, activation='relu')(flat)
-fc1 = BatchNormalization(axis=-1)(fc1)
-fc1 = Dropout(0.5)(fc1)
+    output = Dense(16, activation='linear')(fc1)
+    output = Reshape((4, 4))(output)
 
-output = Dense(16, activation='linear')(fc1)
-output = Reshape((4, 4))(output)
+    model = Model(inputs=input3, outputs=output)
+    model.compile(optimizer='adam', loss='mse', metrics=['accuracy', 'mse', 'mae'])
 
-model = Model(inputs=input3, outputs=output)
-model.compile(optimizer='adam', loss='mse', metrics=['accuracy', 'mse', 'mae'])
+    tf.keras.utils.plot_model(model,
+                              to_file='PoseEstimationPlot.png',
+                              show_shapes=True,
+                              rankdir='TB')
 
-tf.keras.utils.plot_model(model,
-                          to_file='PoseEstimationPlot.png',
-                          show_shapes=True,
-                          rankdir='TB')
+    model.summary()
 
-model.summary()
+    with open('PoseEstimationSummary.txt', 'w') as f:
+        with redirect_stdout(f):
+            model.summary()
 
-with open('PoseEstimationSummary.txt', 'w') as f:
-    with redirect_stdout(f):
-        model.summary()
+    # Train model
+    history = model.fit(lbls_train, poses_train,
+                        batch_size=1,
+                        epochs=epochs,
+                        verbose=1,
+                        validation_data=(lbls_val, poses_val),
+                        callbacks=[csv, mc])
 
-# Train model
-history = model.fit(lbls_train, poses_train,
-                    batch_size=1,
-                    epochs=epochs,
-                    verbose=1,
-                    validation_data=(lbls_val, poses_val))
+
+# Load best model from file
+model = load_model(model_name, compile=False)
+
+# Compile loaded model
+model.compile(optimizer='adam', loss=loss_function, metrics=metrics)
 
 predicted_poses = model.predict(lbls_test)
-score = model.evaluate(lbls_test, poses_test)
-print(poses_test[0, :, :].T)
-print(predicted_poses[0, :, :].T)
+f = open("pose_estimation/predicted_poses.txt", "w+")
+for i in range(8):
+    np.set_printoptions(threshold=np.inf, linewidth=np.inf)  # turn off summarization, line-wrapping
+    f.write("True:\n" + np.array2string(poses_test[i, :, :].T, separator=', ') + "\n")
+    f.write("Predicted:\n" + np.array2string(predicted_poses[i, :, :].T, separator=', ') + "\n")
+f.close()
 
 print('\n# Evaluate on test data')
 start_time = time.time()
