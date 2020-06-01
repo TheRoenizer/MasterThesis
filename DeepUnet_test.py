@@ -18,7 +18,7 @@ model_name = 'best_model_deepunet_ny_wcc_endo.hdf5'
 train = True
 which_data = 1  # 1 = jigsaw, 2 = EndoVis
 which_path = 2  # 1 = local, 2 = remote
-batch_size = 25
+batch_size = 5
 num_epochs = 1000
 
 Loss_function = 2  # 1=focal_loss, 2=weighted_categorical_crossentropy, 3=categorical_cross_entropy
