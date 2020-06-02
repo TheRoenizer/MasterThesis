@@ -52,7 +52,6 @@ def load_data_EndoVis17(data_path, dtype=np.float32):
     temp = np.empty((N, *DIM, 1), dtype=dtype)
     labels_temp = np.empty((1080, 1920), dtype=dtype)
     labels_crop = np.empty((N, *DIM), dtype=dtype)
-    #labels_temp_temp = np.empty(DIM, dtype=dtype)
     for i in range(N):
         image_path = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/left_frames/frame{}.png'.format(str(i).zfill(3)))
         images_temp = cv.imread(image_path).astype(dtype)
@@ -88,7 +87,6 @@ def load_data_EndoVis17_full(data_path, dtype=np.float32):
     temp = np.empty((N, *DIM, 1), dtype=dtype)
     labels_temp = np.empty((1080, 1920), dtype=dtype)
     labels_crop = np.empty((N, *DIM), dtype=dtype)
-    #labels_temp_temp = np.empty(DIM, dtype=dtype)
     for i in range(N):
         image_path = os.path.join(data_path, 'instrument_1_4_training/instrument_dataset_3/left_frames/frame{}.png'.format(str(i).zfill(3)))
         images_temp = cv.imread(image_path).astype(dtype)
