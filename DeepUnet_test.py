@@ -107,7 +107,7 @@ if which_data == 1:
 
 if which_data == 2:
     print('Loading images and labels...')
-    images, labels, labels_display = load_data_EndoVis17(PATH)
+    images, labels, labels_display = load_data_EndoVis17_full(PATH)
 
     imgs_train = images[0:175]
     imgs_val = images[175:200]
@@ -125,7 +125,7 @@ print('Images and labels loaded!')
 
 if train:
     input_shape_jigsaws = np.zeros((480, 640, 3))
-    input_shape_endovis = np.zeros((512, 640, 3))
+    input_shape_endovis = np.zeros((1024, 1280, 3))
 
     if which_data == 1:
         (deep_unet, name) = deep_unet(input_shape_jigsaws.shape, num_classes=5, padding=16)
@@ -184,7 +184,7 @@ def show_predictions_test(image_num=1):
 for i in range(len(imgs_test)):
     show_predictions_test(i)
 
-'''
+
 print('\n# Evaluate on test data')
 start_time = time.time()
 results = deep_unet.evaluate(imgs_test, lbls_test, batch_size=1)
@@ -225,5 +225,5 @@ f.write("\nFPS: %.2f" % fps)
 if Loss_function == 2:
     f.write("\nWeights: %s" % weights)
 f.close()
-'''
+
 print('DONE!')

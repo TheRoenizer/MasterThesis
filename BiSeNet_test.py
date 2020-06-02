@@ -202,7 +202,7 @@ def show_predictions_test(image_num=1):
 for i in range(len(imgs_test)):
     show_predictions_test(i)
 
-'''
+
 print('\n# Evaluate on test data')
 start_time = time.time()
 results = net.evaluate([imgs_test, imgs_test], lbls_test, batch_size=1)
@@ -244,5 +244,5 @@ f.write("\nFPS: %.2f" % fps)
 if Loss_function == 2:
     f.write("\nWeigts: %s" % weights)
 f.close()
-'''
+
 print('DONE!')
