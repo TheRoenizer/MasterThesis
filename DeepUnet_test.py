@@ -181,7 +181,7 @@ def show_predictions_test(image_num=1):
     display_test([imgs_test[image_num], lbls_display_test[image_num], create_mask(pred_mask)], image_num)
 
 
-for i in range(10):
+for i in range(len(imgs_test)):
     show_predictions_test(i)
 
 
