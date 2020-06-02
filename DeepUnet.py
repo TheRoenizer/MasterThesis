@@ -20,12 +20,9 @@ def deep_unet(input_shape, num_classes=5, padding=0):
 
     # add zero padding such to the height so it is divisible by 128 (2*7)
     x = ZeroPadding2D((padding, 0))(inputs)
-    #print("inputs: " + str(inputs.shape))
-    #print("x: "+str(x.shape))
 
     # Down pooling stage
     # 1. down
-    #conv1_0 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(inputs)
     conv1_1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(x)
     conv1_2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv1_1)
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1_2)

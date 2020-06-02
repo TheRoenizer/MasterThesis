@@ -138,10 +138,6 @@ mc = tf.keras.callbacks.ModelCheckpoint(model_name, monitor='val_loss', mode='mi
 csv = tf.keras.callbacks.CSVLogger('pictures_bisenet/metrics.csv', separator=',', append=False)
 
 if train:
-# use tf.data to improve performance
-
-    #train_dataset = tf.data.Dataset.from_tensor_slices((imgs_train, lbls_train_onehot))
-    #val_dataset = tf.data.Dataset.from_tensor_slices((imgs_test, lbls_val_onehot))
 
     if which_data == 1:
         net = bise_net((480, 640, 3), 5)
