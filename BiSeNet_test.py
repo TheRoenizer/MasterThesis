@@ -39,14 +39,12 @@ if which_data == 1:
     weights = [.5, 1.5, 1, 1.5, 1]  # [background, right gripper, right shaft, left gripper, left shaft]
 
     metrics = ['accuracy',
-               iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4,
-               dice_coef_mean, dice_coef0, dice_coef1, dice_coef2, dice_coef3, dice_coef4]
+               iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3, iou_coef4]
 if which_data == 2:
     weights = [.5, 2, 2, 2]  # [background, shaft, wrist, claspers]
 
     metrics = ['accuracy',
-               iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3,
-               dice_coef_mean, dice_coef0, dice_coef1, dice_coef2, dice_coef3]
+               iou_coef_mean, iou_coef0, iou_coef1, iou_coef2, iou_coef3]
 
 if which_path == 1:
     # Christoffer:
@@ -201,7 +199,7 @@ def show_predictions_test(image_num=1):
     pred_mask = net.predict([x, x]) * 255
     display_test([imgs_test[image_num], lbls_display_test[image_num], create_mask(pred_mask)], image_num)
 
-for i in range(10):
+for i in range(len(imgs_test)):
     show_predictions_test(i)
 
 
