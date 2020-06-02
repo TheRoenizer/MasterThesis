@@ -23,14 +23,14 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 from BiSeNet import bise_net
 from functions import *
 
-model_name = 'best_model_bisenet_wcc.hdf5'
+model_name = 'best_model_bisenet_fl_endo.hdf5'
 train = False
 which_path = 2  # 1 = local, 2 = remote
-which_data = 1 # 1 = JIGSAWS, 2 = EndoVis2017
+which_data = 2 # 1 = JIGSAWS, 2 = EndoVis2017
 batch_size = 1
 num_epochs = 100
 
-Loss_function = 2   # 1=focal_loss, 2=weighted_categorical_crossentropy 3=categorical_cross_entropy
+Loss_function = 1   # 1=focal_loss, 2=weighted_categorical_crossentropy 3=categorical_cross_entropy
 
 FL_alpha = .25      # Focal loss alpha
 FL_gamma = 2.       # Focal loss gamma
@@ -202,7 +202,7 @@ def show_predictions_test(image_num=1):
 for i in range(len(imgs_test)):
     show_predictions_test(i)
 
-
+'''
 print('\n# Evaluate on test data')
 start_time = time.time()
 results = net.evaluate([imgs_test, imgs_test], lbls_test, batch_size=1)
@@ -244,5 +244,5 @@ f.write("\nFPS: %.2f" % fps)
 if Loss_function == 2:
     f.write("\nWeigts: %s" % weights)
 f.close()
-
+'''
 print('DONE!')
