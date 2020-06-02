@@ -24,7 +24,7 @@ from BiSeNet import bise_net
 from functions import *
 
 model_name = 'best_model_bisenet_wcc.hdf5'
-train = True
+train = False
 which_path = 2  # 1 = local, 2 = remote
 which_data = 1 # 1 = JIGSAWS, 2 = EndoVis2017
 batch_size = 1
